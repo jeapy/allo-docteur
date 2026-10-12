@@ -1,9 +1,5 @@
 package dev.jpzconception.allodocteur;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 /** Petit client de test autour de MockMvc (JSON, jeton Bearer, helpers d'inscription). */
 public class ApiClient {
@@ -30,21 +27,21 @@ public class ApiClient {
     public record Session(String email, String userId, String token) {}
 
     public MvcResult get(String url, String token, String... queryPairs) throws Exception {
-        MockHttpServletRequestBuilder req = get(url);
+        MockHttpServletRequestBuilder req = MockMvcRequestBuilders.get(url);
         for (int i = 0; i + 1 < queryPairs.length; i += 2) req.param(queryPairs[i], queryPairs[i + 1]);
         return mvc.perform(auth(req, token)).andReturn();
     }
 
     public MvcResult post(String url, Object body, String token) throws Exception {
-        return mvc.perform(auth(post(url), token).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body))).andReturn();
+        return mvc.perform(auth(MockMvcRequestBuilders.post(url), token).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body))).andReturn();
     }
 
     public MvcResult put(String url, Object body, String token) throws Exception {
-        return mvc.perform(auth(put(url), token).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body))).andReturn();
+        return mvc.perform(auth(MockMvcRequestBuilders.put(url), token).contentType(MediaType.APPLICATION_JSON).content(json.writeValueAsString(body))).andReturn();
     }
 
     public MvcResult delete(String url, String token) throws Exception {
-        return mvc.perform(auth(delete(url), token)).andReturn();
+        return mvc.perform(auth(MockMvcRequestBuilders.delete(url), token)).andReturn();
     }
 
     public MvcResult perform(MockHttpServletRequestBuilder req, String token) throws Exception {
