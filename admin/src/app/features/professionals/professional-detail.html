@@ -1,0 +1,68 @@
+<a mat-button routerLink="/professionals"><mat-icon>arrow_back</mat-icon> {{ 'professionals.back' | transloco }}</a>
+@if (busy()) { <mat-progress-bar mode="indeterminate" /> }
+@if (pro(); as p) {
+  <h1>{{ p.firstName }} {{ p.lastName }}</h1>
+  <p class="meta">
+    {{ p.type.label }} · {{ p.email }} ·
+    <strong>{{ 'verification.' + p.verificationStatus | transloco }}</strong>
+  </p>
+  @if (p.rejectionReason) {
+    <p class="reason" role="note">{{ 'professionals.reason' | transloco }} : {{ p.rejectionReason }}</p>
+  }
+
+  <div class="actions">
+    @if (canReview()) {
+      @if (p.verificationStatus === 'PENDING' || p.verificationStatus === 'SUSPENDED') {
+        <button mat-flat-button (click)="approve()" [disabled]="busy()">{{ 'professionals.approve' | transloco }}</button>
+      }
+      @if (p.verificationStatus === 'PENDING') {
+        <button mat-stroked-button (click)="reject()" [disabled]="busy()">{{ 'professionals.reject' | transloco }}</button>
+      }
+      @if (p.verificationStatus === 'APPROVED') {
+        <button mat-stroked-button (click)="suspend()" [disabled]="busy()">{{ 'professionals.suspend' | transloco }}</button>
+      }
+    }
+  </div>
+
+  <div class="grid">
+    <mat-card>
+      <mat-card-header><mat-card-title>{{ 'professionals.identity' | transloco }}</mat-card-title></mat-card-header>
+      <mat-card-content>
+        <dl>
+          <dt>{{ 'professionals.license' | transloco }}</dt><dd>{{ p.licenseNumber }}</dd>
+          <dt>{{ 'professionals.qualification' | transloco }}</dt><dd>{{ p.qualification }}</dd>
+          <dt>{{ 'professionals.experience' | transloco }}</dt><dd>{{ p.yearsExperience ?? '—' }}</dd>
+          <dt>{{ 'professionals.city' | transloco }}</dt><dd>{{ p.city.name }}{{ p.district ? ' – ' + p.district.name : '' }}</dd>
+          <dt>{{ 'professionals.specialties' | transloco }}</dt>
+          <dd>@for (s of p.specialties; track s.id) { <span class="chip">{{ s.name }}</span> }</dd>
+          <dt>{{ 'professionals.fees' | transloco }}</dt>
+          <dd>
+            @if (p.offersTeleconsultation) { {{ 'professionals.tele' | transloco }} : {{ p.consultationFee | number }} {{ p.currency }}<br /> }
+            @if (p.offersHomeVisit) { {{ 'professionals.home' | transloco }} : {{ p.homeVisitFee | number }} {{ p.currency }} }
+          </dd>
+        </dl>
+        @if (p.bio) { <p>{{ p.bio }}</p> }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header><mat-card-title>{{ 'professionals.documents' | transloco }}</mat-card-title></mat-card-header>
+      <mat-card-content>
+        @if (p.documents?.length) {
+          <mat-list>
+            @for (d of p.documents; track d.id) {
+              <mat-list-item>
+                <mat-icon matListItemIcon>description</mat-icon>
+                <span matListItemTitle>{{ d.filename }}</span>
+                <span matListItemLine>{{ d.type }} · {{ d.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                <button matListItemMeta mat-button (click)="open(d)">{{ 'professionals.open' | transloco }}</button>
+              </mat-list-item>
+            }
+          </mat-list>
+        } @else {
+          <p>{{ 'professionals.noDocuments' | transloco }}</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+}

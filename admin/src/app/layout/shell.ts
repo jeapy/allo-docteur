@@ -30,5 +30,6 @@ export class ShellComponent {
   protected readonly nav = [
     { path: '/dashboard', icon: 'dashboard', label: 'nav.dashboard' },
     { path: '/users', icon: 'group', label: 'nav.users' },
+    { path: '/professionals', icon: 'medical_services', label: 'nav.professionals' },
   ];
 }

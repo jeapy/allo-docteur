@@ -1,27 +1,100 @@
 {
-  "app": { "name": "Allo Docteur", "admin": "Administration" },
-  "nav": { "dashboard": "Tableau de bord", "users": "Utilisateurs", "logout": "Se déconnecter" },
+  "app": {
+    "name": "Allo Docteur",
+    "admin": "Administration"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "users": "Utilisateurs",
+    "logout": "Se déconnecter",
+    "professionals": "Professionnels"
+  },
   "login": {
     "title": "Connexion administrateur",
-    "email": "Adresse e-mail", "password": "Mot de passe", "submit": "Se connecter",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
     "mfaTitle": "Vérification en deux étapes",
     "mfaHint": "Saisissez le code à 6 chiffres de votre application d'authentification.",
-    "code": "Code", "verify": "Valider", "back": "Retour"
+    "code": "Code",
+    "verify": "Valider",
+    "back": "Retour"
   },
-  "validation": { "required": "Champ obligatoire", "email": "Adresse e-mail invalide", "code": "Code à 6 chiffres" },
+  "validation": {
+    "required": "Champ obligatoire",
+    "email": "Adresse e-mail invalide",
+    "code": "Code à 6 chiffres"
+  },
   "users": {
-    "title": "Utilisateurs", "search": "Rechercher", "role": "Rôle", "status": "Statut",
-    "all": "Tous", "name": "Nom", "email": "E-mail", "phone": "Téléphone", "createdAt": "Inscription",
-    "empty": "Aucun utilisateur", "suspend": "Suspendre", "activate": "Réactiver"
+    "title": "Utilisateurs",
+    "search": "Rechercher",
+    "role": "Rôle",
+    "status": "Statut",
+    "all": "Tous",
+    "name": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "createdAt": "Inscription",
+    "empty": "Aucun utilisateur",
+    "suspend": "Suspendre",
+    "activate": "Réactiver"
   },
-  "roles": { "PATIENT": "Patient", "PROFESSIONAL": "Professionnel", "ADMIN": "Administrateur" },
-  "statuses": { "ACTIVE": "Actif", "SUSPENDED": "Suspendu", "PENDING": "En attente" },
-  "dashboard": { "title": "Tableau de bord", "soon": "Les indicateurs seront disponibles dans une prochaine phase." },
+  "roles": {
+    "PATIENT": "Patient",
+    "PROFESSIONAL": "Professionnel",
+    "ADMIN": "Administrateur"
+  },
+  "statuses": {
+    "ACTIVE": "Actif",
+    "SUSPENDED": "Suspendu",
+    "PENDING": "En attente"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "soon": "Les indicateurs seront disponibles dans une prochaine phase."
+  },
   "errors": {
     "generic": "Une erreur est survenue. Veuillez réessayer.",
     "network": "Serveur injoignable.",
     "forbidden": "Accès refusé.",
     "invalidCredentials": "Identifiants invalides.",
     "tooMany": "Trop de tentatives. Réessayez plus tard."
+  },
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
+  },
+  "verification": {
+    "PENDING": "En attente",
+    "APPROVED": "Approuvé",
+    "REJECTED": "Rejeté",
+    "SUSPENDED": "Suspendu"
+  },
+  "professionals": {
+    "title": "Professionnels de santé",
+    "type": "Type",
+    "license": "N° d'ordre",
+    "city": "Ville",
+    "submittedAt": "Soumis le",
+    "review": "Examiner",
+    "empty": "Aucun professionnel",
+    "back": "Retour à la liste",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "suspend": "Suspendre",
+    "reason": "Motif",
+    "rejectTitle": "Rejeter le profil",
+    "suspendTitle": "Suspendre le profil",
+    "identity": "Identité professionnelle",
+    "qualification": "Qualification",
+    "experience": "Années d'expérience",
+    "specialties": "Spécialités",
+    "fees": "Tarifs",
+    "tele": "Téléconsultation",
+    "home": "Visite à domicile",
+    "documents": "Justificatifs",
+    "open": "Ouvrir",
+    "noDocuments": "Aucun justificatif déposé.",
+    "updated": "Profil mis à jour."
   }
 }

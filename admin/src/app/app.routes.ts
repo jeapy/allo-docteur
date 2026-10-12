@@ -18,6 +18,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
       {
+        path: 'professionals',
+        loadComponent: () =>
+          import('./features/professionals/professionals-list').then((m) => m.ProfessionalsListComponent),
+      },
+      {
+        path: 'professionals/:id',
+        loadComponent: () =>
+          import('./features/professionals/professional-detail').then((m) => m.ProfessionalDetailComponent),
+      },
+      {
         path: 'users',
         loadComponent: () => import('./features/users/users-list').then((m) => m.UsersListComponent),
       },

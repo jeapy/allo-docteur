@@ -1,0 +1,8 @@
+.meta { margin: 0 0 8px; }
+.reason { color: var(--mat-sys-error); }
+.actions { display: flex; gap: 8px; margin: 16px 0; flex-wrap: wrap; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 8px 0; }
+dt { font-weight: 600; }
+dd { margin: 0; }
+.chip { display: inline-block; padding: 2px 10px; margin: 0 6px 4px 0; border-radius: 12px; background: var(--mat-sys-secondary-container); }
