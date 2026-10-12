@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   application:
     name: allo-docteur
   datasource:
@@ -12,6 +16,7 @@ spring:
     properties:
       hibernate:
         jdbc.time_zone: UTC
+        default_batch_fetch_size: 50
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -51,3 +56,5 @@ app:
     password: ${APP_ADMIN_PASSWORD:}
   rate-limit:
     auth-per-minute: 10
+  storage:
+    local-path: ${APP_STORAGE_PATH:./data/storage}
