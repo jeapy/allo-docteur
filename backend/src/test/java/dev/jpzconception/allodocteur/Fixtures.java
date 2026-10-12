@@ -4,7 +4,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.jpzconception.allodocteur.ApiClient.Session;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -78,6 +82,23 @@ public class Fixtures {
         check(api.post("/api/v1/admin/professionals/" + pro.userId() + "/approve", Map.of(), adminToken)
                 .getResponse().getStatus(), 200, "approbation");
         return pro;
+    }
+
+    public record Booking(String id, Instant startAt) {}
+
+    /** Réserve le créneau n° {@code slotIndex} (08:00, 08:30…) du surlendemain : toujours dans le futur. */
+    public Booking book(Session patient, Session pro, String type, int slotIndex) throws Exception {
+        LocalDate day = LocalDate.now(ZoneOffset.UTC).plusDays(2);
+        JsonNode slot = api.body(api.get("/api/v1/professionals/" + pro.userId() + "/slots", patient.token(),
+                "type", type, "from", day.toString())).get(slotIndex);
+        Map<String, Object> req = new HashMap<>();
+        req.put("professionalId", pro.userId());
+        req.put("type", type);
+        req.put("reason", "CONSULTATION");
+        req.put("startAt", slot.get("startAt").asText());
+        var result = api.post("/api/v1/appointments", req, patient.token());
+        check(result.getResponse().getStatus(), 201, "réservation");
+        return new Booking(api.body(result).get("id").asText(), Instant.parse(slot.get("startAt").asText()));
     }
 
     private static void check(int actual, int expected, String step) {

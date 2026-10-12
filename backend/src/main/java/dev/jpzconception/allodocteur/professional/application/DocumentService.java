@@ -7,15 +7,13 @@ import dev.jpzconception.allodocteur.professional.infrastructure.ProfessionalDoc
 import dev.jpzconception.allodocteur.professional.infrastructure.ProfessionalRepository;
 import dev.jpzconception.allodocteur.shared.error.ApiException;
 import dev.jpzconception.allodocteur.shared.security.AuthenticatedUser;
+import dev.jpzconception.allodocteur.shared.storage.FileInspector;
 import dev.jpzconception.allodocteur.shared.storage.StorageService;
 import dev.jpzconception.allodocteur.user.domain.Role;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
@@ -116,27 +114,18 @@ public class DocumentService {
         }
     }
 
-    /** Détection par signature (octets magiques) : on ne fait pas confiance au Content-Type du client. */
+    /** Les justificatifs n'acceptent que PDF, JPEG et PNG. */
     static String detectContentType(byte[] b) {
-        if (b.length >= 4 && b[0] == '%' && b[1] == 'P' && b[2] == 'D' && b[3] == 'F') return "application/pdf";
-        if (b.length >= 3 && (b[0] & 0xFF) == 0xFF && (b[1] & 0xFF) == 0xD8 && (b[2] & 0xFF) == 0xFF) return "image/jpeg";
-        if (b.length >= 8 && (b[0] & 0xFF) == 0x89 && b[1] == 'P' && b[2] == 'N' && b[3] == 'G') return "image/png";
-        return null;
+        String type = FileInspector.detectContentType(b);
+        return "image/webp".equals(type) ? null : type;
     }
 
     static String sanitize(String name) {
-        String base = name == null ? "document" : name.replace('\\', '/');
-        base = base.substring(base.lastIndexOf('/') + 1).replaceAll("[\\p{Cntrl}\"<>:|?*]", "_").trim();
-        if (base.isEmpty()) base = "document";
-        return base.length() > 200 ? base.substring(base.length() - 200) : base;
+        return FileInspector.sanitizeFilename(name);
     }
 
     private static String sha256(byte[] bytes) {
-        try {
-            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        }
+        return FileInspector.sha256(bytes);
     }
 
     private static ApiException notFound() {

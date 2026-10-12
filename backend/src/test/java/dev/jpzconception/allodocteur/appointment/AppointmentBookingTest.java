@@ -15,6 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +110,38 @@ class AppointmentBookingTest extends AbstractIntegrationTest {
     }
 
     @Test
+    void simultaneousBookingsOfTheSameSlotYieldExactlyOneWinner() throws Exception {
+        Session pro = fx.approvedProfessional("Race" + UUID.randomUUID().toString().substring(0, 6));
+        int contenders = 4;
+        List<Session> patients = new java.util.ArrayList<>();
+        for (int i = 0; i < contenders; i++) patients.add(fx.patient("Racer" + i));
+        String slot = slots(patients.get(0), pro.userId(), "TELECONSULTATION_VIDEO").get(0).get("startAt").asText();
+
+        ExecutorService pool = Executors.newFixedThreadPool(contenders);
+        CountDownLatch go = new CountDownLatch(1);
+        List<Future<Integer>> results = new java.util.ArrayList<>();
+        for (Session p : patients) {
+            results.add(pool.submit(() -> {
+                go.await();
+                return api.post("/api/v1/appointments",
+                        booking(pro.userId(), "TELECONSULTATION_VIDEO", "CONSULTATION", slot), p.token())
+                        .getResponse().getStatus();
+            }));
+        }
+        go.countDown();
+        int created = 0;
+        int conflicts = 0;
+        for (Future<Integer> f : results) {
+            int status = f.get();
+            if (status == 201) created++;
+            if (status == 409) conflicts++;
+        }
+        pool.shutdown();
+        assertThat(created).isEqualTo(1);
+        assertThat(conflicts).isEqualTo(contenders - 1);
+    }
+
+    @Test
     void annulationLibereLeCreneau() throws Exception {
         Session pro = fx.approvedProfessional("Free" + UUID.randomUUID().toString().substring(0, 6));
         Session alice = fx.patient("Alice");
@@ -182,7 +218,7 @@ class AppointmentBookingTest extends AbstractIntegrationTest {
         List<JsonNode> all = new java.util.ArrayList<>();
         slots(parent, pro.userId(), "TELECONSULTATION_VIDEO").forEach(all::add);
 
-        // le parent et l'enfant peuvent avoir un rendez-vous au même moment (personnes différentes)
+        // le parent réserve d'abord pour lui-même
         String slot = all.get(0).get("startAt").asText();
         assertThat(api.post("/api/v1/appointments", booking(pro.userId(), "TELECONSULTATION_VIDEO", "CONSULTATION", slot),
                 parent.token()).getResponse().getStatus()).isEqualTo(201);
