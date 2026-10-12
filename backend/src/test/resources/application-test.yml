@@ -1,0 +1,15 @@
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-0123456789
+  crypto:
+    key: MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=
+  cookie:
+    secure: false
+  admin:
+    email: admin@test.local
+    password: AdminPassw0rd!
+  rate-limit:
+    auth-per-minute: 100000
+spring:
+  datasource:
+    password: unused
