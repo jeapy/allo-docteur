@@ -13,10 +13,10 @@ import dev.jpzconception.allodocteur.professional.infrastructure.ProfessionalRep
 import dev.jpzconception.allodocteur.reference.domain.City;
 import dev.jpzconception.allodocteur.reference.domain.District;
 import dev.jpzconception.allodocteur.reference.domain.Specialty;
-import dev.jpzconception.allodocteur.reference.infrastructure.ReferenceRepositories.CityRepository;
-import dev.jpzconception.allodocteur.reference.infrastructure.ReferenceRepositories.DistrictRepository;
-import dev.jpzconception.allodocteur.reference.infrastructure.ReferenceRepositories.ProfessionalTypeRepository;
-import dev.jpzconception.allodocteur.reference.infrastructure.ReferenceRepositories.SpecialtyRepository;
+import dev.jpzconception.allodocteur.reference.infrastructure.CityRepository;
+import dev.jpzconception.allodocteur.reference.infrastructure.DistrictRepository;
+import dev.jpzconception.allodocteur.reference.infrastructure.ProfessionalTypeRepository;
+import dev.jpzconception.allodocteur.reference.infrastructure.SpecialtyRepository;
 import dev.jpzconception.allodocteur.shared.error.ApiException;
 import dev.jpzconception.allodocteur.shared.security.AuthenticatedUser;
 import dev.jpzconception.allodocteur.user.domain.Role;
