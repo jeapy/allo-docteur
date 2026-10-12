@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface AvailabilityExceptionRepository extends JpaRepository<AvailabilityException, UUID> {
     List<AvailabilityException> findByProfessionalIdAndDateGreaterThanEqualOrderByDateAscStartTimeAsc(
             UUID professionalId, LocalDate from);
+
+    List<AvailabilityException> findByProfessionalIdAndDateBetween(UUID professionalId, LocalDate from, LocalDate to);
 }
