@@ -1,0 +1,24 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav #nav [mode]="mode()" [opened]="!isHandset()" class="sidenav" role="navigation">
+    <div class="brand">{{ 'app.name' | transloco }}</div>
+    <mat-nav-list>
+      @for (item of this.nav; track item.path) {
+        <a mat-list-item [routerLink]="item.path" routerLinkActive="active" (click)="isHandset() && nav.close()">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label | transloco }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar>
+      @if (isHandset()) {
+        <button mat-icon-button (click)="nav.toggle()" aria-label="Menu"><mat-icon>menu</mat-icon></button>
+      }
+      <span class="spacer"></span>
+      <span class="who">{{ auth.user()?.email }}</span>
+      <button mat-button (click)="auth.logout()">{{ 'nav.logout' | transloco }}</button>
+    </mat-toolbar>
+    <main class="content"><router-outlet /></main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

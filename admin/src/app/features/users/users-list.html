@@ -1,0 +1,60 @@
+<h1>{{ 'users.title' | transloco }}</h1>
+<div class="filters">
+  <mat-form-field appearance="outline" class="grow">
+    <mat-label>{{ 'users.search' | transloco }}</mat-label>
+    <input matInput [formControl]="search" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'users.role' | transloco }}</mat-label>
+    <mat-select [formControl]="role">
+      <mat-option value="">{{ 'users.all' | transloco }}</mat-option>
+      @for (r of roles; track r) { <mat-option [value]="r">{{ 'roles.' + r | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'users.status' | transloco }}</mat-label>
+    <mat-select [formControl]="status">
+      <mat-option value="">{{ 'users.all' | transloco }}</mat-option>
+      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'statuses.' + s | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+<div class="table-wrap">
+  <table mat-table [dataSource]="rows()" matSort (matSortChange)="onSort($event)" matSortActive="createdAt" matSortDirection="desc">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName">{{ 'users.name' | transloco }}</th>
+      <td mat-cell *matCellDef="let u">{{ u.firstName }} {{ u.lastName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'users.email' | transloco }}</th>
+      <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+    </ng-container>
+    <ng-container matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef>{{ 'users.role' | transloco }}</th>
+      <td mat-cell *matCellDef="let u">{{ 'roles.' + u.role | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'users.status' | transloco }}</th>
+      <td mat-cell *matCellDef="let u">{{ 'statuses.' + u.status | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'users.createdAt' | transloco }}</th>
+      <td mat-cell *matCellDef="let u">{{ u.createdAt | date: 'dd/MM/yyyy' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let u">
+        <button mat-button (click)="toggle(u)">
+          {{ (u.status === 'SUSPENDED' ? 'users.activate' : 'users.suspend') | transloco }}
+        </button>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'users.empty' | transloco }}</td></tr>
+  </table>
+</div>
+<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
+  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />

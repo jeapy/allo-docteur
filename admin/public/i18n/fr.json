@@ -1,0 +1,27 @@
+{
+  "app": { "name": "Allo Docteur", "admin": "Administration" },
+  "nav": { "dashboard": "Tableau de bord", "users": "Utilisateurs", "logout": "Se déconnecter" },
+  "login": {
+    "title": "Connexion administrateur",
+    "email": "Adresse e-mail", "password": "Mot de passe", "submit": "Se connecter",
+    "mfaTitle": "Vérification en deux étapes",
+    "mfaHint": "Saisissez le code à 6 chiffres de votre application d'authentification.",
+    "code": "Code", "verify": "Valider", "back": "Retour"
+  },
+  "validation": { "required": "Champ obligatoire", "email": "Adresse e-mail invalide", "code": "Code à 6 chiffres" },
+  "users": {
+    "title": "Utilisateurs", "search": "Rechercher", "role": "Rôle", "status": "Statut",
+    "all": "Tous", "name": "Nom", "email": "E-mail", "phone": "Téléphone", "createdAt": "Inscription",
+    "empty": "Aucun utilisateur", "suspend": "Suspendre", "activate": "Réactiver"
+  },
+  "roles": { "PATIENT": "Patient", "PROFESSIONAL": "Professionnel", "ADMIN": "Administrateur" },
+  "statuses": { "ACTIVE": "Actif", "SUSPENDED": "Suspendu", "PENDING": "En attente" },
+  "dashboard": { "title": "Tableau de bord", "soon": "Les indicateurs seront disponibles dans une prochaine phase." },
+  "errors": {
+    "generic": "Une erreur est survenue. Veuillez réessayer.",
+    "network": "Serveur injoignable.",
+    "forbidden": "Accès refusé.",
+    "invalidCredentials": "Identifiants invalides.",
+    "tooMany": "Trop de tentatives. Réessayez plus tard."
+  }
+}
