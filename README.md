@@ -2,14 +2,14 @@
 
 Clinique virtuelle de soins à domicile : API Spring Boot + administration Angular.
 
-## État – Phase 1
+## État – Phases 1 et 2
 | Partie | État |
 |---|---|
-| `admin/` Angular 22 | login + 2FA, layout, liste des utilisateurs – **build et tests OK** |
-| `backend/` Spring Boot 3.5.6 / Java 21 | auth (JWT, refresh avec rotation, TOTP, reset), utilisateurs, audit, tests – **écrit, pas encore compilé ni testé** |
+| `admin/` Angular 22 | login + 2FA, layout, utilisateurs, validation des professionnels – **build et tests OK** |
+| `backend/` Spring Boot 3.5.6 / Java 21 | Phase 1 (auth, utilisateurs, audit) + Phase 2 (référentiels, professionnels, disponibilités, justificatifs, recherche avancée, validation admin) – **écrit, pas encore compilé ni testé** |
 | Docker / CI | `docker-compose.yml`, `Makefile`, GitHub Actions – non exécutés |
 
-Contrat d'API : `docs/api-contract-phase1.md`. Swagger : `/swagger-ui.html`.
+Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`. Swagger : `/swagger-ui.html`.
 
 ## Démarrage rapide
 ```
@@ -29,6 +29,12 @@ Compte admin initial : `APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD` (créé au premi
 - E-mails derrière le port `EmailSender` (stub qui journalise).
 - Spring Boot 3.5.6 choisi faute de pouvoir compiler en environnement restreint ; migration vers la 4.x prévue en phase de durcissement.
 
-## À faire (Phase 1)
+- Référentiel géographique (villes/quartiers) en base ; jeu de départ : Abidjan et ses communes + 7 villes (modifiable par migration).
+- Justificatifs stockés derrière le port `StorageService` (disque local `APP_STORAGE_PATH`, à monter en volume en production).
+- Recherche : `Specification` JPA avec sous-requêtes `exists` (zones d'intervention, disponibilités, absences).
+
+## À faire
+- Écran admin de gestion des référentiels (spécialités, villes, quartiers).
+- Notes/avis (`rating_avg`/`rating_count` sont prêts, alimentés en Phase 7).
 - Imposer la 2FA aux comptes ADMIN SUPER/FINANCE (le champ `mfaEnabled` est exposé, le blocage n'est pas encore appliqué).
 - Écrans admin d'activation 2FA et de réinitialisation de mot de passe.
