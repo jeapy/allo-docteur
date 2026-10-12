@@ -28,6 +28,11 @@ export const routes: Routes = [
           import('./features/professionals/professional-detail').then((m) => m.ProfessionalDetailComponent),
       },
       {
+        path: 'appointments',
+        loadComponent: () =>
+          import('./features/appointments/appointments-list').then((m) => m.AppointmentsListComponent),
+      },
+      {
         path: 'users',
         loadComponent: () => import('./features/users/users-list').then((m) => m.UsersListComponent),
       },

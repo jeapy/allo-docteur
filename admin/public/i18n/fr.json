@@ -7,7 +7,8 @@
     "dashboard": "Tableau de bord",
     "users": "Utilisateurs",
     "logout": "Se déconnecter",
-    "professionals": "Professionnels"
+    "professionals": "Professionnels",
+    "appointments": "Rendez-vous"
   },
   "login": {
     "title": "Connexion administrateur",
@@ -62,7 +63,8 @@
   },
   "common": {
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "all": "Tous"
   },
   "verification": {
     "PENDING": "En attente",
@@ -96,5 +98,51 @@
     "open": "Ouvrir",
     "noDocuments": "Aucun justificatif déposé.",
     "updated": "Profil mis à jour."
+  },
+  "appointments": {
+    "title": "Rendez-vous",
+    "status": "Statut",
+    "type": "Mode",
+    "date": "Date",
+    "patient": "Patient",
+    "bookedBy": "réservé par",
+    "professional": "Professionnel",
+    "fee": "Tarif",
+    "from": "Du",
+    "to": "Au",
+    "empty": "Aucun rendez-vous",
+    "cancel": "Annuler",
+    "cancelTitle": "Annuler le rendez-vous",
+    "cancelled": "Rendez-vous annulé."
+  },
+  "appointmentStatuses": {
+    "REQUESTED": "Demandé",
+    "CONFIRMED": "Confirmé",
+    "IN_PROGRESS": "En cours",
+    "COMPLETED": "Terminé",
+    "CANCELLED": "Annulé",
+    "NO_SHOW": "Patient absent"
+  },
+  "appointmentTypes": {
+    "TELECONSULTATION_VIDEO": "Téléconsultation vidéo",
+    "TELECONSULTATION_AUDIO": "Téléconsultation audio",
+    "CHAT": "Messagerie",
+    "HOME_VISIT": "Visite à domicile"
+  },
+  "appointmentReasons": {
+    "CONSULTATION": "Consultation",
+    "TREATMENT_FOLLOWUP": "Suivi de traitement",
+    "MEDICAL_CERTIFICATE": "Certificat médical",
+    "INJECTION": "Injection",
+    "DRESSING": "Pansement",
+    "INFUSION": "Perfusion",
+    "BLOOD_PRESSURE": "Prise de tension",
+    "MEDICAL_SURVEILLANCE": "Surveillance médicale",
+    "PREGNANCY_FOLLOWUP": "Suivi de grossesse",
+    "POSTNATAL": "Consultation postnatale",
+    "BREASTFEEDING_ADVICE": "Conseils en allaitement",
+    "ELDERLY_ASSISTANCE": "Assistance aux personnes âgées",
+    "HYGIENE_CARE": "Soins d'hygiène",
+    "DAILY_COMPANIONSHIP": "Accompagnement quotidien"
   }
 }

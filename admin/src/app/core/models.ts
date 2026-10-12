@@ -96,3 +96,24 @@ export interface ProfessionalDetail {
   documents?: ProfessionalDocument[];
   createdAt?: string;
 }
+
+export type AppointmentStatus = 'REQUESTED' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+export type AppointmentType = 'TELECONSULTATION_VIDEO' | 'TELECONSULTATION_AUDIO' | 'CHAT' | 'HOME_VISIT';
+
+/** Vue administrateur : le détail du motif et la date de naissance ne sont jamais exposés. */
+export interface AppointmentRow {
+  id: string;
+  status: AppointmentStatus;
+  type: AppointmentType;
+  reason: string;
+  startAt: string;
+  endAt: string;
+  fee: number;
+  currency: string;
+  address?: string | null;
+  patient: { id: string; name: string };
+  beneficiaryName: string;
+  professional: { id: string; name: string; qualification?: string | null; typeLabel?: string | null };
+  cancelReason?: string | null;
+  createdAt: string;
+}

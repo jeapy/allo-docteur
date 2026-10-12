@@ -2,14 +2,14 @@
 
 Clinique virtuelle de soins à domicile : API Spring Boot + administration Angular.
 
-## État – Phases 1 et 2
+## État – Phases 1 à 3
 | Partie | État |
 |---|---|
-| `admin/` Angular 22 | login + 2FA, layout, utilisateurs, validation des professionnels – **build et tests OK** |
-| `backend/` Spring Boot 3.5.6 / Java 21 | Phase 1 (auth, utilisateurs, audit) + Phase 2 (référentiels, professionnels, disponibilités, justificatifs, recherche avancée, validation admin) – **écrit, pas encore compilé ni testé** |
+| `admin/` Angular 22 | login + 2FA, layout, utilisateurs, validation des professionnels, rendez-vous – **build et tests OK** |
+| `backend/` Spring Boot 3.5.6 / Java 21 | Phases 1-2 (auth, utilisateurs, audit, référentiels, professionnels, recherche, validation admin) : `mvn verify` OK sur le poste du développeur. Phase 3 (patients, rendez-vous, téléconsultation, messagerie, documents) : **écrite, pas encore compilée ni testée** |
 | Docker / CI | `docker-compose.yml`, `Makefile`, GitHub Actions – non exécutés |
 
-Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`. Swagger : `/swagger-ui.html`.
+Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`, `docs/api-contract-phase3.md`. Swagger : `/swagger-ui.html`.
 
 ## Démarrage rapide
 ```
@@ -32,6 +32,11 @@ Compte admin initial : `APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD` (créé au premi
 - Référentiel géographique (villes/quartiers) en base ; jeu de départ : Abidjan et ses communes + 7 villes (modifiable par migration).
 - Justificatifs stockés derrière le port `StorageService` (disque local `APP_STORAGE_PATH`, à monter en volume en production).
 - Recherche : `Specification` JPA avec sous-requêtes `exists` (zones d'intervention, disponibilités, absences).
+- Rendez-vous : confirmation manuelle par le professionnel ; créneaux calculés à la demande (pas stockés) ; anti-double réservation garanti par une contrainte d'exclusion PostgreSQL (`btree_gist`) en plus du contrôle applicatif.
+- Modules découplés par événements (`AppointmentEvents`) et par identifiants : la téléconsultation ouvre sa salle en réagissant à `Started`, sans que le module rendez-vous la connaisse.
+- Les administrateurs voient les rendez-vous (suivi) mais jamais les données de santé : détail du motif, date de naissance, messages et documents.
+- Messagerie par polling (`since`) ; WebSocket prévu plus tard. Les messages sont chiffrés au repos ; les fichiers partagés ne le sont pas encore (phase de durcissement).
+- Horloge injectée (`Clock`) : les tests d'intégration la déplacent pour atteindre l'heure d'un rendez-vous.
 
 ## À faire
 - Écran admin de gestion des référentiels (spécialités, villes, quartiers).
