@@ -58,6 +58,9 @@ app:
     auth-per-minute: 10
   storage:
     local-path: ${APP_STORAGE_PATH:./data/storage}
+  notifications:
+    external-types: APPOINTMENT_REMINDER,SOS,PRESCRIPTION,COMPLAINT_UPDATE  # doublés d'un push/SMS/e-mail (stubs)
+    reminder-minutes: 60
   payments:
     commission-rate: 0.10            # commission sur les consultations (surchargée par le plan d'abonnement du professionnel)
     pharmacy-commission-rate: 0

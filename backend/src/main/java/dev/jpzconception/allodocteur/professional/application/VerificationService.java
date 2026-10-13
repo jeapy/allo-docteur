@@ -34,10 +34,12 @@ public class VerificationService {
     private final AuditService audit;
     private final EmailSender email;
     private final Clock clock;
+    private final org.springframework.context.ApplicationEventPublisher events;
 
     public VerificationService(ProfessionalRepository professionals, ProfessionalDocumentRepository documents,
                                ProfessionalService professionalService, ProfessionalAssembler assembler,
-                               AuditService audit, EmailSender email, Clock clock) {
+                               AuditService audit, EmailSender email, Clock clock,
+                               org.springframework.context.ApplicationEventPublisher events) {
         this.professionals = professionals;
         this.documents = documents;
         this.professionalService = professionalService;
@@ -45,6 +47,7 @@ public class VerificationService {
         this.audit = audit;
         this.email = email;
         this.clock = clock;
+        this.events = events;
     }
 
     @Transactional(readOnly = true)
@@ -67,6 +70,7 @@ public class VerificationService {
         }
         p.approve(adminId, Instant.now(clock));
         audit.record(adminId, "PROFESSIONAL_APPROVED", "PROFESSIONAL", id.toString(), p.getLicenseNumber());
+        events.publishEvent(new ProfessionalEvents.VerificationChanged(id, VerificationStatus.APPROVED));
         email.send(p.getUser().getEmail(), "Votre profil Allo Docteur est validé",
                 "Votre profil est désormais visible dans le répertoire des professionnels.");
         return professionalService.detail(p, true);
@@ -76,6 +80,7 @@ public class VerificationService {
         Professional p = professionalService.require(id);
         p.reject(adminId, Instant.now(clock), reason);
         audit.record(adminId, "PROFESSIONAL_REJECTED", "PROFESSIONAL", id.toString(), reason);
+        events.publishEvent(new ProfessionalEvents.VerificationChanged(id, VerificationStatus.REJECTED));
         email.send(p.getUser().getEmail(), "Votre profil Allo Docteur n'a pas été validé",
                 "Motif : " + reason + "\nVous pouvez corriger votre profil et le soumettre à nouveau.");
         return professionalService.detail(p, true);
@@ -85,6 +90,7 @@ public class VerificationService {
         Professional p = professionalService.require(id);
         p.suspend(adminId, Instant.now(clock), reason);
         audit.record(adminId, "PROFESSIONAL_SUSPENDED", "PROFESSIONAL", id.toString(), reason);
+        events.publishEvent(new ProfessionalEvents.VerificationChanged(id, VerificationStatus.SUSPENDED));
         email.send(p.getUser().getEmail(), "Votre profil Allo Docteur est suspendu", "Motif : " + reason);
         return professionalService.detail(p, true);
     }

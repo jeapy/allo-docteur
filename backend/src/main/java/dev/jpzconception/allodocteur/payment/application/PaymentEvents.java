@@ -9,9 +9,12 @@ public final class PaymentEvents {
 
     private PaymentEvents() {}
 
-    public record Captured(UUID paymentId, PayableType payableType, UUID payableId, UUID payerId, BigDecimal amount) {}
+    /** {@code payeeUserId} : le professionnel bénéficiaire, nul si les fonds vont à une pharmacie ou à la plateforme. */
+    public record Captured(UUID paymentId, PayableType payableType, UUID payableId, UUID payerId, BigDecimal amount,
+                           UUID payeeUserId) {}
 
-    public record Released(UUID paymentId, PayableType payableType, UUID payableId, UUID payerId, BigDecimal amount) {}
+    public record Released(UUID paymentId, PayableType payableType, UUID payableId, UUID payerId, BigDecimal amount,
+                           UUID payeeUserId) {}
 
     public record Refunded(UUID paymentId, PayableType payableType, UUID payableId, UUID payerId, BigDecimal amount) {}
 

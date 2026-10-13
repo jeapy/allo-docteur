@@ -56,10 +56,13 @@ public class PrescriptionService {
     private final PrescriptionProperties props;
     private final Clock clock;
 
+    private final org.springframework.context.ApplicationEventPublisher events;
+
     public PrescriptionService(PrescriptionRepository prescriptions, PrescriptionItemRepository items,
                                AppointmentAccess appointments, MedicalRecordProvisioner provisioner,
                                RecordAccessService access, ProfessionalLookup professionals,
-                               PrescriptionProperties props, Clock clock) {
+                               PrescriptionProperties props, Clock clock,
+                               org.springframework.context.ApplicationEventPublisher events) {
         this.prescriptions = prescriptions;
         this.items = items;
         this.appointments = appointments;
@@ -68,6 +71,7 @@ public class PrescriptionService {
         this.professionals = professionals;
         this.props = props;
         this.clock = clock;
+        this.events = events;
     }
 
     // ------------------------------------------------------------------ émission
@@ -121,6 +125,7 @@ public class PrescriptionService {
         p.setIntegrityHash(PrescriptionHasher.hash(p, lines));
         prescriptions.save(p);
         items.saveAll(lines);
+        events.publishEvent(new PrescriptionEvents.Issued(p.getId(), p.getAccountId(), p.getProfessionalId()));
         return toDetail(p, lines, pro);
     }
 

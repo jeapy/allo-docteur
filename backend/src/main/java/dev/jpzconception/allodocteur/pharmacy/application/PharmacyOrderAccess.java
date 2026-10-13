@@ -26,14 +26,22 @@ public class PharmacyOrderAccess {
     }
 
     private final PharmacyOrderRepository orders;
+    private final dev.jpzconception.allodocteur.pharmacy.infrastructure.PharmacyMemberRepository members;
 
-    public PharmacyOrderAccess(PharmacyOrderRepository orders) {
+    public PharmacyOrderAccess(PharmacyOrderRepository orders,
+                               dev.jpzconception.allodocteur.pharmacy.infrastructure.PharmacyMemberRepository members) {
         this.orders = orders;
+        this.members = members;
     }
 
     public Ref requireOwned(UUID accountId, UUID orderId) {
         return orders.findById(orderId).filter(o -> o.getAccountId().equals(accountId)).map(PharmacyOrderAccess::toRef)
                 .orElseThrow(() -> ApiException.notFound("ORDER_NOT_FOUND", "Commande introuvable."));
+    }
+
+    /** Comptes des pharmaciens rattachés à une pharmacie (pour les prévenir d'une nouvelle commande). */
+    public java.util.List<UUID> memberUserIds(UUID pharmacyId) {
+        return members.findByPharmacyId(pharmacyId).stream().map(m -> m.getUserId()).toList();
     }
 
     public Optional<Ref> find(UUID orderId) {

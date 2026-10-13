@@ -255,7 +255,7 @@ public class PaymentService {
     private void capture(Payment p, PayableResolver resolver) {
         p.capture(clock.instant());
         events.publishEvent(new PaymentEvents.Captured(p.getId(), p.getPayableType(), p.getPayableId(), p.getPayerId(),
-                p.getAmount()));
+                p.getAmount(), payeeUser(p)));
         if (resolver == null || !resolver.escrow()) {
             release(p);
             return;
@@ -292,7 +292,7 @@ public class PaymentService {
                     p.getId(), null, label);
         }
         events.publishEvent(new PaymentEvents.Released(p.getId(), p.getPayableType(), p.getPayableId(), p.getPayerId(),
-                p.getAmount()));
+                p.getAmount(), payeeUser(p)));
     }
 
     private void refund(Payment p) {
@@ -332,6 +332,10 @@ public class PaymentService {
 
     private PayableResolver resolverOrNull(PayableType type) {
         return resolvers.get(type);
+    }
+
+    private static UUID payeeUser(Payment p) {
+        return p.getPayeeType() == PayeeType.USER ? p.getPayeeId() : null;
     }
 
     private static void validateReference(PaymentMethod method, String ref) {

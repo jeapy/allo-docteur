@@ -13,6 +13,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, UUID>, JpaSpecificationExecutor<Appointment> {
 
+    List<Appointment> findByStatusAndStartAtGreaterThanAndStartAtLessThanEqual(
+            dev.jpzconception.allodocteur.appointment.domain.AppointmentStatus status, java.time.Instant from, java.time.Instant to);
+
     @Query("""
             select a from Appointment a
             where a.professionalId = :pid and a.status in :statuses

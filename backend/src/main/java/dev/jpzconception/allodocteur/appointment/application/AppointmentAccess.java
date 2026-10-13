@@ -53,6 +53,12 @@ public class AppointmentAccess {
                 .orElseThrow(() -> ApiException.notFound("APPOINTMENT_NOT_FOUND", "Rendez-vous introuvable."));
     }
 
+    /** Rendez-vous confirmés qui commencent dans l'intervalle ]from, to] (rappels). */
+    public java.util.List<Ref> upcomingConfirmed(Instant from, Instant to) {
+        return appointments.findByStatusAndStartAtGreaterThanAndStartAtLessThanEqual(AppointmentStatus.CONFIRMED, from, to)
+                .stream().map(AppointmentAccess::toRef).toList();
+    }
+
     /** Lecture sans contrôle d'accès, réservée aux traitements internes (paiement). */
     public Optional<Ref> findRef(UUID appointmentId) {
         return appointments.findById(appointmentId).map(AppointmentAccess::toRef);

@@ -39,6 +39,11 @@ public class ProfessionalLookup {
                 .map(p -> new Dispatcher(p.getId(), p.getCity().getId(), name(p), p.getUser().getPhone()));
     }
 
+    /** Professionnels pouvant répondre à une alerte SOS : toute la ville, ou tous si l'alerte n'a pas de ville. */
+    public java.util.List<UUID> homeVisitProfessionalIds(Integer cityId) {
+        return cityId == null ? professionals.homeVisitIds() : professionals.homeVisitIdsInCity(cityId);
+    }
+
     /** Pharmacien(ne) approuvé(e) et actif(ve) : seul(e) à pouvoir être rattaché(e) à une pharmacie. */
     public boolean isActivePharmacist(UUID professionalId) {
         return professionals.findById(professionalId)
