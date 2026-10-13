@@ -7,7 +7,7 @@ export interface CurrentUser {
   firstName: string | null;
   lastName: string | null;
   role: Role;
-  adminLevel?: 'SUPER' | 'SUPPORT' | 'FINANCE' | null;
+  adminLevel?: AdminLevel | null;
 }
 
 export interface TokenResponse {
@@ -18,6 +18,8 @@ export interface TokenResponse {
 export type LoginResponse =
   | { status: 'AUTHENTICATED'; accessToken: string; expiresIn: number; user: CurrentUser }
   | { status: 'MFA_REQUIRED'; mfaToken: string };
+
+export type AdminLevel = 'SUPER' | 'SUPPORT' | 'FINANCE';
 
 export interface Page<T> {
   content: T[];
@@ -116,4 +118,21 @@ export interface AppointmentRow {
   professional: { id: string; name: string; qualification?: string | null; typeLabel?: string | null };
   cancelReason?: string | null;
   createdAt: string;
+}
+
+export type AccessOutcome = 'GRANTED' | 'DENIED';
+
+/** Journal d'accès aux dossiers médicaux : métadonnées uniquement, jamais de contenu médical. */
+export interface AccessLogRow {
+  id: string;
+  recordId: string;
+  actorId: string;
+  actorName: string;
+  actorRole: Role;
+  action: string;
+  targetId?: string | null;
+  outcome: AccessOutcome;
+  reason?: string | null;
+  ipAddress?: string | null;
+  occurredAt: string;
 }

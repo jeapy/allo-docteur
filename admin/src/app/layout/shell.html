@@ -2,7 +2,7 @@
   <mat-sidenav #nav [mode]="mode()" [opened]="!isHandset()" class="sidenav" role="navigation">
     <div class="brand">{{ 'app.name' | transloco }}</div>
     <mat-nav-list>
-      @for (item of this.nav; track item.path) {
+      @for (item of menu(); track item.path) {
         <a mat-list-item [routerLink]="item.path" routerLinkActive="active" (click)="isHandset() && nav.close()">
           <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
           <span matListItemTitle>{{ item.label | transloco }}</span>

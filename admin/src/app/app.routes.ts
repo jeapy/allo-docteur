@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, roleGuard } from './core/guards';
+import { authGuard, guestGuard, levelGuard, roleGuard } from './core/guards';
 
 export const routes: Routes = [
   {
@@ -31,6 +31,11 @@ export const routes: Routes = [
         path: 'appointments',
         loadComponent: () =>
           import('./features/appointments/appointments-list').then((m) => m.AppointmentsListComponent),
+      },
+      {
+        path: 'access-logs',
+        canActivate: [levelGuard('SUPER')],
+        loadComponent: () => import('./features/access-logs/access-logs-list').then((m) => m.AccessLogsListComponent),
       },
       {
         path: 'users',

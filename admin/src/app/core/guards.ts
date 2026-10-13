@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { Role } from './models';
+import { AdminLevel, Role } from './models';
 
 export const authGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
@@ -16,4 +16,11 @@ export const guestGuard: CanActivateFn = () => {
 export const roleGuard = (...roles: Role[]): CanActivateFn => () => {
   const auth = inject(AuthService);
   return auth.hasRole(...roles) ? true : inject(Router).createUrlTree(['/login']);
+};
+
+/** Réserve une route à certains niveaux d'administration (ex. SUPER). */
+export const levelGuard = (...levels: AdminLevel[]): CanActivateFn => () => {
+  const auth = inject(AuthService);
+  const level = auth.user()?.adminLevel;
+  return level && levels.includes(level) ? true : inject(Router).createUrlTree(['/']);
 };

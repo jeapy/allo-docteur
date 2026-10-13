@@ -10,6 +10,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { map } from 'rxjs';
 import { AuthService } from '../core/auth.service';
+import { AdminLevel } from '../core/models';
 
 @Component({
   selector: 'app-shell',
@@ -27,10 +28,16 @@ export class ShellComponent {
     initialValue: false,
   });
   protected readonly mode = computed(() => (this.isHandset() ? 'over' : 'side'));
-  protected readonly nav = [
+  private readonly items: { path: string; icon: string; label: string; levels?: AdminLevel[] }[] = [
     { path: '/dashboard', icon: 'dashboard', label: 'nav.dashboard' },
     { path: '/users', icon: 'group', label: 'nav.users' },
     { path: '/professionals', icon: 'medical_services', label: 'nav.professionals' },
     { path: '/appointments', icon: 'event', label: 'nav.appointments' },
+    { path: '/access-logs', icon: 'policy', label: 'nav.accessLogs', levels: ['SUPER'] },
   ];
+  /** Entrées de menu visibles pour le niveau d'administration connecté. */
+  protected readonly menu = computed(() => {
+    const level = this.auth.user()?.adminLevel;
+    return this.items.filter((i) => !i.levels || (!!level && i.levels.includes(level)));
+  });
 }

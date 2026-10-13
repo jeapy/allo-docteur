@@ -8,7 +8,8 @@
     "users": "Utilisateurs",
     "logout": "Se déconnecter",
     "professionals": "Professionnels",
-    "appointments": "Rendez-vous"
+    "appointments": "Rendez-vous",
+    "accessLogs": "Journal d'accès médical"
   },
   "login": {
     "title": "Connexion administrateur",
@@ -144,5 +145,40 @@
     "ELDERLY_ASSISTANCE": "Assistance aux personnes âgées",
     "HYGIENE_CARE": "Soins d'hygiène",
     "DAILY_COMPANIONSHIP": "Accompagnement quotidien"
+  },
+  "accessLogs": {
+    "title": "Journal d'accès aux dossiers médicaux",
+    "hint": "Qui a consulté ou modifié un dossier, et quand. Seules les métadonnées sont affichées : le contenu médical n'est jamais visible par l'administration.",
+    "date": "Date",
+    "actor": "Intervenant",
+    "action": "Action",
+    "outcome": "Résultat",
+    "record": "Dossier",
+    "ip": "Adresse IP",
+    "recordId": "Identifiant du dossier",
+    "actorId": "Identifiant de l'intervenant",
+    "empty": "Aucun accès enregistré."
+  },
+  "accessOutcomes": {
+    "GRANTED": "Autorisé",
+    "DENIED": "Refusé"
+  },
+  "accessActions": {
+    "VIEW_RECORD": "Consultation du dossier",
+    "UPDATE_SUMMARY": "Modification de la fiche de synthèse",
+    "VIEW_ENTRIES": "Consultation du carnet de santé",
+    "CREATE_ENTRY": "Ajout d'une entrée",
+    "DELETE_ENTRY": "Suppression d'une entrée",
+    "VIEW_ACCESS_LOG": "Consultation du journal d'accès",
+    "VIEW_PRESCRIPTIONS": "Consultation des ordonnances",
+    "VIEW_PRESCRIPTION": "Consultation d'une ordonnance",
+    "CREATE_PRESCRIPTION": "Émission d'une ordonnance",
+    "CANCEL_PRESCRIPTION": "Annulation d'une ordonnance"
+  },
+  "accessReasons": {
+    "NOT_OWNER": "Le dossier appartient à un autre compte",
+    "OWNER_ONLY": "Action réservée au patient",
+    "NO_CARE_RELATIONSHIP": "Aucun lien de soin avec le patient",
+    "NO_CONSENT": "Consentement absent ou retiré"
   }
 }
