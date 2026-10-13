@@ -13,7 +13,10 @@
     "sos": "Urgences SOS",
     "pharmacies": "Pharmacies",
     "finance": "Paiements et retraits",
-    "subscriptions": "Abonnements"
+    "subscriptions": "Abonnements",
+    "complaints": "Réclamations",
+    "reviews": "Avis",
+    "partners": "Partenaires"
   },
   "login": {
     "title": "Connexion administrateur",
@@ -336,5 +339,92 @@
   "planAudiences": {
     "PROFESSIONAL": "Professionnel",
     "PATIENT": "Patient"
+  },
+  "complaintStatuses": {
+    "OPEN": "Ouverte",
+    "IN_REVIEW": "En cours d'examen",
+    "RESOLVED": "Résolue",
+    "REJECTED": "Rejetée"
+  },
+  "reviewStatuses": {
+    "VISIBLE": "Visible",
+    "HIDDEN": "Masqué"
+  },
+  "partnerTypes": {
+    "CLINIC": "Clinique",
+    "HEALTH_CENTER": "Centre de santé",
+    "HOSPITAL": "Hôpital",
+    "PHARMACY": "Pharmacie",
+    "LAB": "Laboratoire",
+    "AMBULANCE": "Ambulance",
+    "INSURANCE": "Assurance",
+    "MUTUAL": "Mutuelle"
+  },
+  "partnerStatuses": {
+    "ACTIVE": "Actif",
+    "INACTIVE": "Inactif"
+  },
+  "complaints": {
+    "title": "Réclamations",
+    "summary": "Répartition par statut",
+    "status": "Statut",
+    "number": "Numéro",
+    "author": "Déposant",
+    "subject": "Objet",
+    "createdAt": "Déposée le",
+    "open": "Ouvrir",
+    "empty": "Aucune réclamation",
+    "back": "Retour à la liste",
+    "linkedAppointment": "Rendez-vous concerné",
+    "description": "Description",
+    "resolution": "Résolution",
+    "rejectReason": "Motif du rejet",
+    "thread": "Échanges",
+    "fromAdmin": "Équipe Allo Docteur",
+    "fromAuthor": "Déposant",
+    "noMessages": "Aucun échange pour le moment.",
+    "yourReply": "Votre réponse",
+    "send": "Répondre",
+    "take": "Prendre en charge",
+    "resolve": "Résoudre",
+    "reject": "Rejeter",
+    "resolveTitle": "Résoudre la réclamation",
+    "rejectTitle": "Rejeter la réclamation",
+    "saved": "Réclamation mise à jour"
+  },
+  "reviews": {
+    "title": "Avis",
+    "hint": "Un avis masqué disparaît du profil public du professionnel et sort de sa note moyenne. Le motif est conservé dans le journal d'audit.",
+    "status": "Statut",
+    "rating": "Note",
+    "comment": "Commentaire",
+    "author": "Auteur",
+    "createdAt": "Date",
+    "hide": "Masquer",
+    "show": "Rétablir",
+    "hiddenReason": "Motif du masquage",
+    "hideTitle": "Masquer l'avis",
+    "empty": "Aucun avis",
+    "hidden": "Avis masqué",
+    "restored": "Avis rétabli"
+  },
+  "partners": {
+    "title": "Partenaires",
+    "create": "Nouveau partenaire",
+    "edit": "Modifier le partenaire",
+    "editAction": "Modifier",
+    "name": "Nom",
+    "type": "Type",
+    "city": "Ville",
+    "address": "Adresse",
+    "email": "E-mail de contact",
+    "phone": "Téléphone",
+    "contact": "Contact",
+    "contractStart": "Début du contrat",
+    "status": "Statut",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "empty": "Aucun partenaire",
+    "saved": "Partenaire enregistré"
   }
 }

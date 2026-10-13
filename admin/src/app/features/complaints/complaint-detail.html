@@ -1,0 +1,53 @@
+<a mat-button routerLink="/complaints">{{ 'complaints.back' | transloco }}</a>
+@if (busy()) { <mat-progress-bar mode="indeterminate" /> }
+@if (detail(); as d) {
+  <h1>{{ d.summary.number }} — {{ d.summary.subject }}</h1>
+  <p class="meta">
+    {{ 'complaintStatuses.' + d.summary.status | transloco }} ·
+    {{ d.summary.authorName || d.summary.authorId }} ({{ 'roles.' + d.summary.authorRole | transloco }}) ·
+    {{ d.summary.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+  </p>
+  @if (d.summary.appointmentId) { <p class="meta">{{ 'complaints.linkedAppointment' | transloco }} : {{ d.summary.appointmentId }}</p> }
+
+  <mat-card class="block">
+    <mat-card-header><mat-card-title>{{ 'complaints.description' | transloco }}</mat-card-title></mat-card-header>
+    <mat-card-content><p class="text">{{ d.description }}</p></mat-card-content>
+  </mat-card>
+
+  @if (d.resolution) {
+    <mat-card class="block">
+      <mat-card-header><mat-card-title>{{ (d.summary.status === 'RESOLVED' ? 'complaints.resolution' : 'complaints.rejectReason') | transloco }}</mat-card-title></mat-card-header>
+      <mat-card-content><p class="text">{{ d.resolution }}</p></mat-card-content>
+    </mat-card>
+  }
+
+  <section class="block" [attr.aria-label]="'complaints.thread' | transloco">
+    <h2>{{ 'complaints.thread' | transloco }}</h2>
+    @for (m of d.messages; track m.id) {
+      <div class="msg" [class.admin]="m.fromAdmin">
+        <div class="who">{{ (m.fromAdmin ? 'complaints.fromAdmin' : 'complaints.fromAuthor') | transloco }} · {{ m.createdAt | date: 'dd/MM/yyyy HH:mm' }}</div>
+        <p class="text">{{ m.body }}</p>
+      </div>
+    } @empty {
+      <p class="meta">{{ 'complaints.noMessages' | transloco }}</p>
+    }
+  </section>
+
+  @if (!closed()) {
+    <form class="block" (ngSubmit)="send()">
+      <mat-form-field appearance="outline" class="full">
+        <mat-label>{{ 'complaints.yourReply' | transloco }}</mat-label>
+        <textarea matInput rows="4" maxlength="5000" [formControl]="message"></textarea>
+        @if (message.invalid && message.touched) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
+      </mat-form-field>
+      <div class="actions">
+        <button mat-flat-button type="submit" [disabled]="busy()">{{ 'complaints.send' | transloco }}</button>
+        @if (d.summary.status === 'OPEN') {
+          <button mat-stroked-button type="button" [disabled]="busy()" (click)="take()">{{ 'complaints.take' | transloco }}</button>
+        }
+        <button mat-stroked-button type="button" [disabled]="busy()" (click)="resolve()">{{ 'complaints.resolve' | transloco }}</button>
+        <button mat-stroked-button type="button" [disabled]="busy()" (click)="reject()">{{ 'complaints.reject' | transloco }}</button>
+      </div>
+    </form>
+  }
+}

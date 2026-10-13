@@ -1,0 +1,57 @@
+<div class="head">
+  <h1>{{ 'partners.title' | transloco }}</h1>
+  <button mat-flat-button (click)="create()">{{ 'partners.create' | transloco }}</button>
+</div>
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'partners.type' | transloco }}</mat-label>
+    <mat-select [formControl]="type">
+      <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
+      @for (t of types; track t) { <mat-option [value]="t">{{ 'partnerTypes.' + t | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'partners.status' | transloco }}</mat-label>
+    <mat-select [formControl]="status">
+      <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
+      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'partnerStatuses.' + s | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+</div>
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+<div class="table-wrap">
+  <table mat-table [dataSource]="rows()">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>{{ 'partners.name' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ p.name }}<div class="sub">{{ p.address }}</div></td>
+    </ng-container>
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef>{{ 'partners.type' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ 'partnerTypes.' + p.type | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="city">
+      <th mat-header-cell *matHeaderCellDef>{{ 'partners.city' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ p.cityName || '—' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="contact">
+      <th mat-header-cell *matHeaderCellDef>{{ 'partners.contact' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ p.contactEmail || '—' }}<div class="sub">{{ p.contactPhone }}</div></td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ 'partners.status' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ 'partnerStatuses.' + p.status | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let p">
+        <button mat-button (click)="edit(p)">{{ 'partners.editAction' | transloco }}</button>
+        <button mat-button (click)="toggle(p)">{{ (p.status === 'ACTIVE' ? 'partners.deactivate' : 'partners.activate') | transloco }}</button>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'partners.empty' | transloco }}</td></tr>
+  </table>
+</div>
+<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
+  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />

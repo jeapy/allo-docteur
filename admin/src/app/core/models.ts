@@ -282,3 +282,79 @@ export interface PlanPayload {
   commissionRate: number | null;
   active: boolean;
 }
+
+// ---- Phase 7 : réclamations, avis, partenaires ----
+
+export type ComplaintStatus = 'OPEN' | 'IN_REVIEW' | 'RESOLVED' | 'REJECTED';
+
+export interface ComplaintRow {
+  id: string;
+  number: string;
+  authorId: string;
+  authorName: string | null;
+  authorRole: 'PATIENT' | 'PROFESSIONAL';
+  appointmentId: string | null;
+  subject: string;
+  status: ComplaintStatus;
+  assignedTo: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
+}
+
+export interface ComplaintMessage {
+  id: string;
+  authorId: string;
+  fromAdmin: boolean;
+  body: string;
+  createdAt: string;
+}
+
+export interface ComplaintDetail {
+  summary: ComplaintRow;
+  description: string;
+  resolution: string | null;
+  messages: ComplaintMessage[];
+}
+
+export type ComplaintSummary = Record<ComplaintStatus, number>;
+
+export type ReviewStatus = 'VISIBLE' | 'HIDDEN';
+
+export interface ReviewRow {
+  id: string;
+  appointmentId: string;
+  professionalId: string;
+  authorName: string;
+  rating: number;
+  comment: string | null;
+  status: ReviewStatus;
+  hiddenReason: string | null;
+  createdAt: string;
+}
+
+export type PartnerType =
+  | 'CLINIC' | 'HEALTH_CENTER' | 'HOSPITAL' | 'PHARMACY' | 'LAB' | 'AMBULANCE' | 'INSURANCE' | 'MUTUAL';
+export type PartnerStatus = 'ACTIVE' | 'INACTIVE';
+
+export interface PartnerRow {
+  id: string;
+  name: string;
+  type: PartnerType;
+  cityId: number | null;
+  cityName: string | null;
+  address: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  contractStartDate: string | null;
+  status: PartnerStatus;
+}
+
+export interface PartnerPayload {
+  name: string;
+  type: PartnerType;
+  cityId: number | null;
+  address: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  contractStartDate: string | null;
+}

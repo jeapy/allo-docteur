@@ -51,6 +51,26 @@ export const routes: Routes = [
           import('./features/subscriptions/subscriptions-list').then((m) => m.SubscriptionsListComponent),
       },
       {
+        path: 'complaints',
+        canActivate: [levelGuard('SUPER', 'SUPPORT')],
+        loadComponent: () => import('./features/complaints/complaints-list').then((m) => m.ComplaintsListComponent),
+      },
+      {
+        path: 'complaints/:id',
+        canActivate: [levelGuard('SUPER', 'SUPPORT')],
+        loadComponent: () => import('./features/complaints/complaint-detail').then((m) => m.ComplaintDetailComponent),
+      },
+      {
+        path: 'reviews',
+        canActivate: [levelGuard('SUPER', 'SUPPORT')],
+        loadComponent: () => import('./features/reviews/reviews-list').then((m) => m.ReviewsListComponent),
+      },
+      {
+        path: 'partners',
+        canActivate: [levelGuard('SUPER', 'SUPPORT')],
+        loadComponent: () => import('./features/partners/partners-list').then((m) => m.PartnersListComponent),
+      },
+      {
         path: 'access-logs',
         canActivate: [levelGuard('SUPER')],
         loadComponent: () => import('./features/access-logs/access-logs-list').then((m) => m.AccessLogsListComponent),

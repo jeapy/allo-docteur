@@ -37,6 +37,9 @@ export class ShellComponent {
     { path: '/pharmacies', icon: 'local_pharmacy', label: 'nav.pharmacies' },
     { path: '/finance', icon: 'payments', label: 'nav.finance', levels: ['SUPER', 'FINANCE'] },
     { path: '/subscriptions', icon: 'card_membership', label: 'nav.subscriptions' },
+    { path: '/complaints', icon: 'support_agent', label: 'nav.complaints', levels: ['SUPER', 'SUPPORT'] },
+    { path: '/reviews', icon: 'reviews', label: 'nav.reviews', levels: ['SUPER', 'SUPPORT'] },
+    { path: '/partners', icon: 'handshake', label: 'nav.partners', levels: ['SUPER', 'SUPPORT'] },
     { path: '/access-logs', icon: 'policy', label: 'nav.accessLogs', levels: ['SUPER'] },
   ];
   /** Entrées de menu visibles pour le niveau d'administration connecté. */

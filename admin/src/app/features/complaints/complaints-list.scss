@@ -1,0 +1,7 @@
+.filters { display: flex; gap: 12px; flex-wrap: wrap; padding-top: 12px; }
+.chips { display: flex; gap: 16px; flex-wrap: wrap; list-style: none; padding: 0; margin: 8px 0; }
+.chips li { padding: 6px 12px; border: 1px solid currentColor; border-radius: 16px; opacity: 0.9; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; }
+.empty { padding: 24px; text-align: center; }
+.sub { font-size: 0.8rem; opacity: 0.75; }

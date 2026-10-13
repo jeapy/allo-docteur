@@ -8,6 +8,8 @@ import { TranslocoPipe } from '@jsverse/transloco';
 
 export interface ReasonDialogData {
   titleKey: string;
+  /** Libellé du champ ; « Motif » par défaut. */
+  labelKey?: string;
 }
 
 @Component({
@@ -17,7 +19,7 @@ export interface ReasonDialogData {
     <h2 mat-dialog-title>{{ data.titleKey | transloco }}</h2>
     <mat-dialog-content>
       <mat-form-field appearance="outline" class="full">
-        <mat-label>{{ 'professionals.reason' | transloco }}</mat-label>
+        <mat-label>{{ (data.labelKey ?? 'professionals.reason') | transloco }}</mat-label>
         <textarea matInput rows="4" maxlength="1000" [formControl]="reason"></textarea>
         @if (reason.invalid) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
       </mat-form-field>

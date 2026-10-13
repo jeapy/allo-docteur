@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ (existing ? 'partners.edit' : 'partners.create') | transloco }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="grid">
+    <mat-form-field appearance="outline" class="wide">
+      <mat-label>{{ 'partners.name' | transloco }}</mat-label>
+      <input matInput formControlName="name" maxlength="150" required />
+      @if (form.controls.name.invalid) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.type' | transloco }}</mat-label>
+      <mat-select formControlName="type" required>
+        @for (t of types; track t) { <mat-option [value]="t">{{ 'partnerTypes.' + t | transloco }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.city' | transloco }}</mat-label>
+      <mat-select formControlName="cityId">
+        <mat-option [value]="null">—</mat-option>
+        @for (c of cities(); track c.id) { <mat-option [value]="c.id">{{ c.name }}</mat-option> }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="wide">
+      <mat-label>{{ 'partners.address' | transloco }}</mat-label>
+      <input matInput formControlName="address" maxlength="255" />
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.email' | transloco }}</mat-label>
+      <input matInput type="email" formControlName="contactEmail" />
+      @if (form.controls.contactEmail.invalid) { <mat-error>{{ 'validation.email' | transloco }}</mat-error> }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.phone' | transloco }}</mat-label>
+      <input matInput formControlName="contactPhone" inputmode="tel" />
+      @if (form.controls.contactPhone.invalid) { <mat-error>{{ 'validation.phone' | transloco }}</mat-error> }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'partners.contractStart' | transloco }}</mat-label>
+      <input matInput type="date" formControlName="contractStartDate" />
+    </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>{{ 'common.cancel' | transloco }}</button>
+    <button mat-flat-button type="submit">{{ 'common.save' | transloco }}</button>
+  </mat-dialog-actions>
+</form>
