@@ -6,6 +6,7 @@ import dev.jpzconception.allodocteur.appointment.infrastructure.AppointmentRepos
 import dev.jpzconception.allodocteur.shared.error.ApiException;
 import dev.jpzconception.allodocteur.shared.security.AuthenticatedUser;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AppointmentAccess {
 
-    public record Ref(UUID id, UUID patientId, UUID professionalId, AppointmentType type, AppointmentStatus status,
+    public record Ref(UUID id, UUID patientId, UUID dependentId, String beneficiaryName, LocalDate beneficiaryBirthDate,
+                      UUID professionalId, AppointmentType type, AppointmentStatus status,
                       Instant startAt, Instant endAt, Instant completedAt) {
         public boolean isPatient(UUID userId) {
             return patientId.equals(userId);
@@ -31,11 +33,22 @@ public class AppointmentAccess {
         this.appointments = appointments;
     }
 
+    /**
+     * Le professionnel a-t-il un lien de soin avec cette personne ? Oui s'il a au moins un rendez-vous confirmé, en cours
+     * ou terminé avec elle. {@code dependentId} nul = le titulaire du compte lui-même.
+     */
+    public boolean hasCareRelationship(UUID professionalId, UUID accountId, UUID dependentId) {
+        return dependentId == null
+                ? appointments.existsCareForSelf(professionalId, accountId, AppointmentStatus.CARE)
+                : appointments.existsCareForDependent(professionalId, dependentId, AppointmentStatus.CARE);
+    }
+
     /** 404 (et non 403) pour un non-participant : on ne révèle pas l'existence du rendez-vous. */
     public Ref requireParticipant(AuthenticatedUser user, UUID appointmentId) {
         return appointments.findById(appointmentId)
                 .filter(a -> a.isParticipant(user.id()))
-                .map(a -> new Ref(a.getId(), a.getPatientId(), a.getProfessionalId(), a.getType(), a.getStatus(),
+                .map(a -> new Ref(a.getId(), a.getPatientId(), a.getDependentId(), a.getBeneficiaryName(),
+                        a.getBeneficiaryBirthDate(), a.getProfessionalId(), a.getType(), a.getStatus(),
                         a.getStartAt(), a.getEndAt(), a.getCompletedAt()))
                 .orElseThrow(() -> ApiException.notFound("APPOINTMENT_NOT_FOUND", "Rendez-vous introuvable."));
     }

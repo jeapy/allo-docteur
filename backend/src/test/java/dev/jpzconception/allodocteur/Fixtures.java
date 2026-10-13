@@ -88,6 +88,11 @@ public class Fixtures {
 
     /** Réserve le créneau n° {@code slotIndex} (08:00, 08:30…) du surlendemain : toujours dans le futur. */
     public Booking book(Session patient, Session pro, String type, int slotIndex) throws Exception {
+        return book(patient, pro, type, slotIndex, null);
+    }
+
+    /** Idem, pour une personne à charge ({@code dependentId} nul = le titulaire du compte). */
+    public Booking book(Session patient, Session pro, String type, int slotIndex, String dependentId) throws Exception {
         LocalDate day = LocalDate.now(ZoneOffset.UTC).plusDays(2);
         JsonNode slot = api.body(api.get("/api/v1/professionals/" + pro.userId() + "/slots", patient.token(),
                 "type", type, "from", day.toString())).get(slotIndex);
@@ -96,6 +101,7 @@ public class Fixtures {
         req.put("type", type);
         req.put("reason", "CONSULTATION");
         req.put("startAt", slot.get("startAt").asText());
+        if (dependentId != null) req.put("dependentId", dependentId);
         var result = api.post("/api/v1/appointments", req, patient.token());
         check(result.getResponse().getStatus(), 201, "réservation");
         return new Booking(api.body(result).get("id").asText(), Instant.parse(slot.get("startAt").asText()));

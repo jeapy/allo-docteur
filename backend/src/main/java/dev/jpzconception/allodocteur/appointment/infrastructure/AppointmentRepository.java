@@ -39,4 +39,19 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID>,
     boolean existsOverlapForDependent(@Param("did") UUID dependentId,
                                       @Param("statuses") Collection<AppointmentStatus> statuses,
                                       @Param("from") Instant from, @Param("to") Instant to);
+
+    @Query("""
+            select count(a) > 0 from Appointment a
+            where a.professionalId = :pro and a.patientId = :account and a.dependentId is null
+              and a.status in :statuses
+            """)
+    boolean existsCareForSelf(@Param("pro") UUID professionalId, @Param("account") UUID accountId,
+                              @Param("statuses") Collection<AppointmentStatus> statuses);
+
+    @Query("""
+            select count(a) > 0 from Appointment a
+            where a.professionalId = :pro and a.dependentId = :dep and a.status in :statuses
+            """)
+    boolean existsCareForDependent(@Param("pro") UUID professionalId, @Param("dep") UUID dependentId,
+                                   @Param("statuses") Collection<AppointmentStatus> statuses);
 }

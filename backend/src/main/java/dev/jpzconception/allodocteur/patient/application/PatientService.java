@@ -119,6 +119,18 @@ public class PatientService {
         return patients.findById(userId).orElse(null);
     }
 
+    /** Nom de la personne concernée par un dossier : le titulaire du compte ou sa personne à charge. */
+    @Transactional(readOnly = true)
+    public String beneficiaryName(UUID accountId, UUID dependentId) {
+        if (dependentId != null) {
+            return dependents.findById(dependentId).map(Dependent::fullName).orElse("Personne supprimée");
+        }
+        return users.findById(accountId)
+                .map(u -> ((u.getFirstName() == null ? "" : u.getFirstName()) + " "
+                        + (u.getLastName() == null ? "" : u.getLastName())).trim())
+                .orElse("Compte supprimé");
+    }
+
     private Dependent ownDependent(UUID guardianId, UUID id) {
         return dependents.findByIdAndGuardianId(id, guardianId)
                 .orElseThrow(() -> ApiException.notFound("DEPENDENT_NOT_FOUND", "Personne à charge introuvable."));
