@@ -2,14 +2,14 @@
 
 Clinique virtuelle de soins à domicile : API Spring Boot + administration Angular.
 
-## État – Phases 1 à 4
+## État – Phases 1 à 5
 | Partie | État |
 |---|---|
-| `admin/` Angular 22 | login + 2FA, layout, utilisateurs, validation des professionnels, rendez-vous, journal d'accès médical (SUPER) – **build et tests OK** |
-| `backend/` Spring Boot 3.5.6 / Java 21 | Phases 1-2 (auth, utilisateurs, audit, référentiels, professionnels, recherche, validation admin) : `mvn verify` OK sur le poste du développeur. Phase 3 (patients, rendez-vous, téléconsultation, messagerie, documents) et Phase 4 (consentement, dossier médical, carnet de santé, journal d'accès, ordonnances) : **écrites, pas encore compilées ni testées** |
+| `admin/` Angular 22 | login + 2FA, layout, utilisateurs, validation des professionnels, rendez-vous, journal d'accès médical (SUPER), suivi SOS, pharmacies – **build et tests OK** |
+| `backend/` Spring Boot 3.5.6 / Java 21 | Phases 1-2 (auth, utilisateurs, audit, référentiels, professionnels, recherche, validation admin) : `mvn verify` OK sur le poste du développeur. Phase 3 (patients, rendez-vous, téléconsultation, messagerie, documents) Phase 4 (consentement, dossier médical, carnet de santé, journal d'accès, ordonnances) et Phase 5 (SOS, pharmacies, livraison) : **écrites, pas encore compilées ni testées** |
 | Docker / CI | `docker-compose.yml`, `Makefile`, GitHub Actions – non exécutés |
 
-Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`, `docs/api-contract-phase3.md`, `docs/api-contract-phase4.md`. Swagger : `/swagger-ui.html`.
+Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`, `docs/api-contract-phase3.md`, `docs/api-contract-phase4.md`, `docs/api-contract-phase5.md`. Swagger : `/swagger-ui.html`.
 
 ## Démarrage rapide
 ```
@@ -38,6 +38,8 @@ Compte admin initial : `APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD` (créé au premi
 - Messagerie par polling (`since`) ; WebSocket prévu plus tard. Les messages sont chiffrés au repos ; les fichiers partagés ne le sont pas encore (phase de durcissement).
 - Données de santé (phase 4) : accès à un dossier = propriétaire du compte, ou professionnel avec lien de soin (rendez-vous confirmé, en cours ou terminé) **et** consentement actif ; tout le reste → 404 ou 403. Les administrateurs n'y accèdent jamais ; seul le niveau SUPER voit le journal d'accès (métadonnées + IP). Journal en ajout seul (trigger PostgreSQL), refus compris. Texte de consentement v1.0 **provisoire** : à faire valider juridiquement.
 - Ordonnances : numéro `ORD-AAAA-NNNNNN`, empreinte SHA-256 détectant une altération en base (ce n'est pas une signature électronique qualifiée), validité 90 jours, émission pendant la consultation ou 3 jours après (`app.prescriptions.*`).
+- SOS (phase 5) : le premier professionnel de la même ville qui accepte gagne (UPDATE conditionnel atomique) et une visite urgente est créée. **Bris de glace** : le preneur accède au dossier sans consentement 24 h, motif obligatoire, journalisé ; à faire valider juridiquement. Structures de santé saisies par l'admin (aucune pré-remplie).
+- Pharmacies : les pharmaciens sont des professionnels (type `PHARMACIST`) rattachés à une pharmacie par l'admin. Livraison derrière le port `DeliveryProvider` (stub) ; remise validée par un code à 6 chiffres, 5 essais max. Paiement des commandes en Phase 6, notifications en Phase 7.
 - Horloge injectée (`Clock`) : les tests d'intégration la déplacent pour atteindre l'heure d'un rendez-vous.
 
 ## À faire
