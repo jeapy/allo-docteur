@@ -20,6 +20,7 @@ public class Fixtures {
     private final ApiClient api;
     private final String adminToken;
     private final int typeId;
+    private final Map<String, Integer> typeIds = new HashMap<>();
     private final int specialtyId;
     private final int cityId;
 
@@ -29,6 +30,7 @@ public class Fixtures {
         Session probe = api.registerAndLogin("PATIENT", "Ref");
         int type = 0;
         for (JsonNode t : api.body(api.get("/api/v1/reference/professional-types", probe.token()))) {
+            typeIds.put(t.get("code").asText(), t.get("id").asInt());
             if (t.get("code").asText().equals("GENERAL_PRACTITIONER")) type = t.get("id").asInt();
         }
         this.typeId = type;
@@ -52,10 +54,26 @@ public class Fixtures {
         return approvedProfessional(lastName, true, true);
     }
 
+    public int cityId() {
+        return cityId;
+    }
+
+    /** Professionnel approuvé d'un autre type que médecin généraliste (ex. PHARMACIST). */
+    public Session approvedProfessionalOfType(String lastName, String typeCode) throws Exception {
+        Integer id = typeIds.get(typeCode);
+        if (id == null) throw new IllegalStateException("Type de professionnel inconnu : " + typeCode);
+        return approvedProfessional(lastName, true, true, id);
+    }
+
     public Session approvedProfessional(String lastName, boolean teleconsultation, boolean homeVisit) throws Exception {
+        return approvedProfessional(lastName, teleconsultation, homeVisit, typeId);
+    }
+
+    private Session approvedProfessional(String lastName, boolean teleconsultation, boolean homeVisit, int professionalTypeId)
+            throws Exception {
         Session pro = api.registerAndLogin("PROFESSIONAL", lastName);
         var profile = Map.ofEntries(
-                Map.entry("professionalTypeId", typeId),
+                Map.entry("professionalTypeId", professionalTypeId),
                 Map.entry("qualification", "Docteur en médecine"),
                 Map.entry("licenseNumber", "FX-" + UUID.randomUUID()),
                 Map.entry("yearsExperience", 5),
