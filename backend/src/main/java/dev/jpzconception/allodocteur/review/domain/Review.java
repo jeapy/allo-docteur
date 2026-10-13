@@ -7,6 +7,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Getter;
@@ -37,6 +39,7 @@ public class Review extends AuditableEntity {
     @Column(name = "author_name", nullable = false, updatable = false)
     private String authorName;
 
+    @JdbcTypeCode(SqlTypes.SMALLINT) // la colonne est SMALLINT (validation Hibernate)
     @Column(nullable = false, updatable = false)
     private int rating;
 
