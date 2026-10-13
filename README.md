@@ -2,14 +2,14 @@
 
 Clinique virtuelle de soins à domicile : API Spring Boot + administration Angular.
 
-## État – Phases 1 à 5
+## État – Phases 1 à 6
 | Partie | État |
 |---|---|
-| `admin/` Angular 22 | login + 2FA, layout, utilisateurs, validation des professionnels, rendez-vous, journal d'accès médical (SUPER), suivi SOS, pharmacies – **build et tests OK** |
-| `backend/` Spring Boot 3.5.6 / Java 21 | Phases 1-2 (auth, utilisateurs, audit, référentiels, professionnels, recherche, validation admin) : `mvn verify` OK sur le poste du développeur. Phase 3 (patients, rendez-vous, téléconsultation, messagerie, documents) Phase 4 (consentement, dossier médical, carnet de santé, journal d'accès, ordonnances) et Phase 5 (SOS, pharmacies, livraison) : **écrites, pas encore compilées ni testées** |
+| `admin/` Angular 22 | login + 2FA, layout, utilisateurs, validation des professionnels, rendez-vous, journal d'accès médical (SUPER), suivi SOS, pharmacies, finance (paiements, retraits), abonnements – **build et tests OK** |
+| `backend/` Spring Boot 3.5.6 / Java 21 | Phases 1-2 (auth, utilisateurs, audit, référentiels, professionnels, recherche, validation admin) : `mvn verify` OK sur le poste du développeur. Phase 3 (patients, rendez-vous, téléconsultation, messagerie, documents) Phase 4 (consentement, dossier médical, carnet de santé, journal d'accès, ordonnances) Phase 5 (SOS, pharmacies, livraison) et Phase 6 (paiements, portefeuille, commissions, abonnements) : **écrites, pas encore compilées ni testées** |
 | Docker / CI | `docker-compose.yml`, `Makefile`, GitHub Actions – non exécutés |
 
-Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`, `docs/api-contract-phase3.md`, `docs/api-contract-phase4.md`, `docs/api-contract-phase5.md`. Swagger : `/swagger-ui.html`.
+Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`, `docs/api-contract-phase3.md`, `docs/api-contract-phase4.md`, `docs/api-contract-phase5.md`, `docs/api-contract-phase6.md`. Swagger : `/swagger-ui.html`.
 
 ## Démarrage rapide
 ```
@@ -40,6 +40,7 @@ Compte admin initial : `APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD` (créé au premi
 - Ordonnances : numéro `ORD-AAAA-NNNNNN`, empreinte SHA-256 détectant une altération en base (ce n'est pas une signature électronique qualifiée), validité 90 jours, émission pendant la consultation ou 3 jours après (`app.prescriptions.*`).
 - SOS (phase 5) : le premier professionnel de la même ville qui accepte gagne (UPDATE conditionnel atomique) et une visite urgente est créée. **Bris de glace** : le preneur accède au dossier sans consentement 24 h, motif obligatoire, journalisé ; à faire valider juridiquement. Structures de santé saisies par l'admin (aucune pré-remplie).
 - Pharmacies : les pharmaciens sont des professionnels (type `PHARMACIST`) rattachés à une pharmacie par l'admin. Livraison derrière le port `DeliveryProvider` (stub) ; remise validée par un code à 6 chiffres, 5 essais max. Paiement des commandes en Phase 6, notifications en Phase 7.
+- Paiements (phase 6) : paiement à la réservation, fonds en séquestre jusqu'à la prestation, puis répartition net/commission ; remboursement automatique en cas d'annulation. Commission globale (10 %) surchargeable par le plan d'abonnement du professionnel. Portefeuille à grand livre en ajout seul ; les gains des professionnels se retirent après validation de la finance. Opérateurs (Mobile Money, carte, banque) derrière `PaymentProvider`, **stubs uniquement** : aucune intégration réelle. Abonnements enregistrés sans blocage métier. Les prix des formules (5 000 / 15 000 / 2 000 XOF) et la commission de 10 % sont **indicatifs** : à valider avec le métier.
 - Horloge injectée (`Clock`) : les tests d'intégration la déplacent pour atteindre l'heure d'un rendez-vous.
 
 ## À faire
@@ -47,3 +48,6 @@ Compte admin initial : `APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD` (créé au premi
 - Notes/avis (`rating_avg`/`rating_count` sont prêts, alimentés en Phase 7).
 - Imposer la 2FA aux comptes ADMIN SUPER/FINANCE (le champ `mfaEnabled` est exposé, le blocage n'est pas encore appliqué).
 - Écrans admin d'activation 2FA et de réinitialisation de mot de passe.
+- Versement des gains des pharmacies (leur portefeuille est crédité, aucun retrait n'est encore prévu) et remboursement d'un paiement déjà réparti.
+- Intégrations réelles Mobile Money / carte / banque (aujourd'hui : stubs), avec rappel de l'opérateur (webhook) pour les paiements en attente.
+- Prorata lors d'un changement de formule d'abonnement ; effets métier des abonnements (visibilité, remises Premium) si le métier le décide.
