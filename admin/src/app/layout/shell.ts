@@ -35,6 +35,8 @@ export class ShellComponent {
     { path: '/appointments', icon: 'event', label: 'nav.appointments' },
     { path: '/sos', icon: 'emergency', label: 'nav.sos' },
     { path: '/pharmacies', icon: 'local_pharmacy', label: 'nav.pharmacies' },
+    { path: '/finance', icon: 'payments', label: 'nav.finance', levels: ['SUPER', 'FINANCE'] },
+    { path: '/subscriptions', icon: 'card_membership', label: 'nav.subscriptions' },
     { path: '/access-logs', icon: 'policy', label: 'nav.accessLogs', levels: ['SUPER'] },
   ];
   /** Entrées de menu visibles pour le niveau d'administration connecté. */

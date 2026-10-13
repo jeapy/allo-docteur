@@ -1,0 +1,37 @@
+<h2 mat-dialog-title>{{ 'subscriptions.editPlan' | transloco }} — {{ plan.code }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <mat-dialog-content class="grid">
+    <mat-form-field appearance="outline" class="wide">
+      <mat-label>{{ 'subscriptions.name' | transloco }}</mat-label>
+      <input matInput formControlName="name" maxlength="100" required />
+      @if (form.controls.name.invalid) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="wide">
+      <mat-label>{{ 'subscriptions.description' | transloco }}</mat-label>
+      <textarea matInput rows="2" formControlName="description" maxlength="500"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'subscriptions.price' | transloco }} ({{ plan.currency }})</mat-label>
+      <input matInput type="number" min="0" step="100" formControlName="price" required />
+      @if (form.controls.price.invalid) { <mat-error>{{ 'validation.range' | transloco }}</mat-error> }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'subscriptions.duration' | transloco }}</mat-label>
+      <input matInput type="number" min="1" max="3650" formControlName="durationDays" required />
+      @if (form.controls.durationDays.invalid) { <mat-error>{{ 'validation.range' | transloco }}</mat-error> }
+    </mat-form-field>
+    @if (isProfessional) {
+      <mat-form-field appearance="outline" class="wide">
+        <mat-label>{{ 'subscriptions.commissionPercent' | transloco }}</mat-label>
+        <input matInput type="number" min="0" max="100" step="0.5" formControlName="commissionPercent" />
+        <mat-hint>{{ 'subscriptions.commissionHint' | transloco }}</mat-hint>
+        @if (form.controls.commissionPercent.invalid) { <mat-error>{{ 'validation.range' | transloco }}</mat-error> }
+      </mat-form-field>
+    }
+    <mat-checkbox formControlName="active" class="wide">{{ 'subscriptions.active' | transloco }}</mat-checkbox>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>{{ 'common.cancel' | transloco }}</button>
+    <button mat-flat-button type="submit">{{ 'common.save' | transloco }}</button>
+  </mat-dialog-actions>
+</form>

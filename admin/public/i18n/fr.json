@@ -11,7 +11,9 @@
     "appointments": "Rendez-vous",
     "accessLogs": "Journal d'accès médical",
     "sos": "Urgences SOS",
-    "pharmacies": "Pharmacies"
+    "pharmacies": "Pharmacies",
+    "finance": "Paiements et retraits",
+    "subscriptions": "Abonnements"
   },
   "login": {
     "title": "Connexion administrateur",
@@ -241,5 +243,98 @@
     "deactivate": "Désactiver",
     "saved": "Pharmacie enregistrée.",
     "empty": "Aucune pharmacie"
+  },
+  "finance": {
+    "title": "Paiements et commissions",
+    "hint": "Les fonds d'un rendez-vous ou d'une commande restent en séquestre jusqu'à la prestation, puis sont répartis entre le professionnel (ou la pharmacie) et la plateforme. Les remboursements ne sont possibles que tant que les fonds sont en séquestre.",
+    "volume": "Volume encaissé",
+    "commissions": "Commissions",
+    "subscriptionRevenue": "Abonnements",
+    "escrow": "En séquestre",
+    "refundedTotal": "Remboursé",
+    "pendingWithdrawals": "Retraits à traiter",
+    "pendingPayments": "Paiements en attente",
+    "tabPayments": "Paiements",
+    "tabWithdrawals": "Retraits",
+    "status": "Statut",
+    "method": "Moyen de paiement",
+    "type": "Objet",
+    "date": "Date",
+    "amount": "Montant",
+    "commission": "Commission",
+    "professional": "Professionnel",
+    "destination": "Destination",
+    "confirmTransfer": "Confirmer le virement",
+    "rejectTransfer": "Rejeter",
+    "refund": "Rembourser",
+    "pay": "Verser",
+    "reject": "Rejeter",
+    "rejectTransferTitle": "Rejeter le virement",
+    "refundTitle": "Rembourser le paiement",
+    "rejectWithdrawalTitle": "Rejeter le retrait",
+    "transferConfirmed": "Virement confirmé.",
+    "transferRejected": "Virement rejeté.",
+    "refunded": "Paiement remboursé.",
+    "withdrawalPaid": "Retrait versé.",
+    "withdrawalRejected": "Retrait rejeté, le montant a été restitué.",
+    "empty": "Aucun paiement.",
+    "emptyWithdrawals": "Aucun retrait."
+  },
+  "paymentStatuses": {
+    "PENDING": "En attente",
+    "FAILED": "Échoué",
+    "CAPTURED": "En séquestre",
+    "RELEASED": "Réparti",
+    "REFUNDED": "Remboursé"
+  },
+  "paymentMethods": {
+    "MOBILE_MONEY": "Mobile Money",
+    "CARD": "Carte bancaire",
+    "BANK_TRANSFER": "Virement",
+    "WALLET": "Portefeuille"
+  },
+  "payableTypes": {
+    "APPOINTMENT": "Rendez-vous",
+    "PHARMACY_ORDER": "Commande de pharmacie",
+    "SUBSCRIPTION": "Abonnement",
+    "WALLET_TOPUP": "Recharge"
+  },
+  "withdrawalStatuses": {
+    "REQUESTED": "À traiter",
+    "PAID": "Versé",
+    "REJECTED": "Rejeté"
+  },
+  "subscriptions": {
+    "title": "Abonnements",
+    "hint": "Les abonnements sont enregistrés et facturés. Le taux de commission d'une formule professionnelle remplace le taux global pour les professionnels abonnés.",
+    "tabSubscriptions": "Abonnements",
+    "tabPlans": "Formules",
+    "status": "Statut",
+    "user": "Utilisateur",
+    "plan": "Formule",
+    "audience": "Public",
+    "startsAt": "Début",
+    "endsAt": "Fin",
+    "price": "Prix",
+    "duration": "Durée (jours)",
+    "commissionPercent": "Commission (%)",
+    "commissionHint": "Laisser vide pour appliquer le taux global.",
+    "name": "Nom",
+    "description": "Description",
+    "active": "Formule active",
+    "edit": "Modifier",
+    "editPlan": "Modifier la formule",
+    "planSaved": "Formule enregistrée.",
+    "empty": "Aucun abonnement."
+  },
+  "subscriptionStatuses": {
+    "TRIAL": "Essai",
+    "ACTIVE": "Actif",
+    "EXPIRED": "Expiré",
+    "CANCELLED": "Résilié"
+  },
+  "planAudiences": {
+    "PROFESSIONAL": "Professionnel",
+    "PATIENT": "Patient"
   }
 }

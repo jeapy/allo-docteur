@@ -1,0 +1,76 @@
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'finance.status' | transloco }}</mat-label>
+    <mat-select [formControl]="status">
+      <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
+      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'paymentStatuses.' + s | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'finance.method' | transloco }}</mat-label>
+    <mat-select [formControl]="method">
+      <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
+      @for (m of methods; track m) { <mat-option [value]="m">{{ 'paymentMethods.' + m | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'finance.type' | transloco }}</mat-label>
+    <mat-select [formControl]="type">
+      <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
+      @for (t of types; track t) { <mat-option [value]="t">{{ 'payableTypes.' + t | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+<div class="table-wrap">
+  <table mat-table [dataSource]="rows()">
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.date' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ p.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="type">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.type' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ 'payableTypes.' + p.payableType | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="method">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.method' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">
+        {{ 'paymentMethods.' + p.method | transloco }}
+        <div class="sub">{{ p.provider }}</div>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef class="num">{{ 'finance.amount' | transloco }}</th>
+      <td mat-cell *matCellDef="let p" class="num">{{ p.amount | number: '1.0-0' }} {{ p.currency }}</td>
+    </ng-container>
+    <ng-container matColumnDef="commission">
+      <th mat-header-cell *matHeaderCellDef class="num">{{ 'finance.commission' | transloco }}</th>
+      <td mat-cell *matCellDef="let p" class="num">{{ p.commissionAmount | number: '1.0-0' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.status' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">
+        {{ 'paymentStatuses.' + p.status | transloco }}
+        @if (p.failureReason) { <div class="sub">{{ p.failureReason }}</div> }
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let p">
+        @if (isPendingTransfer(p)) {
+          <button mat-button (click)="confirmTransfer(p)">{{ 'finance.confirmTransfer' | transloco }}</button>
+          <button mat-button (click)="rejectTransfer(p)">{{ 'finance.rejectTransfer' | transloco }}</button>
+        }
+        @if (p.status === 'CAPTURED') {
+          <button mat-button (click)="refund(p)">{{ 'finance.refund' | transloco }}</button>
+        }
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'finance.empty' | transloco }}</td></tr>
+  </table>
+</div>
+<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
+  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />

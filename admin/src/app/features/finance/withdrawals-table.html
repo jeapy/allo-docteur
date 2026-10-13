@@ -1,0 +1,56 @@
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'finance.status' | transloco }}</mat-label>
+    <mat-select [formControl]="status">
+      <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
+      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'withdrawalStatuses.' + s | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+<div class="table-wrap">
+  <table mat-table [dataSource]="rows()">
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.date' | transloco }}</th>
+      <td mat-cell *matCellDef="let w">{{ w.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="user">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.professional' | transloco }}</th>
+      <td mat-cell *matCellDef="let w"><span class="sub">{{ w.userId }}</span></td>
+    </ng-container>
+    <ng-container matColumnDef="method">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.method' | transloco }}</th>
+      <td mat-cell *matCellDef="let w">{{ 'paymentMethods.' + w.method | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="destination">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.destination' | transloco }}</th>
+      <td mat-cell *matCellDef="let w">{{ w.destination }}</td>
+    </ng-container>
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef class="num">{{ 'finance.amount' | transloco }}</th>
+      <td mat-cell *matCellDef="let w" class="num">{{ w.amount | number: '1.0-0' }} {{ w.currency }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ 'finance.status' | transloco }}</th>
+      <td mat-cell *matCellDef="let w">
+        {{ 'withdrawalStatuses.' + w.status | transloco }}
+        @if (w.rejectReason) { <div class="sub">{{ w.rejectReason }}</div> }
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let w">
+        @if (w.status === 'REQUESTED') {
+          <button mat-button (click)="pay(w)">{{ 'finance.pay' | transloco }}</button>
+          <button mat-button (click)="reject(w)">{{ 'finance.reject' | transloco }}</button>
+        }
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'finance.emptyWithdrawals' | transloco }}</td></tr>
+  </table>
+</div>
+<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
+  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />

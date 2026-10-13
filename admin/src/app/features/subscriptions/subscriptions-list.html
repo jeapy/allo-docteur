@@ -1,0 +1,86 @@
+<h1>{{ 'subscriptions.title' | transloco }}</h1>
+<p class="hint">{{ 'subscriptions.hint' | transloco }}</p>
+<mat-tab-group>
+  <mat-tab [label]="'subscriptions.tabSubscriptions' | transloco">
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'subscriptions.status' | transloco }}</mat-label>
+        <mat-select [formControl]="status">
+          <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
+          @for (s of statuses; track s) { <mat-option [value]="s">{{ 'subscriptionStatuses.' + s | transloco }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+    <div class="table-wrap">
+      <table mat-table [dataSource]="rows()">
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.user' | transloco }}</th>
+          <td mat-cell *matCellDef="let s">{{ s.userName || s.userId }}</td>
+        </ng-container>
+        <ng-container matColumnDef="plan">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.plan' | transloco }}</th>
+          <td mat-cell *matCellDef="let s">{{ s.planName }}<div class="sub">{{ s.planCode }}</div></td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.status' | transloco }}</th>
+          <td mat-cell *matCellDef="let s">{{ 'subscriptionStatuses.' + s.status | transloco }}</td>
+        </ng-container>
+        <ng-container matColumnDef="startsAt">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.startsAt' | transloco }}</th>
+          <td mat-cell *matCellDef="let s">{{ s.startsAt | date: 'dd/MM/yyyy' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="endsAt">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.endsAt' | transloco }}</th>
+          <td mat-cell *matCellDef="let s">{{ s.endsAt | date: 'dd/MM/yyyy' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'subscriptions.empty' | transloco }}</td></tr>
+      </table>
+    </div>
+    <mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
+      [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+  </mat-tab>
+
+  <mat-tab [label]="'subscriptions.tabPlans' | transloco">
+    <div class="table-wrap">
+      <table mat-table [dataSource]="plans()">
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.plan' | transloco }}</th>
+          <td mat-cell *matCellDef="let p">{{ p.name }}<div class="sub">{{ p.code }}</div></td>
+        </ng-container>
+        <ng-container matColumnDef="audience">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.audience' | transloco }}</th>
+          <td mat-cell *matCellDef="let p">{{ 'planAudiences.' + p.audience | transloco }}</td>
+        </ng-container>
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef class="num">{{ 'subscriptions.price' | transloco }}</th>
+          <td mat-cell *matCellDef="let p" class="num">{{ p.price | number: '1.0-0' }} {{ p.currency }}</td>
+        </ng-container>
+        <ng-container matColumnDef="duration">
+          <th mat-header-cell *matHeaderCellDef class="num">{{ 'subscriptions.duration' | transloco }}</th>
+          <td mat-cell *matCellDef="let p" class="num">{{ p.durationDays }}</td>
+        </ng-container>
+        <ng-container matColumnDef="commission">
+          <th mat-header-cell *matHeaderCellDef class="num">{{ 'subscriptions.commissionPercent' | transloco }}</th>
+          <td mat-cell *matCellDef="let p" class="num">
+            {{ p.commissionRate == null ? '—' : (p.commissionRate * 100 | number: '1.0-2') }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="active">
+          <th mat-header-cell *matHeaderCellDef>{{ 'subscriptions.active' | transloco }}</th>
+          <td mat-cell *matCellDef="let p">{{ (p.active ? 'common.yes' : 'common.no') | transloco }}</td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let p">
+            @if (canEditPlans()) { <button mat-button (click)="edit(p)">{{ 'subscriptions.edit' | transloco }}</button> }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="planColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: planColumns"></tr>
+      </table>
+    </div>
+  </mat-tab>
+</mat-tab-group>

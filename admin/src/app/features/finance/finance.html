@@ -1,0 +1,42 @@
+<h1>{{ 'finance.title' | transloco }}</h1>
+<p class="hint">{{ 'finance.hint' | transloco }}</p>
+@if (summary(); as s) {
+  <div class="summary" role="status" aria-live="polite">
+    <div class="tile">
+      <span class="value">{{ s.volume | number: '1.0-0' }}</span>
+      <span class="label">{{ 'finance.volume' | transloco }} ({{ s.currency }})</span>
+    </div>
+    <div class="tile">
+      <span class="value">{{ s.commissions | number: '1.0-0' }}</span>
+      <span class="label">{{ 'finance.commissions' | transloco }}</span>
+    </div>
+    <div class="tile">
+      <span class="value">{{ s.subscriptionRevenue | number: '1.0-0' }}</span>
+      <span class="label">{{ 'finance.subscriptionRevenue' | transloco }}</span>
+    </div>
+    <div class="tile">
+      <span class="value">{{ s.escrow | number: '1.0-0' }}</span>
+      <span class="label">{{ 'finance.escrow' | transloco }}</span>
+    </div>
+    <div class="tile">
+      <span class="value">{{ s.refunded | number: '1.0-0' }}</span>
+      <span class="label">{{ 'finance.refundedTotal' | transloco }}</span>
+    </div>
+    <div class="tile" [class.alert]="s.pendingWithdrawals > 0">
+      <span class="value">{{ s.pendingWithdrawals }}</span>
+      <span class="label">{{ 'finance.pendingWithdrawals' | transloco }} ({{ s.pendingWithdrawalsAmount | number: '1.0-0' }})</span>
+    </div>
+    <div class="tile" [class.alert]="s.pendingPayments > 0">
+      <span class="value">{{ s.pendingPayments }}</span>
+      <span class="label">{{ 'finance.pendingPayments' | transloco }}</span>
+    </div>
+  </div>
+}
+<mat-tab-group>
+  <mat-tab [label]="'finance.tabPayments' | transloco">
+    <app-payments-table (changed)="refresh()" />
+  </mat-tab>
+  <mat-tab [label]="'finance.tabWithdrawals' | transloco">
+    <app-withdrawals-table (changed)="refresh()" />
+  </mat-tab>
+</mat-tab-group>

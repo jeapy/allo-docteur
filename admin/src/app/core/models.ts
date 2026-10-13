@@ -199,3 +199,86 @@ export interface CityRef {
   id: number;
   name: string;
 }
+
+export type PaymentStatus = 'PENDING' | 'FAILED' | 'CAPTURED' | 'RELEASED' | 'REFUNDED';
+export type PaymentMethod = 'MOBILE_MONEY' | 'CARD' | 'BANK_TRANSFER' | 'WALLET';
+export type PayableType = 'APPOINTMENT' | 'PHARMACY_ORDER' | 'SUBSCRIPTION' | 'WALLET_TOPUP';
+
+export interface PaymentRow {
+  id: string;
+  payerId: string;
+  payableType: PayableType;
+  payableId: string;
+  method: PaymentMethod;
+  provider: string;
+  status: PaymentStatus;
+  amount: number;
+  currency: string;
+  commissionAmount: number;
+  netAmount: number;
+  failureReason?: string | null;
+  createdAt: string;
+}
+
+export type WithdrawalStatus = 'REQUESTED' | 'PAID' | 'REJECTED';
+
+export interface WithdrawalRow {
+  id: string;
+  userId: string;
+  amount: number;
+  currency: string;
+  method: 'MOBILE_MONEY' | 'BANK_TRANSFER';
+  destination: string;
+  status: WithdrawalStatus;
+  rejectReason?: string | null;
+  createdAt: string;
+  processedAt?: string | null;
+}
+
+export interface FinanceSummary {
+  volume: number;
+  commissions: number;
+  subscriptionRevenue: number;
+  refunded: number;
+  escrow: number;
+  pendingPayments: number;
+  pendingWithdrawals: number;
+  pendingWithdrawalsAmount: number;
+  platformBalance: number;
+  currency: string;
+}
+
+export type SubscriptionStatus = 'TRIAL' | 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+
+export interface SubscriptionRow {
+  id: string;
+  userId: string;
+  userName?: string | null;
+  planCode: string;
+  planName: string;
+  status: SubscriptionStatus;
+  startsAt: string;
+  endsAt: string;
+}
+
+export interface PlanRow {
+  id: string;
+  code: string;
+  audience: 'PROFESSIONAL' | 'PATIENT';
+  name: string;
+  description?: string | null;
+  price: number;
+  currency: string;
+  durationDays: number;
+  commissionRate?: number | null;
+  active: boolean;
+}
+
+export interface PlanPayload {
+  name: string;
+  description: string | null;
+  price: number;
+  durationDays: number;
+  commissionRate: number | null;
+  active: boolean;
+}

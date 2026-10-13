@@ -41,6 +41,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/pharmacies/pharmacies-list').then((m) => m.PharmaciesListComponent),
       },
       {
+        path: 'finance',
+        canActivate: [levelGuard('SUPER', 'FINANCE')],
+        loadComponent: () => import('./features/finance/finance').then((m) => m.FinanceComponent),
+      },
+      {
+        path: 'subscriptions',
+        loadComponent: () =>
+          import('./features/subscriptions/subscriptions-list').then((m) => m.SubscriptionsListComponent),
+      },
+      {
         path: 'access-logs',
         canActivate: [levelGuard('SUPER')],
         loadComponent: () => import('./features/access-logs/access-logs-list').then((m) => m.AccessLogsListComponent),
