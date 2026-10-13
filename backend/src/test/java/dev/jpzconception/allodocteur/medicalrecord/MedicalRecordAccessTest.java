@@ -83,8 +83,8 @@ class MedicalRecordAccessTest extends AbstractIntegrationTest {
         accept(patient);
         JsonNode history = api.body(api.get("/api/v1/consents/history", patient.token()));
         assertThat(history).hasSize(2);
-        assertThat(history.get(0).get("revokedAt").isNull()).isTrue();
-        assertThat(history.get(1).get("revokedAt").isNull()).isFalse();
+        assertThat(history.get(0).path("revokedAt").isMissingNode() || history.get(0).path("revokedAt").isNull()).isTrue();
+        assertThat(history.get(1).path("revokedAt").isMissingNode() || history.get(1).path("revokedAt").isNull()).isFalse();
     }
 
     @Test
@@ -262,7 +262,7 @@ class MedicalRecordAccessTest extends AbstractIntegrationTest {
         assertThat(log.findValuesAsText("outcome")).contains("GRANTED", "DENIED");
         assertThat(log.findValuesAsText("actorId")).contains(pro.userId(), stranger.userId());
         // le propriétaire ne voit pas l'adresse IP
-        log.forEach(l -> assertThat(l.get("ipAddress") == null || l.get("ipAddress").isNull()).isTrue());
+        log.forEach(l -> assertThat(l.path("ipAddress").isMissingNode() || l.path("ipAddress").isNull()).isTrue());
 
         // un professionnel ne lit pas le journal
         assertThat(status(api.get("/api/v1/medical-records/" + id + "/access-log", pro.token()))).isEqualTo(403);
