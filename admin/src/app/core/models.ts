@@ -136,3 +136,66 @@ export interface AccessLogRow {
   ipAddress?: string | null;
   occurredAt: string;
 }
+
+export type SosStatus = 'OPEN' | 'ACCEPTED' | 'RESOLVED' | 'CANCELLED';
+export type SosCategory = 'MEDICAL' | 'ACCIDENT' | 'PREGNANCY' | 'CHILD' | 'OTHER';
+
+/** Suivi des urgences : ni description médicale ni coordonnées exactes. */
+export interface SosAlertRow {
+  id: string;
+  status: SosStatus;
+  category: SosCategory;
+  accountId: string;
+  patientName: string;
+  cityId?: number | null;
+  city?: string | null;
+  professional?: { id: string; name: string } | null;
+  appointmentId?: string | null;
+  createdAt: string;
+  acceptedAt?: string | null;
+  resolvedAt?: string | null;
+  cancelReason?: string | null;
+  waitingMinutes: number;
+}
+
+export interface SosSummary {
+  open: number;
+  accepted: number;
+}
+
+export interface PharmacyRow {
+  id: string;
+  name: string;
+  cityId: number;
+  city: string;
+  districtId?: number | null;
+  district?: string | null;
+  address: string;
+  phone: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  openingHours?: string | null;
+  onDuty: boolean;
+  offersDelivery: boolean;
+  deliveryFee: number;
+  currency: string;
+  active: boolean;
+}
+
+export interface PharmacyPayload {
+  name: string;
+  cityId: number;
+  address: string;
+  phone: string;
+  latitude: number | null;
+  longitude: number | null;
+  openingHours: string | null;
+  onDuty: boolean;
+  offersDelivery: boolean;
+  deliveryFee: number | null;
+}
+
+export interface CityRef {
+  id: number;
+  name: string;
+}

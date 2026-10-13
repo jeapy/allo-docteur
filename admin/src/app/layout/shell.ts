@@ -33,6 +33,8 @@ export class ShellComponent {
     { path: '/users', icon: 'group', label: 'nav.users' },
     { path: '/professionals', icon: 'medical_services', label: 'nav.professionals' },
     { path: '/appointments', icon: 'event', label: 'nav.appointments' },
+    { path: '/sos', icon: 'emergency', label: 'nav.sos' },
+    { path: '/pharmacies', icon: 'local_pharmacy', label: 'nav.pharmacies' },
     { path: '/access-logs', icon: 'policy', label: 'nav.accessLogs', levels: ['SUPER'] },
   ];
   /** Entrées de menu visibles pour le niveau d'administration connecté. */

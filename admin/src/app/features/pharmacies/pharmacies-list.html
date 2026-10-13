@@ -1,0 +1,67 @@
+<div class="head">
+  <h1>{{ 'pharmacies.title' | transloco }}</h1>
+  @if (canEdit()) { <button mat-flat-button (click)="edit(null)">{{ 'pharmacies.create' | transloco }}</button> }
+</div>
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'pharmacies.search' | transloco }}</mat-label>
+    <input matInput [formControl]="q" autocomplete="off" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'pharmacies.onDuty' | transloco }}</mat-label>
+    <mat-select [formControl]="onDuty">
+      <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
+      <mat-option [value]="true">{{ 'common.yes' | transloco }}</mat-option>
+      <mat-option [value]="false">{{ 'common.no' | transloco }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+<div class="table-wrap">
+  <table mat-table [dataSource]="rows()">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>{{ 'pharmacies.name' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">
+        {{ p.name }}
+        <div class="sub">{{ p.address }}</div>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="city">
+      <th mat-header-cell *matHeaderCellDef>{{ 'pharmacies.city' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ p.city }}@if (p.district) { <div class="sub">{{ p.district }}</div> }</td>
+    </ng-container>
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef>{{ 'pharmacies.phone' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ p.phone }}</td>
+    </ng-container>
+    <ng-container matColumnDef="onDuty">
+      <th mat-header-cell *matHeaderCellDef>{{ 'pharmacies.onDuty' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ (p.onDuty ? 'common.yes' : 'common.no') | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="delivery">
+      <th mat-header-cell *matHeaderCellDef>{{ 'pharmacies.delivery' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">
+        @if (p.offersDelivery) { {{ p.deliveryFee | currency: p.currency : 'symbol' : '1.0-0' : 'fr' }} } @else { — }
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ 'pharmacies.status' | transloco }}</th>
+      <td mat-cell *matCellDef="let p">{{ (p.active ? 'pharmacies.active' : 'pharmacies.inactive') | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let p">
+        @if (canEdit()) {
+          <button mat-button (click)="edit(p)">{{ 'pharmacies.edit' | transloco }}</button>
+          <button mat-button (click)="toggle(p)">{{ (p.active ? 'pharmacies.deactivate' : 'pharmacies.activate') | transloco }}</button>
+        }
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'pharmacies.empty' | transloco }}</td></tr>
+  </table>
+</div>
+<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
+  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />

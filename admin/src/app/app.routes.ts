@@ -33,6 +33,14 @@ export const routes: Routes = [
           import('./features/appointments/appointments-list').then((m) => m.AppointmentsListComponent),
       },
       {
+        path: 'sos',
+        loadComponent: () => import('./features/sos/sos-list').then((m) => m.SosListComponent),
+      },
+      {
+        path: 'pharmacies',
+        loadComponent: () => import('./features/pharmacies/pharmacies-list').then((m) => m.PharmaciesListComponent),
+      },
+      {
         path: 'access-logs',
         canActivate: [levelGuard('SUPER')],
         loadComponent: () => import('./features/access-logs/access-logs-list').then((m) => m.AccessLogsListComponent),

@@ -1,0 +1,13 @@
+.hint { max-width: 70ch; opacity: 0.8; }
+.summary { display: flex; gap: 16px; margin: 16px 0; flex-wrap: wrap; }
+.tile { border: 1px solid currentColor; border-radius: 8px; padding: 12px 20px; min-width: 140px; display: flex; flex-direction: column; }
+.tile .value { font-size: 2rem; font-weight: 600; }
+.tile .label { font-size: 0.85rem; opacity: 0.8; }
+// le signal d'alerte ne repose pas que sur la couleur : bordure épaisse
+.tile.alert { border-width: 3px; }
+.filters { display: flex; gap: 12px; flex-wrap: wrap; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; }
+.empty { padding: 24px; text-align: center; }
+.sub { font-size: 0.8rem; opacity: 0.75; }
+.waiting { font-weight: 600; text-decoration: underline; }

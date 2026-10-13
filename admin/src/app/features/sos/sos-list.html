@@ -1,0 +1,67 @@
+<h1>{{ 'sos.title' | transloco }}</h1>
+<p class="hint">{{ 'sos.hint' | transloco }}</p>
+<div class="summary" role="status" aria-live="polite">
+  <div class="tile" [class.alert]="summary().open > 0">
+    <span class="value">{{ summary().open }}</span>
+    <span class="label">{{ 'sos.openCount' | transloco }}</span>
+  </div>
+  <div class="tile">
+    <span class="value">{{ summary().accepted }}</span>
+    <span class="label">{{ 'sos.acceptedCount' | transloco }}</span>
+  </div>
+</div>
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>{{ 'sos.status' | transloco }}</mat-label>
+    <mat-select [formControl]="status" multiple>
+      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'sosStatuses.' + s | transloco }}</mat-option> }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
+<div class="table-wrap">
+  <table mat-table [dataSource]="rows()">
+    <ng-container matColumnDef="createdAt">
+      <th mat-header-cell *matHeaderCellDef>{{ 'sos.date' | transloco }}</th>
+      <td mat-cell *matCellDef="let a">{{ a.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="category">
+      <th mat-header-cell *matHeaderCellDef>{{ 'sos.category' | transloco }}</th>
+      <td mat-cell *matCellDef="let a">{{ 'sosCategories.' + a.category | transloco }}</td>
+    </ng-container>
+    <ng-container matColumnDef="patient">
+      <th mat-header-cell *matHeaderCellDef>{{ 'sos.patient' | transloco }}</th>
+      <td mat-cell *matCellDef="let a">{{ a.patientName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="city">
+      <th mat-header-cell *matHeaderCellDef>{{ 'sos.city' | transloco }}</th>
+      <td mat-cell *matCellDef="let a">{{ a.city || '—' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="professional">
+      <th mat-header-cell *matHeaderCellDef>{{ 'sos.professional' | transloco }}</th>
+      <td mat-cell *matCellDef="let a">{{ a.professional?.name || '—' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>{{ 'sos.status' | transloco }}</th>
+      <td mat-cell *matCellDef="let a">
+        <span [class.waiting]="a.status === 'OPEN'">{{ 'sosStatuses.' + a.status | transloco }}</span>
+        <div class="sub">
+          @if (a.status === 'OPEN') { {{ 'sos.waiting' | transloco: { minutes: a.waitingMinutes } }} }
+          @else if (a.cancelReason) { {{ a.cancelReason }} }
+        </div>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let a">
+        @if (cancellable(a)) { <button mat-button (click)="cancel(a)">{{ 'sos.cancel' | transloco }}</button> }
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'sos.empty' | transloco }}</td></tr>
+  </table>
+</div>
+<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
+  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />

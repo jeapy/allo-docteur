@@ -9,7 +9,9 @@
     "logout": "Se déconnecter",
     "professionals": "Professionnels",
     "appointments": "Rendez-vous",
-    "accessLogs": "Journal d'accès médical"
+    "accessLogs": "Journal d'accès médical",
+    "sos": "Urgences SOS",
+    "pharmacies": "Pharmacies"
   },
   "login": {
     "title": "Connexion administrateur",
@@ -25,7 +27,9 @@
   "validation": {
     "required": "Champ obligatoire",
     "email": "Adresse e-mail invalide",
-    "code": "Code à 6 chiffres"
+    "code": "Code à 6 chiffres",
+    "phone": "Numéro de téléphone invalide",
+    "range": "Valeur hors limites"
   },
   "users": {
     "title": "Utilisateurs",
@@ -65,7 +69,10 @@
   "common": {
     "cancel": "Annuler",
     "confirm": "Confirmer",
-    "all": "Tous"
+    "all": "Tous",
+    "yes": "Oui",
+    "no": "Non",
+    "save": "Enregistrer"
   },
   "verification": {
     "PENDING": "En attente",
@@ -180,5 +187,59 @@
     "OWNER_ONLY": "Action réservée au patient",
     "NO_CARE_RELATIONSHIP": "Aucun lien de soin avec le patient",
     "NO_CONSENT": "Consentement absent ou retiré"
+  },
+  "sos": {
+    "title": "Urgences SOS",
+    "hint": "Alertes déclenchées par les patients. Une alerte « ouverte » n'a pas encore été prise en charge par un professionnel. Seules les informations de suivi sont affichées : ni description médicale ni position exacte.",
+    "openCount": "Alertes ouvertes",
+    "acceptedCount": "Prises en charge",
+    "status": "Statut",
+    "date": "Date",
+    "category": "Catégorie",
+    "patient": "Patient",
+    "city": "Ville",
+    "professional": "Professionnel",
+    "waiting": "En attente depuis {{minutes}} min",
+    "cancel": "Annuler",
+    "cancelTitle": "Annuler l'alerte",
+    "cancelled": "Alerte annulée.",
+    "empty": "Aucune alerte"
+  },
+  "sosStatuses": {
+    "OPEN": "Ouverte",
+    "ACCEPTED": "Prise en charge",
+    "RESOLVED": "Clôturée",
+    "CANCELLED": "Annulée"
+  },
+  "sosCategories": {
+    "MEDICAL": "Urgence médicale",
+    "ACCIDENT": "Accident",
+    "PREGNANCY": "Grossesse / accouchement",
+    "CHILD": "Enfant",
+    "OTHER": "Autre"
+  },
+  "pharmacies": {
+    "title": "Pharmacies partenaires",
+    "create": "Ajouter une pharmacie",
+    "edit": "Modifier",
+    "search": "Rechercher par nom",
+    "name": "Nom",
+    "city": "Ville",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "coordinatesTogether": "Indiquez la latitude et la longitude, ou aucune.",
+    "openingHours": "Horaires",
+    "onDuty": "De garde",
+    "delivery": "Livraison",
+    "deliveryFee": "Frais de livraison",
+    "status": "Statut",
+    "active": "Active",
+    "inactive": "Désactivée",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "saved": "Pharmacie enregistrée.",
+    "empty": "Aucune pharmacie"
   }
 }
