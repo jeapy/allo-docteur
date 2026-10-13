@@ -38,6 +38,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return problem(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", ex.getMessage());
     }
 
+    @ExceptionHandler(org.springframework.orm.ObjectOptimisticLockingFailureException.class)
+    ProblemDetail handleConcurrentUpdate(org.springframework.orm.ObjectOptimisticLockingFailureException ex) {
+        return problem(HttpStatus.CONFLICT, "CONCURRENT_UPDATE", "La ressource a été modifiée entre-temps, réessayez.");
+    }
+
     @ExceptionHandler(Exception.class)
     ProblemDetail handleUnexpected(Exception ex) {
         log.error("Erreur inattendue", ex);

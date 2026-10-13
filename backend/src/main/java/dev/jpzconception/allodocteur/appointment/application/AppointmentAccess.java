@@ -5,8 +5,10 @@ import dev.jpzconception.allodocteur.appointment.domain.AppointmentType;
 import dev.jpzconception.allodocteur.appointment.infrastructure.AppointmentRepository;
 import dev.jpzconception.allodocteur.shared.error.ApiException;
 import dev.jpzconception.allodocteur.shared.security.AuthenticatedUser;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +23,7 @@ public class AppointmentAccess {
 
     public record Ref(UUID id, UUID patientId, UUID dependentId, String beneficiaryName, LocalDate beneficiaryBirthDate,
                       UUID professionalId, AppointmentType type, AppointmentStatus status,
-                      Instant startAt, Instant endAt, Instant completedAt) {
+                      Instant startAt, Instant endAt, Instant completedAt, BigDecimal fee) {
         public boolean isPatient(UUID userId) {
             return patientId.equals(userId);
         }
@@ -47,9 +49,18 @@ public class AppointmentAccess {
     public Ref requireParticipant(AuthenticatedUser user, UUID appointmentId) {
         return appointments.findById(appointmentId)
                 .filter(a -> a.isParticipant(user.id()))
-                .map(a -> new Ref(a.getId(), a.getPatientId(), a.getDependentId(), a.getBeneficiaryName(),
-                        a.getBeneficiaryBirthDate(), a.getProfessionalId(), a.getType(), a.getStatus(),
-                        a.getStartAt(), a.getEndAt(), a.getCompletedAt()))
+                .map(AppointmentAccess::toRef)
                 .orElseThrow(() -> ApiException.notFound("APPOINTMENT_NOT_FOUND", "Rendez-vous introuvable."));
+    }
+
+    /** Lecture sans contrôle d'accès, réservée aux traitements internes (paiement). */
+    public Optional<Ref> findRef(UUID appointmentId) {
+        return appointments.findById(appointmentId).map(AppointmentAccess::toRef);
+    }
+
+    private static Ref toRef(dev.jpzconception.allodocteur.appointment.domain.Appointment a) {
+        return new Ref(a.getId(), a.getPatientId(), a.getDependentId(), a.getBeneficiaryName(),
+                a.getBeneficiaryBirthDate(), a.getProfessionalId(), a.getType(), a.getStatus(),
+                a.getStartAt(), a.getEndAt(), a.getCompletedAt(), a.getFee());
     }
 }

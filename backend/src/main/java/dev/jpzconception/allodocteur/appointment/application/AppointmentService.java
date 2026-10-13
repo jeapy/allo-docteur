@@ -61,10 +61,11 @@ public class AppointmentService {
     private final AuditService audit;
     private final ApplicationEventPublisher events;
     private final Clock clock;
+    private final PaymentGate paymentGate;
 
     public AppointmentService(AppointmentRepository appointments, SlotService slotService, PatientService patients,
                               UserRepository users, AppointmentAssembler assembler, AppointmentProperties props,
-                              AuditService audit, ApplicationEventPublisher events, Clock clock) {
+                              AuditService audit, ApplicationEventPublisher events, Clock clock, PaymentGate paymentGate) {
         this.appointments = appointments;
         this.slotService = slotService;
         this.patients = patients;
@@ -74,6 +75,7 @@ public class AppointmentService {
         this.audit = audit;
         this.events = events;
         this.clock = clock;
+        this.paymentGate = paymentGate;
     }
 
     // ------------------------------------------------------------------ réservation
@@ -232,6 +234,7 @@ public class AppointmentService {
 
     public AppointmentDto confirm(AuthenticatedUser me, UUID id) {
         Appointment a = requireOwnedByProfessional(me, id);
+        paymentGate.requirePaid(a.getId(), a.getFee());
         a.confirm(now());
         events.publishEvent(new AppointmentEvents.Confirmed(a.getId(), a.getPatientId(), a.getProfessionalId()));
         return assembler.toDto(a, false);

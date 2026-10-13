@@ -58,3 +58,13 @@ app:
     auth-per-minute: 10
   storage:
     local-path: ${APP_STORAGE_PATH:./data/storage}
+  payments:
+    commission-rate: 0.10            # commission sur les consultations (surchargée par le plan d'abonnement du professionnel)
+    pharmacy-commission-rate: 0
+    require-payment-to-confirm: true # un rendez-vous payant doit être réglé avant sa confirmation
+    min-withdrawal: 1000
+    min-topup: 500
+    max-topup: 1000000
+  subscriptions:
+    trial-days: 30
+    trial-plan-code: PRO_STANDARD
