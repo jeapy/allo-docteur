@@ -150,6 +150,58 @@ public class AppointmentService {
         return assembler.toDto(a, false);
     }
 
+    // ------------------------------------------------------------------ visite urgente (SOS)
+
+    /** Demande de visite immédiate issue d'une alerte SOS : pas de créneau, le professionnel part tout de suite. */
+    public record UrgentVisit(UUID patientId, UUID dependentId, String beneficiaryName, LocalDate beneficiaryBirthDate,
+                              UUID professionalId, String address, BigDecimal latitude, BigDecimal longitude,
+                              String details) {}
+
+    /**
+     * Crée un rendez-vous de visite à domicile déjà confirmé, qui démarre maintenant. Seul le chevauchement avec un autre
+     * rendez-vous du professionnel est refusé (409 {@code PROFESSIONAL_BUSY}) ; la disponibilité hebdomadaire est ignorée.
+     */
+    public UUID createUrgentVisit(UrgentVisit req) {
+        Professional pro = slotService.requireBookable(req.professionalId());
+        Instant now = now();
+        Appointment a = new Appointment();
+        a.setPatientId(req.patientId());
+        a.setDependentId(req.dependentId());
+        a.setBeneficiaryName(req.beneficiaryName());
+        a.setBeneficiaryBirthDate(req.beneficiaryBirthDate());
+        a.setProfessionalId(pro.getId());
+        a.setType(AppointmentType.HOME_VISIT);
+        a.setReason(dev.jpzconception.allodocteur.appointment.domain.ReasonCategory.CONSULTATION);
+        a.setReasonDetails(req.details());
+        a.setStartAt(now);
+        a.setEndAt(now.plus(slotService.durationMinutes(AppointmentType.HOME_VISIT), ChronoUnit.MINUTES));
+        a.setStatus(AppointmentStatus.CONFIRMED);
+        a.setConfirmedAt(now);
+        a.setAddress(req.address());
+        a.setLatitude(req.latitude());
+        a.setLongitude(req.longitude());
+        a.setFee(pro.getHomeVisitFee() == null ? BigDecimal.ZERO : pro.getHomeVisitFee());
+        a.setCurrency(pro.getCurrency());
+        try {
+            appointments.saveAndFlush(a);
+        } catch (DataIntegrityViolationException e) {
+            throw ApiException.conflict("PROFESSIONAL_BUSY", "Ce professionnel a déjà un rendez-vous en cours.");
+        }
+        events.publishEvent(new AppointmentEvents.Requested(a.getId(), a.getPatientId(), a.getProfessionalId()));
+        events.publishEvent(new AppointmentEvents.Confirmed(a.getId(), a.getPatientId(), a.getProfessionalId()));
+        return a.getId();
+    }
+
+    /** Annulation décidée par le système (alerte SOS annulée) : sans délai minimal. Sans effet si déjà terminé. */
+    public void cancelBySystem(UUID appointmentId, UUID by, String reason) {
+        appointments.findById(appointmentId)
+                .filter(a -> a.getStatus() == AppointmentStatus.REQUESTED || a.getStatus() == AppointmentStatus.CONFIRMED)
+                .ifPresent(a -> {
+                    a.cancel(by, reason, now());
+                    events.publishEvent(new AppointmentEvents.Cancelled(a.getId(), a.getPatientId(), a.getProfessionalId(), by));
+                });
+    }
+
     // ------------------------------------------------------------------ consultation
 
     @Transactional(readOnly = true)

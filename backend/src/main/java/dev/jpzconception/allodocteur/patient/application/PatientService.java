@@ -119,6 +119,19 @@ public class PatientService {
         return patients.findById(userId).orElse(null);
     }
 
+    /** Ville du profil patient, si renseignée. */
+    @Transactional(readOnly = true)
+    public Integer cityIdOf(UUID accountId) {
+        return patients.findById(accountId).map(Patient::getCity).map(c -> c.getId()).orElse(null);
+    }
+
+    /** Date de naissance de la personne concernée par un dossier (titulaire ou personne à charge), si connue. */
+    @Transactional(readOnly = true)
+    public java.time.LocalDate birthDateOf(UUID accountId, UUID dependentId) {
+        if (dependentId != null) return dependents.findById(dependentId).map(Dependent::getBirthDate).orElse(null);
+        return patients.findById(accountId).map(Patient::getBirthDate).orElse(null);
+    }
+
     /** Nom de la personne concernée par un dossier : le titulaire du compte ou sa personne à charge. */
     @Transactional(readOnly = true)
     public String beneficiaryName(UUID accountId, UUID dependentId) {

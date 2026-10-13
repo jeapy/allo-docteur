@@ -28,8 +28,14 @@ public class MedicalAccessLogger {
     /** Dans la transaction de l'appelant (qui ne doit pas être en lecture seule) : la trace suit le sort de l'accès. */
     @Transactional(propagation = Propagation.REQUIRED)
     public void granted(AuthenticatedUser actor, UUID recordId, AccessAction action, UUID targetId) {
+        granted(actor, recordId, action, targetId, null);
+    }
+
+    /** Accès autorisé à titre exceptionnel : {@code reason} précise pourquoi (ex. EMERGENCY_ACCESS). */
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void granted(AuthenticatedUser actor, UUID recordId, AccessAction action, UUID targetId, String reason) {
         logs.save(new MedicalAccessLog(recordId, actor.id(), actor.role(), action, targetId, AccessOutcome.GRANTED,
-                null, ClientIp.current(), Instant.now(clock)));
+                reason, ClientIp.current(), Instant.now(clock)));
     }
 
     /** Transaction indépendante : un refus doit rester tracé même si la requête échoue ensuite. */

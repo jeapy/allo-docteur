@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  *   <li>le propriétaire du compte (patient ou tuteur) y accède toujours ;</li>
  *   <li>un professionnel y accède s'il a un lien de soin (rendez-vous confirmé, en cours ou terminé) ET que le patient a
  *       un consentement actif pour la version courante ;</li>
+ *   <li>exception : un accès d'urgence (« bris de glace ») motivé, lié à une alerte SOS en cours, remplace le consentement ;</li>
  *   <li>les administrateurs n'y accèdent jamais.</li>
  * </ul>
  * Chaque accès d'un tiers, chaque écriture et chaque refus sont journalisés.
@@ -31,9 +32,11 @@ public class RecordAccessService {
     private final AppointmentAccess appointments;
     private final ConsentService consents;
     private final MedicalAccessLogger logger;
+    private final EmergencyAccessPolicy emergency;
 
     public RecordAccessService(MedicalRecordRepository records, AppointmentAccess appointments, ConsentService consents,
-                               MedicalAccessLogger logger) {
+                               MedicalAccessLogger logger, EmergencyAccessPolicy emergency) {
+        this.emergency = emergency;
         this.records = records;
         this.appointments = appointments;
         this.consents = consents;
@@ -66,6 +69,11 @@ public class RecordAccessService {
                 throw notFound();
             }
             if (!consents.hasActive(record.getAccountId())) {
+                if (emergency.allows(me.id(), record.getAccountId(), record.getDependentId())) {
+                    // « bris de glace » : accès sans consentement, toujours journalisé avec son motif
+                    logger.granted(me, recordId, action, targetId, "EMERGENCY_ACCESS");
+                    return new Context(record, false);
+                }
                 logger.denied(me, recordId, action, targetId, "NO_CONSENT");
                 throw ApiException.forbidden("CONSENT_REQUIRED",
                         "Le patient n'a pas donné (ou a retiré) son consentement à l'accès à son dossier.");
