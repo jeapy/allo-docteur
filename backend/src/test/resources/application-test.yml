@@ -10,6 +10,9 @@ app:
     password: AdminPassw0rd!
   rate-limit:
     auth-per-minute: 100000
+  payments:
+    # Les autres scénarios confirment des rendez-vous payants sans passer par la caisse.
+    require-payment-to-confirm: false
 spring:
   datasource:
     password: unused
