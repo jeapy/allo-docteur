@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth.service';
 import { LoginResponse } from '../../core/models';
@@ -11,7 +11,7 @@ import { UiButton, UiField, UiInput } from '../../shared/ui';
 @Component({
   selector: 'app-login',
   imports: [
-    ReactiveFormsModule, NgIcon, UiButton, UiField, UiInput, TranslocoPipe,
+    ReactiveFormsModule, RouterLink, NgIcon, UiButton, UiField, UiInput, TranslocoPipe,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

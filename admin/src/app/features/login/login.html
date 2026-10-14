@@ -24,6 +24,7 @@
               aria-describedby="password-error" />
           </ui-field>
           @if (error()) { <p class="login__error" role="alert">{{ error() }}</p> }
+          <a routerLink="/forgot-password" class="login__hint text-primary-hover underline">{{ 'login.forgot' | transloco }}</a>
           <button uiBtn size="lg" type="submit" [disabled]="form.invalid || loading()">
             @if (loading()) { <span class="spinner" aria-hidden="true"></span> }
             {{ 'login.submit' | transloco }}

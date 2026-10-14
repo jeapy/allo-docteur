@@ -44,6 +44,9 @@
               <td>{{ u.createdAt | date: 'dd/MM/yyyy' }}</td>
               <td>
                 <div class="ui-row-actions">
+                  @if (canManage()) {
+                    <button uiBtn variant="ghost" size="sm" type="button" (click)="sendReset(u)">{{ 'users.sendReset' | transloco }}</button>
+                  }
                   <button uiBtn variant="outline" size="sm" type="button" (click)="toggle(u)">
                     {{ (u.status === 'SUSPENDED' ? 'users.activate' : 'users.suspend') | transloco }}
                   </button>

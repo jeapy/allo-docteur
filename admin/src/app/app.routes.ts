@@ -8,6 +8,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/login').then((m) => m.LoginComponent),
   },
   {
+    path: 'forgot-password',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./features/password/forgot-password').then((m) => m.ForgotPasswordComponent),
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./features/password/reset-password').then((m) => m.ResetPasswordComponent),
+  },
+  {
     path: 'security/2fa',
     canActivate: [authGuard, roleGuard('ADMIN'), twoFactorPendingGuard],
     loadComponent: () => import('./features/security/two-factor-setup').then((m) => m.TwoFactorSetupComponent),

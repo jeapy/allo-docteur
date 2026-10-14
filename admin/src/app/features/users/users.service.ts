@@ -30,4 +30,9 @@ export class UsersService {
   setStatus(id: string, status: UserStatus): Observable<UserSummary> {
     return this.http.patch<UserSummary>(`${this.base}/admin/users/${id}/status`, { status });
   }
+
+  /** Envoie à l'utilisateur un lien de réinitialisation (l'administration ne voit jamais le lien). */
+  sendPasswordReset(id: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/admin/users/${id}/password-reset`, {});
+  }
 }

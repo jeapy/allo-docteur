@@ -49,6 +49,15 @@ export class AuthService {
       .pipe(tap((r) => this.applyIfAuthenticated(r)));
   }
 
+  /** Réponse identique que le compte existe ou non (le serveur ne révèle rien). */
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/auth/password/forgot`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<void> {
+    return this.http.post<void>(`${this.base}/auth/password/reset`, { token, newPassword });
+  }
+
   /** Une seule requête de refresh à la fois ; les appels concurrents partagent le résultat. */
   refresh(): Observable<string> {
     if (!this.refreshInFlight$) {

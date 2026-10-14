@@ -2,9 +2,10 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { PageChange, SortChange, UiBadge, UiButton, UiEmptyState, UiField, UiInput, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiSortHeader, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageChange, SortChange, ToastService, UiBadge, UiButton, UiEmptyState, UiField, UiInput, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiSortHeader, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { catchError, debounceTime, distinctUntilChanged, EMPTY, switchMap } from 'rxjs';
+import { AuthService } from '../../core/auth.service';
 import { Role, UserStatus, UserSummary } from '../../core/models';
 import { UserQuery, UsersService } from './users.service';
 
@@ -17,6 +18,9 @@ import { UserQuery, UsersService } from './users.service';
 })
 export class UsersListComponent {
   private readonly api = inject(UsersService);
+  private readonly auth = inject(AuthService);
+  private readonly toast = inject(ToastService);
+  private readonly i18n = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly tone = statusTone;
@@ -67,6 +71,12 @@ export class UsersListComponent {
 
   protected onSort(s: SortChange): void {
     this.patch({ sort: s.direction ? `${s.active},${s.direction}` : undefined, page: 0 });
+  }
+
+  protected readonly canManage = () => ['SUPER', 'SUPPORT'].includes(this.auth.user()?.adminLevel ?? '');
+
+  protected sendReset(u: UserSummary): void {
+    this.api.sendPasswordReset(u.id).subscribe(() => this.toast.success(this.i18n.translate('users.resetSent', { email: u.email })));
   }
 
   protected toggle(u: UserSummary): void {
