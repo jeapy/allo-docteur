@@ -57,6 +57,7 @@ public class JwtService {
                 .subject(user.getId().toString())
                 .claim(TYPE, ACCESS)
                 .claim("role", user.getRole().name())
+                .claim("mfa", user.isTwoFactorEnabled())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(accessTtl)));
         if (user.getAdminLevel() != null) {
@@ -86,7 +87,8 @@ public class JwtService {
             return Optional.of(new AuthenticatedUser(
                     UUID.fromString(claims.getSubject()),
                     Role.valueOf(claims.get("role", String.class)),
-                    level == null ? null : AdminLevel.valueOf(level)));
+                    level == null ? null : AdminLevel.valueOf(level),
+                    Boolean.TRUE.equals(claims.get("mfa", Boolean.class))));
         } catch (JwtException | IllegalArgumentException e) {
             return Optional.empty();
         }

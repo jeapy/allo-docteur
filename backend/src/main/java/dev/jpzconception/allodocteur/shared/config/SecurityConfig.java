@@ -7,6 +7,7 @@ import dev.jpzconception.allodocteur.auth.infrastructure.RateLimiter;
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,7 +40,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, JwtService jwt, AppProperties props, Clock clock) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http, JwtService jwt, AppProperties props, Clock clock,
+                                    @Value("${app.security.require-admin-mfa:true}") boolean requireAdminMfa) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable) // API sans session ; le cookie de refresh est SameSite=Strict et limité à /auth
                 .cors(c -> c.configurationSource(corsSource(props)))
@@ -55,7 +57,7 @@ public class SecurityConfig {
                                 writeProblem(res, 403, "Forbidden", "ACCESS_DENIED", "Accès refusé.")))
                 .addFilterBefore(new RateLimitFilter(new RateLimiter(props.rateLimit().authPerMinute(), clock)),
                         UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationFilter(jwt), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwt, requireAdminMfa), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

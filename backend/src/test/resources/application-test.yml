@@ -10,6 +10,9 @@ app:
     password: AdminPassw0rd!
   rate-limit:
     auth-per-minute: 100000
+  security:
+    # Les scénarios utilisent l'admin initial sans 2FA ; AdminMfaEnforcementTest réactive l'exigence.
+    require-admin-mfa: false
   payments:
     # Les autres scénarios confirment des rendez-vous payants sans passer par la caisse.
     require-payment-to-confirm: false
