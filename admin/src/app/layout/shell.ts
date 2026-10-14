@@ -58,6 +58,7 @@ export class ShellComponent {
     { path: '/reviews', icon: 'lucideStar', label: 'nav.reviews', levels: ['SUPER', 'SUPPORT'] },
     { path: '/partners', icon: 'lucideHandshake', label: 'nav.partners', levels: ['SUPER', 'SUPPORT'] },
     { path: '/access-logs', icon: 'lucideShieldCheck', label: 'nav.accessLogs', levels: ['SUPER'] },
+    { path: '/audit', icon: 'lucideScrollText', label: 'nav.audit', levels: ['SUPER'] },
   ];
 
   /** Entrées de menu visibles pour le niveau d'administration connecté. */

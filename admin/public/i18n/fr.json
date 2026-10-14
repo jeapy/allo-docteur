@@ -10,6 +10,7 @@
     "professionals": "Professionnels",
     "appointments": "Rendez-vous",
     "accessLogs": "Journal d'accès médical",
+    "audit": "Journal d'audit",
     "sos": "Urgences SOS",
     "pharmacies": "Pharmacies",
     "finance": "Paiements et retraits",
@@ -193,6 +194,20 @@
     "recordId": "Identifiant du dossier",
     "actorId": "Identifiant de l'intervenant",
     "empty": "Aucun accès enregistré."
+  },
+  "audit": {
+    "title": "Journal d'audit",
+    "hint": "Actions d'administration et événements de sécurité, en ajout seul : aucune entrée ne peut être modifiée ni supprimée.",
+    "date": "Date",
+    "actor": "Acteur",
+    "action": "Action",
+    "target": "Cible",
+    "details": "Détails",
+    "ip": "Adresse IP",
+    "targetId": "Identifiant de la cible",
+    "actorId": "Identifiant de l'acteur",
+    "system": "Système",
+    "empty": "Aucune entrée dans le journal."
   },
   "accessOutcomes": {
     "GRANTED": "Autorisé",

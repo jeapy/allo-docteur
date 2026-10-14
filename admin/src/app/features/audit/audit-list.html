@@ -1,0 +1,62 @@
+<ui-page-header [title]="'audit.title' | transloco" [subtitle]="'audit.hint' | transloco" />
+
+<div class="ui-filters">
+  <ui-select-field [label]="'audit.action' | transloco" inputId="au-action">
+    <select uiSelect id="au-action" [formControl]="action">
+      <option value="">{{ 'common.all' | transloco }}</option>
+      @for (a of actions(); track a) { <option [value]="a">{{ a }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-field [label]="'audit.targetId' | transloco" inputId="au-target">
+    <input uiInput id="au-target" [formControl]="targetId" autocomplete="off" />
+  </ui-field>
+  <ui-field [label]="'audit.actorId' | transloco" inputId="au-actor">
+    <input uiInput id="au-actor" [formControl]="actorId" autocomplete="off" />
+  </ui-field>
+  <ui-field [label]="'appointments.from' | transloco" inputId="au-from">
+    <input uiInput id="au-from" type="date" [formControl]="from" />
+  </ui-field>
+  <ui-field [label]="'appointments.to' | transloco" inputId="au-to">
+    <input uiInput id="au-to" type="date" [formControl]="to" />
+  </ui-field>
+</div>
+
+@if (loading() && !rows().length) {
+  <ui-table-skeleton />
+} @else {
+  <div class="ui-table-card" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="scroll">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th>{{ 'audit.date' | transloco }}</th>
+            <th>{{ 'audit.actor' | transloco }}</th>
+            <th>{{ 'audit.action' | transloco }}</th>
+            <th>{{ 'audit.target' | transloco }}</th>
+            <th>{{ 'audit.details' | transloco }}</th>
+            <th>{{ 'audit.ip' | transloco }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of rows(); track l.id) {
+            <tr>
+              <td class="whitespace-nowrap">{{ l.createdAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td class="font-medium">{{ l.actorEmail || ('audit.system' | transloco) }}</td>
+              <td><code class="rounded-sm bg-surface-muted px-1.5 py-0.5 text-xs">{{ l.action }}</code></td>
+              <td>
+                @if (l.targetType) {
+                  {{ l.targetType }}<span class="sub">{{ l.targetId }}</span>
+                } @else { — }
+              </td>
+              <td class="max-w-xs break-words">{{ l.details || '—' }}</td>
+              <td>{{ l.ipAddress || '—' }}</td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="6"><ui-empty-state icon="lucideScrollText" [title]="'audit.empty' | transloco" /></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ui-pagination [length]="total()" [pageSize]="query().size" [pageIndex]="query().page" [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />
+  </div>
+}

@@ -147,6 +147,19 @@ export interface AccessLogRow {
   occurredAt: string;
 }
 
+/** Journal d'audit général. */
+export interface AuditRow {
+  id: string;
+  actorId?: string | null;
+  actorEmail?: string | null;
+  action: string;
+  targetType?: string | null;
+  targetId?: string | null;
+  ipAddress?: string | null;
+  details?: string | null;
+  createdAt: string;
+}
+
 export type SosStatus = 'OPEN' | 'ACCEPTED' | 'RESOLVED' | 'CANCELLED';
 export type SosCategory = 'MEDICAL' | 'ACCIDENT' | 'PREGNANCY' | 'CHILD' | 'OTHER';
 

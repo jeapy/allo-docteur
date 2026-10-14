@@ -81,6 +81,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/access-logs/access-logs-list').then((m) => m.AccessLogsListComponent),
       },
       {
+        path: 'audit',
+        canActivate: [levelGuard('SUPER')],
+        loadComponent: () => import('./features/audit/audit-list').then((m) => m.AuditListComponent),
+      },
+      {
         path: 'users',
         loadComponent: () => import('./features/users/users-list').then((m) => m.UsersListComponent),
       },

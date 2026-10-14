@@ -2,7 +2,7 @@ import {
   lucideActivity, lucideArrowDown, lucideArrowLeft, lucideArrowUp, lucideFileText, lucideBanknote, lucideBell, lucideCalendarDays, lucideCheck, lucideChevronDown, lucideChevronLeft,
   lucideChevronRight, lucideChevronsUpDown, lucideCircleAlert, lucideCreditCard, lucideHandshake, lucideHeadset, lucideHeartPulse,
   lucideInbox, lucideLayoutDashboard, lucideLogOut, lucideMenu, lucidePanelLeftClose, lucidePanelLeftOpen,
-  lucidePill, lucideSearch, lucideShieldCheck, lucideSiren, lucideStar, lucideStethoscope, lucideTrendingUp,
+  lucidePill, lucideScrollText, lucideSearch, lucideShieldCheck, lucideSiren, lucideStar, lucideStethoscope, lucideTrendingUp,
   lucideUserRound, lucideUsers, lucideWallet, lucideX,
 } from '@ng-icons/lucide';
 
@@ -11,6 +11,6 @@ export const UI_ICONS = {
   lucideActivity, lucideArrowDown, lucideArrowLeft, lucideArrowUp, lucideFileText, lucideBanknote, lucideBell, lucideCalendarDays, lucideCheck, lucideChevronDown, lucideChevronLeft,
   lucideChevronRight, lucideChevronsUpDown, lucideCircleAlert, lucideCreditCard, lucideHandshake, lucideHeadset, lucideHeartPulse,
   lucideInbox, lucideLayoutDashboard, lucideLogOut, lucideMenu, lucidePanelLeftClose, lucidePanelLeftOpen,
-  lucidePill, lucideSearch, lucideShieldCheck, lucideSiren, lucideStar, lucideStethoscope, lucideTrendingUp,
+  lucidePill, lucideScrollText, lucideSearch, lucideShieldCheck, lucideSiren, lucideStar, lucideStethoscope, lucideTrendingUp,
   lucideUserRound, lucideUsers, lucideWallet, lucideX,
 };
