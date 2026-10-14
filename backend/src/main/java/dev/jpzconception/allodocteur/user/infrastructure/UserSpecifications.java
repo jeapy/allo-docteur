@@ -19,8 +19,8 @@ public final class UserSpecifications {
                 String like = "%" + escape(q.trim().toLowerCase()) + "%";
                 predicates.add(cb.or(
                         cb.like(cb.lower(root.get("email")), like, '\\'),
-                        cb.like(cb.lower(cb.coalesce(root.<String>get("firstName"), "")), like, '\\'),
-                        cb.like(cb.lower(cb.coalesce(root.<String>get("lastName"), "")), like, '\\')));
+                        cb.like(cb.lower(root.<String>get("firstName")), like, '\\'),
+                        cb.like(cb.lower(root.<String>get("lastName")), like, '\\')));
             }
             if (role != null) predicates.add(cb.equal(root.get("role"), role));
             if (status != null) predicates.add(cb.equal(root.get("status"), status));
