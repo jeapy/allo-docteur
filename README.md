@@ -9,7 +9,7 @@ Clinique virtuelle de soins à domicile : API Spring Boot + administration Angul
 | `backend/` Spring Boot 3.5.6 / Java 21 | Phases 1-2 (auth, utilisateurs, audit, référentiels, professionnels, recherche, validation admin) : `mvn verify` OK sur le poste du développeur. Phase 3 (patients, rendez-vous, téléconsultation, messagerie, documents) Phase 4 (consentement, dossier médical, carnet de santé, journal d'accès, ordonnances) Phase 5 (SOS, pharmacies, livraison) et Phase 6 (paiements, portefeuille, commissions, abonnements) et Phase 7 (notifications, avis, réclamations, partenaires) : **écrites, pas encore compilées ni testées** |
 | Docker / CI | `docker-compose.yml`, `Makefile`, GitHub Actions – non exécutés |
 
-Design system de l'administration (tokens, composants, plan de migration Material → Spartan) : `docs/design-system.md`.
+Design system de l'administration (tokens, composants, migration Material → Spartan terminée) : `docs/design-system.md`.
 
 Contrats d'API : `docs/api-contract-phase1.md`, `docs/api-contract-phase2.md`, `docs/api-contract-phase3.md`, `docs/api-contract-phase4.md`, `docs/api-contract-phase5.md`, `docs/api-contract-phase6.md`, `docs/api-contract-phase7.md`. Swagger : `/swagger-ui.html`.
 
