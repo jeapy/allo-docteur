@@ -1,8 +1,8 @@
 import { HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TranslocoService } from '@jsverse/transloco';
 import { catchError, switchMap, throwError } from 'rxjs';
+import { ToastService } from '../shared/ui/toast';
 import { AuthService } from './auth.service';
 import { API_BASE_URL } from './config';
 import { ProblemDetail } from './models';
@@ -41,13 +41,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next: HttpHandlerFn) => 
 
 /** Affiche une notification pour les erreurs API (ProblemDetail), sauf 401 gérés ailleurs. */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const snack = inject(MatSnackBar);
+  const toast = inject(ToastService);
   const i18n = inject(TranslocoService);
   const base = inject(API_BASE_URL);
   return next(req).pipe(
     catchError((err: unknown) => {
       if (err instanceof HttpErrorResponse && req.url.startsWith(base) && err.status !== 401) {
-        snack.open(messageFor(err, i18n), undefined, { duration: 5000 });
+        toast.error(messageFor(err, i18n));
       }
       return throwError(() => err);
     }),

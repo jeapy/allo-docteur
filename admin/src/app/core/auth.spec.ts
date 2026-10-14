@@ -2,7 +2,7 @@ import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ToastService } from '../shared/ui/toast';
 import { TranslocoService } from '@jsverse/transloco';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { AuthService } from './auth.service';
@@ -23,7 +23,7 @@ describe('Auth', () => {
         provideRouter([{ path: 'login', children: [] }]),
         provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
         provideHttpClientTesting(),
-        { provide: MatSnackBar, useValue: { open: vi.fn() } },
+        { provide: ToastService, useValue: { error: vi.fn(), success: vi.fn(), info: vi.fn() } },
         { provide: TranslocoService, useValue: { translate: (k: string) => k } },
       ],
     });
@@ -85,10 +85,10 @@ describe('Auth', () => {
     expect(auth.isAuthenticated()).toBe(false);
   });
 
-  it('affiche le detail ProblemDetail via la snackbar', () => {
-    const snack = TestBed.inject(MatSnackBar);
+  it('affiche le detail ProblemDetail via un toast', () => {
+    const toast = TestBed.inject(ToastService);
     client.get(`${API}/admin/users`).subscribe({ error: () => undefined });
     http.expectOne(`${API}/admin/users`).flush({ detail: 'Boom' }, { status: 400, statusText: 'Bad Request' });
-    expect(snack.open).toHaveBeenCalledWith('Boom', undefined, { duration: 5000 });
+    expect(toast.error).toHaveBeenCalledWith('Boom');
   });
 });
