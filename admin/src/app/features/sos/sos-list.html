@@ -1,67 +1,69 @@
-<h1>{{ 'sos.title' | transloco }}</h1>
-<p class="hint">{{ 'sos.hint' | transloco }}</p>
-<div class="summary" role="status" aria-live="polite">
-  <div class="tile" [class.alert]="summary().open > 0">
-    <span class="value">{{ summary().open }}</span>
-    <span class="label">{{ 'sos.openCount' | transloco }}</span>
-  </div>
-  <div class="tile">
-    <span class="value">{{ summary().accepted }}</span>
-    <span class="label">{{ 'sos.acceptedCount' | transloco }}</span>
-  </div>
-</div>
-<div class="filters">
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'sos.status' | transloco }}</mat-label>
-    <mat-select [formControl]="status" multiple>
-      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'sosStatuses.' + s | transloco }}</mat-option> }
-    </mat-select>
-  </mat-form-field>
+<ui-page-header [title]="'sos.title' | transloco" [subtitle]="'sos.hint' | transloco" />
+
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:max-w-2xl" role="status" aria-live="polite">
+  <ui-stat-card [label]="'sos.openCount' | transloco" icon="lucideSiren" [value]="summary().open" [alert]="summary().open > 0" />
+  <ui-stat-card [label]="'sos.acceptedCount' | transloco" icon="lucideActivity" [value]="summary().accepted" />
 </div>
 
-@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
-<div class="table-wrap">
-  <table mat-table [dataSource]="rows()">
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef>{{ 'sos.date' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">{{ a.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="category">
-      <th mat-header-cell *matHeaderCellDef>{{ 'sos.category' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">{{ 'sosCategories.' + a.category | transloco }}</td>
-    </ng-container>
-    <ng-container matColumnDef="patient">
-      <th mat-header-cell *matHeaderCellDef>{{ 'sos.patient' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">{{ a.patientName }}</td>
-    </ng-container>
-    <ng-container matColumnDef="city">
-      <th mat-header-cell *matHeaderCellDef>{{ 'sos.city' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">{{ a.city || '—' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="professional">
-      <th mat-header-cell *matHeaderCellDef>{{ 'sos.professional' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">{{ a.professional?.name || '—' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>{{ 'sos.status' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">
-        <span [class.waiting]="a.status === 'OPEN'">{{ 'sosStatuses.' + a.status | transloco }}</span>
-        <div class="sub">
-          @if (a.status === 'OPEN') { {{ 'sos.waiting' | transloco: { minutes: a.waitingMinutes } }} }
-          @else if (a.cancelReason) { {{ a.cancelReason }} }
-        </div>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let a">
-        @if (cancellable(a)) { <button mat-button (click)="cancel(a)">{{ 'sos.cancel' | transloco }}</button> }
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns"></tr>
-    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'sos.empty' | transloco }}</td></tr>
-  </table>
-</div>
-<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
-  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+<fieldset class="m-0 mb-4 flex flex-wrap items-center gap-2 border-0 p-0">
+  <legend class="mb-2 p-0 text-sm font-medium text-muted">{{ 'sos.status' | transloco }}</legend>
+  @for (s of statuses; track s) {
+    <button type="button" [attr.aria-pressed]="isSelected(s)" (click)="toggleStatus(s)"
+      class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-full border px-4 text-sm font-medium transition-colors duration-150 ease-ds"
+      [class.border-primary]="isSelected(s)" [class.bg-primary-soft]="isSelected(s)" [class.text-primary-hover]="isSelected(s)"
+      [class.border-border-strong]="!isSelected(s)" [class.bg-surface]="!isSelected(s)" [class.text-text]="!isSelected(s)">
+      @if (isSelected(s)) { <ng-icon name="lucideCheck" size="14" aria-hidden="true" /> }
+      {{ 'sosStatuses.' + s | transloco }}
+    </button>
+  }
+</fieldset>
+
+@if (loading() && !rows().length) {
+  <ui-table-skeleton />
+} @else {
+  <div class="ui-table-card" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="scroll">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th>{{ 'sos.date' | transloco }}</th>
+            <th>{{ 'sos.category' | transloco }}</th>
+            <th>{{ 'sos.patient' | transloco }}</th>
+            <th>{{ 'sos.city' | transloco }}</th>
+            <th>{{ 'sos.professional' | transloco }}</th>
+            <th>{{ 'sos.status' | transloco }}</th>
+            <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of rows(); track a.id) {
+            <tr>
+              <td class="whitespace-nowrap">{{ a.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ 'sosCategories.' + a.category | transloco }}</td>
+              <td class="font-medium">{{ a.patientName }}</td>
+              <td>{{ a.city || '—' }}</td>
+              <td>{{ a.professional?.name || '—' }}</td>
+              <td>
+                <ui-badge [tone]="a.status === 'OPEN' ? 'danger' : tone(a.status)">{{ 'sosStatuses.' + a.status | transloco }}</ui-badge>
+                <span class="sub">
+                  @if (a.status === 'OPEN') { {{ 'sos.waiting' | transloco: { minutes: a.waitingMinutes } }} }
+                  @else if (a.cancelReason) { {{ a.cancelReason }} }
+                </span>
+              </td>
+              <td>
+                <div class="ui-row-actions">
+                  @if (cancellable(a)) {
+                    <button uiBtn variant="outline" size="sm" type="button" (click)="cancel(a)">{{ 'sos.cancel' | transloco }}</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="7"><ui-empty-state icon="lucideSiren" [title]="'sos.empty' | transloco" /></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ui-pagination [length]="total()" [pageSize]="query().size" [pageIndex]="query().page" (page)="onPage($event)" />
+  </div>
+}

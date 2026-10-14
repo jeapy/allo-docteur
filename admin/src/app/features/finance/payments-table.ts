@@ -2,15 +2,8 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, DestroyRef, computed, inject, output, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageChange, ToastService, UiBadge, UiButton, UiDialog, UiEmptyState, UiPagination, UiSelect, UiSelectField, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { Observable, catchError, EMPTY, filter, switchMap } from 'rxjs';
 import { PayableType, PaymentMethod, PaymentRow, PaymentStatus } from '../../core/models';
 import { ReasonDialogComponent } from '../professionals/reason-dialog';
@@ -20,23 +13,21 @@ import { FinanceService, PaymentQuery } from './finance.service';
 @Component({
   selector: 'app-payments-table',
   imports: [
-    ReactiveFormsModule, DatePipe, DecimalPipe, MatTableModule, MatPaginatorModule, MatFormFieldModule,
-    MatSelectModule, MatButtonModule, MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, DecimalPipe, TranslocoPipe, UiSelectField, UiSelect, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './payments-table.html',
-  styleUrl: './finance.scss',
 })
 export class PaymentsTableComponent {
   private readonly api = inject(FinanceService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
 
   /** Émis après une action qui change les indicateurs (pour rafraîchir les tuiles). */
   readonly changed = output<void>();
 
-  protected readonly columns = ['createdAt', 'type', 'method', 'amount', 'commission', 'status', 'actions'];
+  protected readonly tone = statusTone;
   protected readonly statuses: PaymentStatus[] = ['PENDING', 'CAPTURED', 'RELEASED', 'REFUNDED', 'FAILED'];
   protected readonly methods: PaymentMethod[] = ['MOBILE_MONEY', 'CARD', 'BANK_TRANSFER', 'WALLET'];
   protected readonly types: PayableType[] = ['APPOINTMENT', 'PHARMACY_ORDER', 'SUBSCRIPTION', 'WALLET_TOPUP'];
@@ -75,7 +66,7 @@ export class PaymentsTableComponent {
       .subscribe((type) => this.query.update((q) => ({ ...q, type, page: 0 })));
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.query.update((q) => ({ ...q, page: e.pageIndex, size: e.pageSize }));
   }
 
@@ -97,8 +88,7 @@ export class PaymentsTableComponent {
 
   private askReason(titleKey: string, action: (reason: string) => Observable<PaymentRow>, doneKey: string): void {
     this.dialog
-      .open<ReasonDialogComponent, { titleKey: string }, string>(ReasonDialogComponent, { data: { titleKey } })
-      .afterClosed()
+      .open<string, { titleKey: string }>(ReasonDialogComponent, { titleKey })
       .pipe(
         filter((r): r is string => !!r),
         switchMap((reason) => action(reason)),
@@ -109,7 +99,7 @@ export class PaymentsTableComponent {
   private done(messageKey: string): void {
     this.tick.update((n) => n + 1);
     this.changed.emit();
-    this.snack.open(this.i18n.translate(messageKey), undefined, { duration: 3000 });
+    this.toast.success(this.i18n.translate(messageKey));
   }
 
   private load(q: PaymentQuery) {

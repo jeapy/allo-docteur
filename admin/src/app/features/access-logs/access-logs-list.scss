@@ -1,9 +1,0 @@
-.filters { display: flex; gap: 12px; flex-wrap: wrap; }
-.hint { max-width: 70ch; opacity: 0.8; }
-.table-wrap { overflow-x: auto; }
-table { width: 100%; }
-.empty { padding: 24px; text-align: center; }
-.sub { font-size: 0.8rem; opacity: 0.75; }
-code { font-size: 0.75rem; }
-// le refus doit se distinguer sans reposer sur la seule couleur (le texte l'indique aussi)
-.denied { font-weight: 600; text-decoration: underline; }

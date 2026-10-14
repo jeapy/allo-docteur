@@ -1,68 +1,61 @@
-<h1>{{ 'accessLogs.title' | transloco }}</h1>
-<p class="hint">{{ 'accessLogs.hint' | transloco }}</p>
-<div class="filters">
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'accessLogs.outcome' | transloco }}</mat-label>
-    <mat-select [formControl]="outcome">
-      <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
-      @for (o of outcomes; track o) { <mat-option [value]="o">{{ 'accessOutcomes.' + o | transloco }}</mat-option> }
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'accessLogs.recordId' | transloco }}</mat-label>
-    <input matInput [formControl]="recordId" autocomplete="off" />
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'accessLogs.actorId' | transloco }}</mat-label>
-    <input matInput [formControl]="actorId" autocomplete="off" />
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'appointments.from' | transloco }}</mat-label>
-    <input matInput type="date" [formControl]="from" />
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'appointments.to' | transloco }}</mat-label>
-    <input matInput type="date" [formControl]="to" />
-  </mat-form-field>
+<ui-page-header [title]="'accessLogs.title' | transloco" [subtitle]="'accessLogs.hint' | transloco" />
+
+<div class="ui-filters">
+  <ui-select-field [label]="'accessLogs.outcome' | transloco" inputId="al-outcome">
+    <select uiSelect id="al-outcome" [formControl]="outcome">
+      <option value="">{{ 'common.all' | transloco }}</option>
+      @for (o of outcomes; track o) { <option [value]="o">{{ 'accessOutcomes.' + o | transloco }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-field [label]="'accessLogs.recordId' | transloco" inputId="al-record">
+    <input uiInput id="al-record" [formControl]="recordId" autocomplete="off" />
+  </ui-field>
+  <ui-field [label]="'accessLogs.actorId' | transloco" inputId="al-actor">
+    <input uiInput id="al-actor" [formControl]="actorId" autocomplete="off" />
+  </ui-field>
+  <ui-field [label]="'appointments.from' | transloco" inputId="al-from">
+    <input uiInput id="al-from" type="date" [formControl]="from" />
+  </ui-field>
+  <ui-field [label]="'appointments.to' | transloco" inputId="al-to">
+    <input uiInput id="al-to" type="date" [formControl]="to" />
+  </ui-field>
 </div>
 
-@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
-<div class="table-wrap">
-  <table mat-table [dataSource]="rows()">
-    <ng-container matColumnDef="occurredAt">
-      <th mat-header-cell *matHeaderCellDef>{{ 'accessLogs.date' | transloco }}</th>
-      <td mat-cell *matCellDef="let l">{{ l.occurredAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="actor">
-      <th mat-header-cell *matHeaderCellDef>{{ 'accessLogs.actor' | transloco }}</th>
-      <td mat-cell *matCellDef="let l">
-        {{ l.actorName }}
-        <div class="sub">{{ 'roles.' + l.actorRole | transloco }}</div>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>{{ 'accessLogs.action' | transloco }}</th>
-      <td mat-cell *matCellDef="let l">{{ 'accessActions.' + l.action | transloco }}</td>
-    </ng-container>
-    <ng-container matColumnDef="outcome">
-      <th mat-header-cell *matHeaderCellDef>{{ 'accessLogs.outcome' | transloco }}</th>
-      <td mat-cell *matCellDef="let l">
-        <span [class.denied]="l.outcome === 'DENIED'">{{ 'accessOutcomes.' + l.outcome | transloco }}</span>
-        @if (l.reason) { <div class="sub">{{ 'accessReasons.' + l.reason | transloco }}</div> }
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="record">
-      <th mat-header-cell *matHeaderCellDef>{{ 'accessLogs.record' | transloco }}</th>
-      <td mat-cell *matCellDef="let l"><code>{{ l.recordId }}</code></td>
-    </ng-container>
-    <ng-container matColumnDef="ip">
-      <th mat-header-cell *matHeaderCellDef>{{ 'accessLogs.ip' | transloco }}</th>
-      <td mat-cell *matCellDef="let l">{{ l.ipAddress || '—' }}</td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns"></tr>
-    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'accessLogs.empty' | transloco }}</td></tr>
-  </table>
-</div>
-<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
-  [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />
+@if (loading() && !rows().length) {
+  <ui-table-skeleton />
+} @else {
+  <div class="ui-table-card" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="scroll">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th>{{ 'accessLogs.date' | transloco }}</th>
+            <th>{{ 'accessLogs.actor' | transloco }}</th>
+            <th>{{ 'accessLogs.action' | transloco }}</th>
+            <th>{{ 'accessLogs.outcome' | transloco }}</th>
+            <th>{{ 'accessLogs.record' | transloco }}</th>
+            <th>{{ 'accessLogs.ip' | transloco }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (l of rows(); track l.id) {
+            <tr>
+              <td class="whitespace-nowrap">{{ l.occurredAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td class="font-medium">{{ l.actorName }}<span class="sub font-normal">{{ 'roles.' + l.actorRole | transloco }}</span></td>
+              <td>{{ 'accessActions.' + l.action | transloco }}</td>
+              <td>
+                <ui-badge [tone]="tone(l.outcome)">{{ 'accessOutcomes.' + l.outcome | transloco }}</ui-badge>
+                @if (l.reason) { <span class="sub">{{ 'accessReasons.' + l.reason | transloco }}</span> }
+              </td>
+              <td><code class="rounded-sm bg-surface-muted px-1.5 py-0.5 text-xs">{{ l.recordId }}</code></td>
+              <td>{{ l.ipAddress || '—' }}</td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="6"><ui-empty-state icon="lucideShieldCheck" [title]="'accessLogs.empty' | transloco" /></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ui-pagination [length]="total()" [pageSize]="query().size" [pageIndex]="query().page" [pageSizeOptions]="[10, 20, 50, 100]" (page)="onPage($event)" />
+  </div>
+}

@@ -2,15 +2,9 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
+import { NgIcon } from '@ng-icons/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageChange, ToastService, UiBadge, UiButton, UiDialog, UiEmptyState, UiPageHeader, UiPagination, UiStatCard, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { catchError, EMPTY, filter, interval, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { SosAlertRow, SosStatus, SosSummary } from '../../core/models';
@@ -21,21 +15,19 @@ import { SosQuery, SosService } from './sos.service';
 @Component({
   selector: 'app-sos-list',
   imports: [
-    ReactiveFormsModule, DatePipe, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatSelectModule,
-    MatButtonModule, MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, TranslocoPipe, NgIcon, UiStatCard, UiPageHeader, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './sos-list.html',
-  styleUrl: './sos-list.scss',
 })
 export class SosListComponent {
   private readonly api = inject(SosService);
   private readonly auth = inject(AuthService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['createdAt', 'category', 'patient', 'city', 'professional', 'status', 'actions'];
+  protected readonly tone = statusTone;
   protected readonly statuses: SosStatus[] = ['OPEN', 'ACCEPTED', 'RESOLVED', 'CANCELLED'];
   protected readonly status = new FormControl<SosStatus[]>(['OPEN', 'ACCEPTED'], { nonNullable: true });
 
@@ -76,8 +68,17 @@ export class SosListComponent {
       .subscribe((status) => this.query.update((q) => ({ ...q, status, page: 0 })));
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.query.update((q) => ({ ...q, page: e.pageIndex, size: e.pageSize }));
+  }
+
+  protected isSelected(s: SosStatus): boolean {
+    return this.status.value.includes(s);
+  }
+
+  protected toggleStatus(s: SosStatus): void {
+    const cur = this.status.value;
+    this.status.setValue(cur.includes(s) ? cur.filter((x) => x !== s) : [...cur, s]);
   }
 
   protected cancellable(a: SosAlertRow): boolean {
@@ -86,17 +87,14 @@ export class SosListComponent {
 
   protected cancel(a: SosAlertRow): void {
     this.dialog
-      .open<ReasonDialogComponent, { titleKey: string }, string>(ReasonDialogComponent, {
-        data: { titleKey: 'sos.cancelTitle' },
-      })
-      .afterClosed()
+      .open<string, { titleKey: string }>(ReasonDialogComponent, { titleKey: 'sos.cancelTitle' })
       .pipe(
         filter((r): r is string => !!r),
         switchMap((reason) => this.api.cancel(a.id, reason)),
       )
       .subscribe(() => {
         this.tick.update((n) => n + 1);
-        this.snack.open(this.i18n.translate('sos.cancelled'), undefined, { duration: 3000 });
+        this.toast.success(this.i18n.translate('sos.cancelled'));
       });
   }
 

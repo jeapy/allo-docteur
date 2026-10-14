@@ -2,13 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { PageChange, UiBadge, UiEmptyState, UiField, UiInput, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { catchError, debounceTime, EMPTY, switchMap } from 'rxjs';
 import { AccessLogRow, AccessOutcome } from '../../core/models';
 import { AccessLogQuery, AccessLogsService } from './access-logs.service';
@@ -17,17 +12,15 @@ import { AccessLogQuery, AccessLogsService } from './access-logs.service';
 @Component({
   selector: 'app-access-logs-list',
   imports: [
-    ReactiveFormsModule, DatePipe, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatInputModule,
-    MatSelectModule, MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, TranslocoPipe, UiPageHeader, UiField, UiInput, UiSelectField, UiSelect, UiTable, UiBadge, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './access-logs-list.html',
-  styleUrl: './access-logs-list.scss',
 })
 export class AccessLogsListComponent {
   private readonly api = inject(AccessLogsService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['occurredAt', 'actor', 'action', 'outcome', 'record', 'ip'];
+  protected readonly tone = statusTone;
   protected readonly outcomes: AccessOutcome[] = ['GRANTED', 'DENIED'];
 
   protected readonly outcome = new FormControl<AccessOutcome | ''>('', { nonNullable: true });
@@ -79,7 +72,7 @@ export class AccessLogsListComponent {
     });
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.patch({ page: e.pageIndex, size: e.pageSize });
   }
 

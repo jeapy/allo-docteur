@@ -1,56 +1,56 @@
-<div class="filters">
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'finance.status' | transloco }}</mat-label>
-    <mat-select [formControl]="status">
-      <mat-option [value]="null">{{ 'common.all' | transloco }}</mat-option>
-      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'withdrawalStatuses.' + s | transloco }}</mat-option> }
-    </mat-select>
-  </mat-form-field>
+<div class="ui-filters">
+  <ui-select-field [label]="'finance.status' | transloco" inputId="wd-status">
+    <select uiSelect id="wd-status" [formControl]="status">
+      <option [ngValue]="null">{{ 'common.all' | transloco }}</option>
+      @for (s of statuses; track s) { <option [ngValue]="s">{{ 'withdrawalStatuses.' + s | transloco }}</option> }
+    </select>
+  </ui-select-field>
 </div>
 
-@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
-<div class="table-wrap">
-  <table mat-table [dataSource]="rows()">
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef>{{ 'finance.date' | transloco }}</th>
-      <td mat-cell *matCellDef="let w">{{ w.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="user">
-      <th mat-header-cell *matHeaderCellDef>{{ 'finance.professional' | transloco }}</th>
-      <td mat-cell *matCellDef="let w"><span class="sub">{{ w.userId }}</span></td>
-    </ng-container>
-    <ng-container matColumnDef="method">
-      <th mat-header-cell *matHeaderCellDef>{{ 'finance.method' | transloco }}</th>
-      <td mat-cell *matCellDef="let w">{{ 'paymentMethods.' + w.method | transloco }}</td>
-    </ng-container>
-    <ng-container matColumnDef="destination">
-      <th mat-header-cell *matHeaderCellDef>{{ 'finance.destination' | transloco }}</th>
-      <td mat-cell *matCellDef="let w">{{ w.destination }}</td>
-    </ng-container>
-    <ng-container matColumnDef="amount">
-      <th mat-header-cell *matHeaderCellDef class="num">{{ 'finance.amount' | transloco }}</th>
-      <td mat-cell *matCellDef="let w" class="num">{{ w.amount | number: '1.0-0' }} {{ w.currency }}</td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>{{ 'finance.status' | transloco }}</th>
-      <td mat-cell *matCellDef="let w">
-        {{ 'withdrawalStatuses.' + w.status | transloco }}
-        @if (w.rejectReason) { <div class="sub">{{ w.rejectReason }}</div> }
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let w">
-        @if (w.status === 'REQUESTED') {
-          <button mat-button (click)="pay(w)">{{ 'finance.pay' | transloco }}</button>
-          <button mat-button (click)="reject(w)">{{ 'finance.reject' | transloco }}</button>
-        }
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns"></tr>
-    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'finance.emptyWithdrawals' | transloco }}</td></tr>
-  </table>
-</div>
-<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
-  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+@if (loading() && !rows().length) {
+  <ui-table-skeleton />
+} @else {
+  <div class="ui-table-card" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="scroll">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th>{{ 'finance.date' | transloco }}</th>
+            <th>{{ 'finance.professional' | transloco }}</th>
+            <th>{{ 'finance.method' | transloco }}</th>
+            <th>{{ 'finance.destination' | transloco }}</th>
+            <th class="num">{{ 'finance.amount' | transloco }}</th>
+            <th>{{ 'finance.status' | transloco }}</th>
+            <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (w of rows(); track w.id) {
+            <tr>
+              <td class="whitespace-nowrap">{{ w.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td><span class="sub">{{ w.userId }}</span></td>
+              <td>{{ 'paymentMethods.' + w.method | transloco }}</td>
+              <td>{{ w.destination }}</td>
+              <td class="num">{{ w.amount | number: '1.0-0' }} {{ w.currency }}</td>
+              <td>
+                <ui-badge [tone]="tone(w.status)">{{ 'withdrawalStatuses.' + w.status | transloco }}</ui-badge>
+                @if (w.rejectReason) { <span class="sub">{{ w.rejectReason }}</span> }
+              </td>
+              <td>
+                <div class="ui-row-actions">
+                  @if (w.status === 'REQUESTED') {
+                    <button uiBtn variant="secondary" size="sm" type="button" (click)="pay(w)">{{ 'finance.pay' | transloco }}</button>
+                    <button uiBtn variant="outline" size="sm" type="button" (click)="reject(w)">{{ 'finance.reject' | transloco }}</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="7"><ui-empty-state icon="lucideBanknote" [title]="'finance.emptyWithdrawals' | transloco" /></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ui-pagination [length]="total()" [pageSize]="query().size" [pageIndex]="query().page" (page)="onPage($event)" />
+  </div>
+}

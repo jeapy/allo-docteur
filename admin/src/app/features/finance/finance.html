@@ -1,42 +1,25 @@
-<h1>{{ 'finance.title' | transloco }}</h1>
-<p class="hint">{{ 'finance.hint' | transloco }}</p>
-@if (summary(); as s) {
-  <div class="summary" role="status" aria-live="polite">
-    <div class="tile">
-      <span class="value">{{ s.volume | number: '1.0-0' }}</span>
-      <span class="label">{{ 'finance.volume' | transloco }} ({{ s.currency }})</span>
-    </div>
-    <div class="tile">
-      <span class="value">{{ s.commissions | number: '1.0-0' }}</span>
-      <span class="label">{{ 'finance.commissions' | transloco }}</span>
-    </div>
-    <div class="tile">
-      <span class="value">{{ s.subscriptionRevenue | number: '1.0-0' }}</span>
-      <span class="label">{{ 'finance.subscriptionRevenue' | transloco }}</span>
-    </div>
-    <div class="tile">
-      <span class="value">{{ s.escrow | number: '1.0-0' }}</span>
-      <span class="label">{{ 'finance.escrow' | transloco }}</span>
-    </div>
-    <div class="tile">
-      <span class="value">{{ s.refunded | number: '1.0-0' }}</span>
-      <span class="label">{{ 'finance.refundedTotal' | transloco }}</span>
-    </div>
-    <div class="tile" [class.alert]="s.pendingWithdrawals > 0">
-      <span class="value">{{ s.pendingWithdrawals }}</span>
-      <span class="label">{{ 'finance.pendingWithdrawals' | transloco }} ({{ s.pendingWithdrawalsAmount | number: '1.0-0' }})</span>
-    </div>
-    <div class="tile" [class.alert]="s.pendingPayments > 0">
-      <span class="value">{{ s.pendingPayments }}</span>
-      <span class="label">{{ 'finance.pendingPayments' | transloco }}</span>
-    </div>
-  </div>
-}
-<mat-tab-group>
-  <mat-tab [label]="'finance.tabPayments' | transloco">
+<ui-page-header [title]="'finance.title' | transloco" [subtitle]="'finance.hint' | transloco" />
+
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" role="status" aria-live="polite" [attr.aria-busy]="!summary()">
+  @if (summary(); as s) {
+    <ui-stat-card icon="lucideTrendingUp" [label]="('finance.volume' | transloco) + ' (' + s.currency + ')'" [value]="s.volume | number: '1.0-0'" />
+    <ui-stat-card icon="lucideWallet" [label]="'finance.commissions' | transloco" [value]="s.commissions | number: '1.0-0'" />
+    <ui-stat-card icon="lucideCreditCard" [label]="'finance.subscriptionRevenue' | transloco" [value]="s.subscriptionRevenue | number: '1.0-0'" />
+    <ui-stat-card icon="lucideShieldCheck" [label]="'finance.escrow' | transloco" [value]="s.escrow | number: '1.0-0'" />
+    <ui-stat-card icon="lucideBanknote" [label]="'finance.refundedTotal' | transloco" [value]="s.refunded | number: '1.0-0'" />
+    <ui-stat-card icon="lucideBanknote" [label]="'finance.pendingWithdrawals' | transloco" [value]="s.pendingWithdrawals"
+      [hint]="s.pendingWithdrawalsAmount | number: '1.0-0'" [alert]="s.pendingWithdrawals > 0" />
+    <ui-stat-card icon="lucideCircleAlert" [label]="'finance.pendingPayments' | transloco" [value]="s.pendingPayments" [alert]="s.pendingPayments > 0" />
+  } @else {
+    @for (i of [1, 2, 3, 4]; track i) { <ui-stat-card label="…" [loading]="true" /> }
+  }
+</div>
+
+<ui-tabs class="mt-8" [tabs]="tabs()" [(active)]="tab" />
+<div class="mt-4" role="tabpanel" [attr.aria-labelledby]="'tab-' + tab()">
+  @if (tab() === 'payments') {
     <app-payments-table (changed)="refresh()" />
-  </mat-tab>
-  <mat-tab [label]="'finance.tabWithdrawals' | transloco">
+  } @else {
     <app-withdrawals-table (changed)="refresh()" />
-  </mat-tab>
-</mat-tab-group>
+  }
+</div>
