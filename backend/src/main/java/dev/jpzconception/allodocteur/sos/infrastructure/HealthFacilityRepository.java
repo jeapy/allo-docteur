@@ -13,6 +13,16 @@ public interface HealthFacilityRepository extends JpaRepository<HealthFacility, 
 
     List<HealthFacility> findByActiveTrueAndEmergencyServiceTrue();
 
+    /** Structures d'urgence actives dans un rectangle (index ix_facilities_geo). */
+    @Query("""
+            select f from HealthFacility f
+            where f.active = true and f.emergencyService = true
+              and f.latitude between :minLat and :maxLat and f.longitude between :minLon and :maxLon""")
+    List<HealthFacility> findEmergencyInBox(@Param("minLat") java.math.BigDecimal minLat,
+                                            @Param("maxLat") java.math.BigDecimal maxLat,
+                                            @Param("minLon") java.math.BigDecimal minLon,
+                                            @Param("maxLon") java.math.BigDecimal maxLon);
+
     @Query("select f from HealthFacility f where (:activeOnly = false or f.active = true)")
     Page<HealthFacility> search(@Param("activeOnly") boolean activeOnly, Pageable pageable);
 

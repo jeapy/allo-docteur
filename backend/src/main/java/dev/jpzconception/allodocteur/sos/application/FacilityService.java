@@ -7,6 +7,7 @@ import dev.jpzconception.allodocteur.reference.infrastructure.CityRepository;
 import dev.jpzconception.allodocteur.reference.infrastructure.DistrictRepository;
 import dev.jpzconception.allodocteur.shared.error.ApiException;
 import dev.jpzconception.allodocteur.shared.geo.GeolocationProvider;
+import dev.jpzconception.allodocteur.shared.geo.NearestSearch;
 import dev.jpzconception.allodocteur.sos.api.SosDtos.FacilityDto;
 import dev.jpzconception.allodocteur.sos.api.SosDtos.FacilityRequest;
 import dev.jpzconception.allodocteur.sos.domain.HealthFacility;
@@ -49,15 +50,13 @@ public class FacilityService {
     /** Structures d'urgence actives les plus proches d'une position, de la plus proche à la plus éloignée. */
     @Transactional(readOnly = true)
     public List<FacilityDto> nearest(BigDecimal latitude, BigDecimal longitude, int limit) {
-        List<HealthFacility> all = facilities.findByActiveTrueAndEmergencyServiceTrue();
-        record Scored(HealthFacility f, double km) {}
-        List<Scored> ranked = all.stream()
-                .map(f -> new Scored(f, geo.distanceKm(latitude, longitude, f.getLatitude(), f.getLongitude())))
-                .sorted(Comparator.comparingDouble(Scored::km).thenComparing(s -> s.f().getName()))
-                .limit(Math.max(limit, 1))
-                .toList();
-        Names names = names(ranked.stream().map(Scored::f).toList());
-        return ranked.stream().map(s -> toDto(s.f(), names, Math.round(s.km() * 10.0) / 10.0)).toList();
+        var ranked = NearestSearch.nearest(latitude, longitude, limit, geo,
+                b -> facilities.findEmergencyInBox(b.minLat(), b.maxLat(), b.minLon(), b.maxLon()),
+                facilities::findByActiveTrueAndEmergencyServiceTrue,
+                HealthFacility::getLatitude, HealthFacility::getLongitude,
+                Comparator.comparing(HealthFacility::getName));
+        Names names = names(ranked.stream().map(NearestSearch.Ranked::item).toList());
+        return ranked.stream().map(r -> toDto(r.item(), names, Math.round(r.km() * 10.0) / 10.0)).toList();
     }
 
     @Transactional(readOnly = true)
