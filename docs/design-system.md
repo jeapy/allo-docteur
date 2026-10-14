@@ -76,3 +76,4 @@ Correspondances : `mat-form-field + matInput → ui-field + uiInput` · `mat-fla
 - Les classes passées à `BrnDialogService` (`panelClass`, `backdropClass`) doivent être un tableau de jetons, pas une chaîne contenant des espaces.
 - `.sr-only` est en `position: absolute` : le cadre du tableau est en `position: relative`, sinon ces éléments débordent hors du conteneur défilant et créent un défilement horizontal de la page sur mobile.
 - Les pipes `currency`/`date` appelés avec la locale `'fr'` exigent `registerLocaleData(localeFr)` (fait dans `app.config.ts`) ; sans cela, NG0701 interrompait le rendu des écrans rendez-vous et pharmacies.
+- Ouverte sans donnée (création), une modale reçoit de Spartan un objet de contexte **vide**, pas `null` : un formulaire « créer ou modifier » utilise `injectDialogEntity<T>()` (`shared/ui/dialog.ts`) pour distinguer les deux cas, sinon il s'affiche en mode « modifier » à la création.
