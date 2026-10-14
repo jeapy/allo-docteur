@@ -6,4 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SpecialtyRepository extends JpaRepository<Specialty, Integer> {
     List<Specialty> findByActiveTrueOrderByNameFrAsc();
+    boolean existsByCodeIgnoreCase(String code);
+
+    List<Specialty> findAllByOrderByNameFrAsc();
 }

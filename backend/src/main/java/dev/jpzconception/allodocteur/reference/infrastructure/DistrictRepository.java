@@ -6,4 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DistrictRepository extends JpaRepository<District, Integer> {
     List<District> findByActiveTrueOrderByNameAsc();
+    boolean existsByCityIdAndNameIgnoreCase(Integer cityId, String name);
+
+    List<District> findAllByOrderByNameAsc();
+
+    List<District> findByCityIdOrderByNameAsc(Integer cityId);
 }
