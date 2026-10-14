@@ -8,7 +8,7 @@ L'application mobile n'est PAS à réaliser, mais l'API doit être pensée pour 
 ## Stack imposée
 Backend : Java 21, Spring Boot (dernière version stable), Maven, Spring Web, Spring Data JPA (Hibernate), Spring Security (JWT access + refresh token), Bean Validation, PostgreSQL, Flyway (migrations), MapStruct, Lombok, springdoc-openapi (Swagger UI), Spring Boot Actuator.
 Tests backend : JUnit 5, Mockito, Testcontainers (PostgreSQL), MockMvc.
-Admin : Angular (dernière version stable, standalone components, signals), Angular Material, TypeScript strict, RxJS, interceptors HTTP pour le JWT, lazy loading des routes.
+Admin : Angular (dernière version stable, standalone components, signals), Spartan UI + Tailwind CSS 4 (migration depuis Angular Material en cours, voir docs/design-system.md), TypeScript strict, RxJS, interceptors HTTP pour le JWT, lazy loading des routes.
 Infra : Docker + docker-compose (postgres, backend, admin servi par Nginx), fichiers .env.example, Makefile ou scripts utiles.
 
 ## Architecture backend
