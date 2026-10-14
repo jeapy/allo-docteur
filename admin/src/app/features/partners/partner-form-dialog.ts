@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BrnDialogClose, BrnDialogRef, BrnDialogTitle, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
+import { BrnDialogClose, BrnDialogRef, BrnDialogTitle } from '@spartan-ng/brain/dialog';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { UiButton, UiField, UiInput, UiSelect, UiSelectField } from '../../shared/ui';
+import { UiButton, UiField, UiInput, UiSelect, UiSelectField, injectDialogEntity } from '../../shared/ui';
 import { CityRef, PartnerPayload, PartnerRow, PartnerType } from '../../core/models';
 import { PartnersService } from './partners.service';
 
@@ -21,7 +21,7 @@ const PHONE = /^\+?[0-9 ()-]{8,20}$/;
   templateUrl: './partner-form-dialog.html',
 })
 export class PartnerFormDialogComponent {
-  protected readonly existing = injectBrnDialogContext<PartnerRow | null>();
+  protected readonly existing = injectDialogEntity<PartnerRow>();
   private readonly ref = inject<BrnDialogRef<PartnerPayload>>(BrnDialogRef);
   private readonly fb = inject(FormBuilder).nonNullable;
 

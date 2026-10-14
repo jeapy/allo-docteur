@@ -1,5 +1,5 @@
 import { Injectable, ViewContainerRef, inject } from '@angular/core';
-import { BrnDialogRef, BrnDialogService } from '@spartan-ng/brain/dialog';
+import { BrnDialogRef, BrnDialogService, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
 import { ComponentType } from '@angular/cdk/overlay';
 import { Observable, map } from 'rxjs';
 
@@ -30,4 +30,13 @@ export class UiDialog {
     });
     return ref.closed$.pipe(map((r) => r));
   }
+}
+
+/**
+ * Entité passée à un formulaire de création/modification. Lorsqu'on ouvre la modale sans donnée (création),
+ * Spartan fournit un objet de contexte vide plutôt que `null` : on ne le prend pour une entité que s'il a un `id`.
+ */
+export function injectDialogEntity<T extends { id: unknown }>(): T | null {
+  const ctx = injectBrnDialogContext<T | null>();
+  return ctx && typeof ctx === 'object' && 'id' in ctx ? ctx : null;
 }
