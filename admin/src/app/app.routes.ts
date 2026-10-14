@@ -94,6 +94,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/access-logs/access-logs-list').then((m) => m.AccessLogsListComponent),
       },
       {
+        path: 'reference',
+        canActivate: [levelGuard('SUPER')],
+        loadComponent: () => import('./features/reference/reference-list').then((m) => m.ReferenceListComponent),
+      },
+      {
         path: 'audit',
         canActivate: [levelGuard('SUPER')],
         loadComponent: () => import('./features/audit/audit-list').then((m) => m.AuditListComponent),

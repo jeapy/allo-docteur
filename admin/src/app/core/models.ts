@@ -425,3 +425,31 @@ export interface PartnerPayload {
   contactPhone: string | null;
   contractStartDate: string | null;
 }
+
+/** Référentiels gérés par l'administration. */
+export interface DistrictAdmin {
+  id: number;
+  name: string;
+  active: boolean;
+}
+
+export interface CityAdmin {
+  id: number;
+  name: string;
+  countryCode: string;
+  active: boolean;
+  districts: DistrictAdmin[];
+}
+
+export interface SpecialtyAdmin {
+  id: number;
+  code: string;
+  name: string;
+  active: boolean;
+}
+
+export interface ProfessionalTypeAdmin {
+  id: number;
+  code: string;
+  label: string;
+}

@@ -1,0 +1,141 @@
+<ui-page-header [title]="'reference.title' | transloco" [subtitle]="'reference.hint' | transloco" />
+
+<ui-tabs [tabs]="tabs()" [(active)]="tab" class="mb-4" />
+
+@if (tab() === 'cities') {
+  <div role="tabpanel" aria-labelledby="tab-cities">
+    <div class="mb-4 mt-4 flex justify-end"><button uiBtn type="button" (click)="addCity()">{{ 'reference.addCity' | transloco }}</button></div>
+    <div class="ui-table-card">
+      <div class="scroll">
+        <table uiTable>
+          <thead>
+            <tr>
+              <th>{{ 'reference.name' | transloco }}</th>
+              <th>{{ 'reference.districts' | transloco }}</th>
+              <th>{{ 'reference.status' | transloco }}</th>
+              <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of cities(); track c.id) {
+              <tr>
+                <td class="font-medium">{{ c.name }}</td>
+                <td>
+                  <button uiBtn variant="ghost" size="sm" type="button" [attr.aria-expanded]="expanded() === c.id" (click)="toggleCity(c)">
+                    {{ 'reference.districtsCount' | transloco: { count: c.districts.length } }}
+                  </button>
+                </td>
+                <td><ui-badge [tone]="c.active ? 'success' : 'neutral'">{{ (c.active ? 'reference.active' : 'reference.inactive') | transloco }}</ui-badge></td>
+                <td>
+                  <div class="ui-row-actions">
+                    <button uiBtn variant="outline" size="sm" type="button" (click)="renameCity(c)">{{ 'reference.rename' | transloco }}</button>
+                    <button uiBtn variant="ghost" size="sm" type="button" (click)="toggleCityActive(c)">
+                      {{ (c.active ? 'reference.deactivate' : 'reference.activate') | transloco }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              @if (expanded() === c.id) {
+                <tr>
+                  <td colspan="4" class="bg-surface-muted">
+                    <div class="flex flex-col gap-2 py-1">
+                      @for (d of c.districts; track d.id) {
+                        <div class="flex items-center justify-between gap-3">
+                          <span class="flex items-center gap-2 text-sm">
+                            {{ d.name }}
+                            @if (!d.active) { <ui-badge tone="neutral">{{ 'reference.inactive' | transloco }}</ui-badge> }
+                          </span>
+                          <span class="ui-row-actions">
+                            <button uiBtn variant="outline" size="sm" type="button" (click)="renameDistrict(d)">{{ 'reference.rename' | transloco }}</button>
+                            <button uiBtn variant="ghost" size="sm" type="button" (click)="toggleDistrictActive(d)">
+                              {{ (d.active ? 'reference.deactivate' : 'reference.activate') | transloco }}
+                            </button>
+                          </span>
+                        </div>
+                      } @empty {
+                        <span class="text-sm text-muted">{{ 'reference.noDistricts' | transloco }}</span>
+                      }
+                      <div><button uiBtn variant="outline" size="sm" type="button" (click)="addDistrict(c)">{{ 'reference.addDistrict' | transloco }}</button></div>
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr><td colspan="4"><ui-empty-state icon="lucideMapPin" [title]="'reference.empty' | transloco" /></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}
+
+@if (tab() === 'specialties') {
+  <div role="tabpanel" aria-labelledby="tab-specialties">
+    <div class="mb-4 mt-4 flex justify-end"><button uiBtn type="button" (click)="addSpecialty()">{{ 'reference.addSpecialty' | transloco }}</button></div>
+    <div class="ui-table-card">
+      <div class="scroll">
+        <table uiTable>
+          <thead>
+            <tr>
+              <th>{{ 'reference.name' | transloco }}</th>
+              <th>{{ 'reference.code' | transloco }}</th>
+              <th>{{ 'reference.status' | transloco }}</th>
+              <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of specialties(); track s.id) {
+              <tr>
+                <td class="font-medium">{{ s.name }}</td>
+                <td><code class="rounded-sm bg-surface-muted px-1.5 py-0.5 text-xs">{{ s.code }}</code></td>
+                <td><ui-badge [tone]="s.active ? 'success' : 'neutral'">{{ (s.active ? 'reference.active' : 'reference.inactive') | transloco }}</ui-badge></td>
+                <td>
+                  <div class="ui-row-actions">
+                    <button uiBtn variant="outline" size="sm" type="button" (click)="renameSpecialty(s)">{{ 'reference.rename' | transloco }}</button>
+                    <button uiBtn variant="ghost" size="sm" type="button" (click)="toggleSpecialtyActive(s)">
+                      {{ (s.active ? 'reference.deactivate' : 'reference.activate') | transloco }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr><td colspan="4"><ui-empty-state icon="lucideBookOpen" [title]="'reference.empty' | transloco" /></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}
+
+@if (tab() === 'types') {
+  <div role="tabpanel" aria-labelledby="tab-types">
+    <p class="mt-4 text-sm text-muted">{{ 'reference.typesHint' | transloco }}</p>
+    <div class="mb-4 mt-2 flex justify-end"><button uiBtn type="button" (click)="addType()">{{ 'reference.addType' | transloco }}</button></div>
+    <div class="ui-table-card">
+      <div class="scroll">
+        <table uiTable>
+          <thead>
+            <tr>
+              <th>{{ 'reference.name' | transloco }}</th>
+              <th>{{ 'reference.code' | transloco }}</th>
+              <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of types(); track t.id) {
+              <tr>
+                <td class="font-medium">{{ t.label }}</td>
+                <td><code class="rounded-sm bg-surface-muted px-1.5 py-0.5 text-xs">{{ t.code }}</code></td>
+                <td><div class="ui-row-actions"><button uiBtn variant="outline" size="sm" type="button" (click)="renameType(t)">{{ 'reference.rename' | transloco }}</button></div></td>
+              </tr>
+            } @empty {
+              <tr><td colspan="3"><ui-empty-state icon="lucideStethoscope" [title]="'reference.empty' | transloco" /></td></tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}
