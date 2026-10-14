@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config';
-import { CityRef, Page, PharmacyPayload, PharmacyRow } from '../../core/models';
+import { CityRef, Page, PharmacyMember, PharmacyPayload, PharmacyRow } from '../../core/models';
 
 export interface PharmacyQuery {
   page: number;
@@ -33,6 +33,18 @@ export class PharmaciesService {
 
   setActive(id: string, active: boolean): Observable<PharmacyRow> {
     return this.http.post<PharmacyRow>(`${this.base}/admin/pharmacies/${id}/${active ? 'activate' : 'deactivate'}`, {});
+  }
+
+  members(id: string): Observable<PharmacyMember[]> {
+    return this.http.get<PharmacyMember[]>(`${this.base}/admin/pharmacies/${id}/members`);
+  }
+
+  addMember(id: string, userId: string): Observable<void> {
+    return this.http.put<void>(`${this.base}/admin/pharmacies/${id}/members/${userId}`, {});
+  }
+
+  removeMember(id: string, userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.base}/admin/pharmacies/${id}/members/${userId}`);
   }
 
   cities(): Observable<CityRef[]> {

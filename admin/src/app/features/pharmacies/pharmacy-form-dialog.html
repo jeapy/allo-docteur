@@ -10,6 +10,12 @@
       @for (c of cities(); track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
     </select>
   </ui-select-field>
+  <ui-select-field [label]="'pharmacies.district' | transloco" inputId="pm-district">
+    <select uiSelect id="pm-district" formControlName="districtId">
+      <option [ngValue]="null">—</option>
+      @for (d of districts(); track d.id) { <option [ngValue]="d.id">{{ d.name }}</option> }
+    </select>
+  </ui-select-field>
   <ui-field [label]="'pharmacies.phone' | transloco" inputId="pm-phone"
     [error]="form.controls.phone.invalid && form.controls.phone.touched ? ('validation.phone' | transloco) : null">
     <input uiInput id="pm-phone" formControlName="phone" inputmode="tel" required />

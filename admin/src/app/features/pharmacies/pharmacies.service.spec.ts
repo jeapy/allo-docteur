@@ -34,4 +34,13 @@ describe('PharmaciesService', () => {
     svc.setActive('p1', true).subscribe();
     http.expectOne('/api/v1/admin/pharmacies/p1/activate');
   });
+
+  it('gère les pharmaciens rattachés', () => {
+    svc.members('p1').subscribe();
+    expect(http.expectOne('/api/v1/admin/pharmacies/p1/members').request.method).toBe('GET');
+    svc.addMember('p1', 'u9').subscribe();
+    expect(http.expectOne('/api/v1/admin/pharmacies/p1/members/u9').request.method).toBe('PUT');
+    svc.removeMember('p1', 'u9').subscribe();
+    expect(http.expectOne('/api/v1/admin/pharmacies/p1/members/u9').request.method).toBe('DELETE');
+  });
 });

@@ -51,6 +51,7 @@ export class ShellComponent {
     { path: '/professionals', icon: 'lucideStethoscope', label: 'nav.professionals' },
     { path: '/appointments', icon: 'lucideCalendarDays', label: 'nav.appointments' },
     { path: '/sos', icon: 'lucideSiren', label: 'nav.sos' },
+    { path: '/facilities', icon: 'lucideHospital', label: 'nav.facilities' },
     { path: '/pharmacies', icon: 'lucidePill', label: 'nav.pharmacies' },
     { path: '/finance', icon: 'lucideWallet', label: 'nav.finance', levels: ['SUPER', 'FINANCE'] },
     { path: '/subscriptions', icon: 'lucideCreditCard', label: 'nav.subscriptions' },

@@ -1,0 +1,46 @@
+<h2 brnDialogTitle class="m-0 mb-4 text-lg font-semibold text-text">{{ (existing ? 'facilities.edit' : 'facilities.create') | transloco }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <ui-field class="sm:col-span-2" [label]="'facilities.name' | transloco" inputId="fa-name"
+    [error]="form.controls.name.invalid && form.controls.name.touched ? ('validation.required' | transloco) : null">
+    <input uiInput id="fa-name" formControlName="name" maxlength="200" required />
+  </ui-field>
+  <ui-select-field [label]="'facilities.type' | transloco" inputId="fa-type">
+    <select uiSelect id="fa-type" formControlName="type">
+      @for (t of types; track t) { <option [value]="t">{{ 'facilityTypes.' + t | transloco }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-field [label]="'facilities.phone' | transloco" inputId="fa-phone"
+    [error]="form.controls.phone.invalid && form.controls.phone.touched ? ('validation.phone' | transloco) : null">
+    <input uiInput id="fa-phone" formControlName="phone" inputmode="tel" />
+  </ui-field>
+  <ui-select-field [label]="'facilities.city' | transloco" inputId="fa-city">
+    <select uiSelect id="fa-city" formControlName="cityId" required>
+      <option [ngValue]="0" disabled>—</option>
+      @for (c of cities(); track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-select-field [label]="'facilities.district' | transloco" inputId="fa-district">
+    <select uiSelect id="fa-district" formControlName="districtId">
+      <option [ngValue]="null">—</option>
+      @for (d of districts(); track d.id) { <option [ngValue]="d.id">{{ d.name }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-field class="sm:col-span-2" [label]="'facilities.address' | transloco" inputId="fa-address">
+    <input uiInput id="fa-address" formControlName="address" maxlength="255" />
+  </ui-field>
+  <ui-field [label]="'facilities.latitude' | transloco" inputId="fa-lat"
+    [error]="form.controls.latitude.invalid && form.controls.latitude.touched ? ('validation.range' | transloco) : null">
+    <input uiInput id="fa-lat" type="number" step="0.000001" formControlName="latitude" required />
+  </ui-field>
+  <ui-field [label]="'facilities.longitude' | transloco" inputId="fa-lng"
+    [error]="form.controls.longitude.invalid && form.controls.longitude.touched ? ('validation.range' | transloco) : null">
+    <input uiInput id="fa-lng" type="number" step="0.000001" formControlName="longitude" required />
+  </ui-field>
+  <label class="flex items-center gap-2 text-sm sm:col-span-2">
+    <input type="checkbox" uiCheckbox formControlName="emergencyService" /> {{ 'facilities.emergencyService' | transloco }}
+  </label>
+  <div class="mt-2 flex justify-end gap-2 sm:col-span-2">
+    <button uiBtn variant="ghost" type="button" brnDialogClose>{{ 'common.cancel' | transloco }}</button>
+    <button uiBtn type="submit">{{ 'common.save' | transloco }}</button>
+  </div>
+</form>

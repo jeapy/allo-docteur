@@ -1,0 +1,59 @@
+<ui-page-header [title]="'facilities.title' | transloco" [subtitle]="'facilities.hint' | transloco">
+  @if (canEdit()) { <button uiBtn type="button" (click)="edit(null)">{{ 'facilities.create' | transloco }}</button> }
+</ui-page-header>
+
+<div class="ui-filters">
+  <ui-select-field [label]="'facilities.city' | transloco" inputId="fa-filter-city">
+    <select uiSelect id="fa-filter-city" [formControl]="cityId">
+      <option value="">{{ 'common.all' | transloco }}</option>
+      @for (c of cities(); track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
+    </select>
+  </ui-select-field>
+</div>
+
+@if (loading() && !rows().length) {
+  <ui-table-skeleton />
+} @else {
+  <div class="ui-table-card" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="scroll">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th>{{ 'facilities.name' | transloco }}</th>
+            <th>{{ 'facilities.type' | transloco }}</th>
+            <th>{{ 'facilities.city' | transloco }}</th>
+            <th>{{ 'facilities.phone' | transloco }}</th>
+            <th>{{ 'facilities.emergencyService' | transloco }}</th>
+            <th>{{ 'facilities.status' | transloco }}</th>
+            <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (f of rows(); track f.id) {
+            <tr>
+              <td class="font-medium">{{ f.name }}@if (f.address) { <span class="sub font-normal">{{ f.address }}</span> }</td>
+              <td>{{ 'facilityTypes.' + f.type | transloco }}</td>
+              <td>{{ f.city }}@if (f.district) { <span class="sub">{{ f.district }}</span> }</td>
+              <td>{{ f.phone || '—' }}</td>
+              <td><ui-badge [tone]="f.emergencyService ? 'primary' : 'neutral'">{{ (f.emergencyService ? 'common.yes' : 'common.no') | transloco }}</ui-badge></td>
+              <td><ui-badge [tone]="f.active ? 'success' : 'neutral'">{{ (f.active ? 'facilities.active' : 'facilities.inactive') | transloco }}</ui-badge></td>
+              <td>
+                <div class="ui-row-actions">
+                  @if (canEdit()) {
+                    <button uiBtn variant="outline" size="sm" type="button" (click)="edit(f)">{{ 'facilities.edit' | transloco }}</button>
+                    <button uiBtn variant="ghost" size="sm" type="button" (click)="toggle(f)">
+                      {{ (f.active ? 'facilities.deactivate' : 'facilities.activate') | transloco }}
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="7"><ui-empty-state icon="lucideHospital" [title]="'facilities.empty' | transloco" /></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ui-pagination [length]="total()" [pageSize]="query().size" [pageIndex]="query().page" (page)="onPage($event)" />
+  </div>
+}

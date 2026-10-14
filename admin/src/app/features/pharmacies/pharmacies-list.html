@@ -49,6 +49,7 @@
                 <div class="ui-row-actions">
                   @if (canEdit()) {
                     <button uiBtn variant="outline" size="sm" type="button" (click)="edit(p)">{{ 'pharmacies.edit' | transloco }}</button>
+                    <button uiBtn variant="outline" size="sm" type="button" (click)="members(p)">{{ 'pharmacies.members' | transloco }}</button>
                     <button uiBtn variant="ghost" size="sm" type="button" (click)="toggle(p)">
                       {{ (p.active ? 'pharmacies.deactivate' : 'pharmacies.activate') | transloco }}
                     </button>

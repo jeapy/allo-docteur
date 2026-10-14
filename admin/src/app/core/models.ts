@@ -205,9 +205,17 @@ export interface PharmacyRow {
   active: boolean;
 }
 
+export interface PharmacyMember {
+  userId: string;
+  name: string;
+  email: string | null;
+  addedAt: string;
+}
+
 export interface PharmacyPayload {
   name: string;
   cityId: number;
+  districtId: number | null;
   address: string;
   phone: string;
   latitude: number | null;
@@ -218,9 +226,45 @@ export interface PharmacyPayload {
   deliveryFee: number | null;
 }
 
+export interface DistrictRef {
+  id: number;
+  name: string;
+}
+
 export interface CityRef {
   id: number;
   name: string;
+  districts?: DistrictRef[];
+}
+
+export type FacilityType = 'HOSPITAL' | 'CLINIC' | 'HEALTH_CENTER';
+
+export interface FacilityRow {
+  id: string;
+  name: string;
+  type: FacilityType;
+  cityId: number;
+  city: string;
+  districtId?: number | null;
+  district?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  latitude: number;
+  longitude: number;
+  emergencyService: boolean;
+  active: boolean;
+}
+
+export interface FacilityPayload {
+  name: string;
+  type: FacilityType;
+  cityId: number;
+  districtId: number | null;
+  address: string | null;
+  phone: string | null;
+  latitude: number;
+  longitude: number;
+  emergencyService: boolean;
 }
 
 export type PaymentStatus = 'PENDING' | 'FAILED' | 'CAPTURED' | 'RELEASED' | 'REFUNDED';

@@ -9,6 +9,7 @@ import { AuthService } from '../../core/auth.service';
 import { PharmacyPayload, PharmacyRow } from '../../core/models';
 import { PharmaciesService, PharmacyQuery } from './pharmacies.service';
 import { PharmacyFormDialogComponent } from './pharmacy-form-dialog';
+import { PharmacyMembersDialogComponent } from './pharmacy-members-dialog';
 
 @Component({
   selector: 'app-pharmacies-list',
@@ -70,6 +71,10 @@ export class PharmaciesListComponent {
         this.refresh();
         this.toast.success(this.i18n.translate('pharmacies.saved'));
       });
+  }
+
+  protected members(p: PharmacyRow): void {
+    this.dialog.open<void, PharmacyRow>(PharmacyMembersDialogComponent, p).subscribe();
   }
 
   protected toggle(p: PharmacyRow): void {

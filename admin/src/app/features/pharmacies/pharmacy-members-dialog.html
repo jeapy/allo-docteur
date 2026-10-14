@@ -1,0 +1,38 @@
+<h2 brnDialogTitle class="m-0 text-lg font-semibold text-text">{{ 'pharmacies.members' | transloco }}</h2>
+<p class="mb-4 mt-1 text-sm text-muted">{{ pharmacy.name }} — {{ 'pharmacies.membersHint' | transloco }}</p>
+
+@if (members().length) {
+  <ul class="m-0 mb-5 list-none divide-y divide-border p-0">
+    @for (m of members(); track m.userId) {
+      <li class="flex items-center justify-between gap-3 py-2.5">
+        <span class="min-w-0">
+          <span class="block truncate text-sm font-medium text-text">{{ m.name }}</span>
+          <span class="block truncate text-xs text-muted">{{ m.email }} · {{ m.addedAt | date: 'dd/MM/yyyy' }}</span>
+        </span>
+        <button uiBtn variant="ghost" size="sm" type="button" (click)="remove(m)">{{ 'pharmacies.removeMember' | transloco }}</button>
+      </li>
+    }
+  </ul>
+} @else {
+  <p class="mb-5 text-sm text-muted">{{ 'pharmacies.noMembers' | transloco }}</p>
+}
+
+<ui-field [label]="'pharmacies.addMember' | transloco" inputId="pm-member-search">
+  <input uiInput id="pm-member-search" type="search" [formControl]="search" autocomplete="off" [placeholder]="'pharmacies.addMemberHint' | transloco" />
+</ui-field>
+@if (candidates().length) {
+  <ul class="m-0 mt-2 list-none divide-y divide-border rounded-md border border-border p-0" role="list">
+    @for (u of candidates(); track u.id) {
+      <li class="flex items-center justify-between gap-3 px-3 py-2">
+        <span class="min-w-0 truncate text-sm">{{ u.firstName }} {{ u.lastName }} <span class="text-muted">· {{ u.email }}</span></span>
+        <button uiBtn variant="outline" size="sm" type="button" [disabled]="isMember(u)" (click)="add(u)">
+          {{ (isMember(u) ? 'pharmacies.alreadyMember' : 'pharmacies.add') | transloco }}
+        </button>
+      </li>
+    }
+  </ul>
+}
+
+<div class="mt-6 flex justify-end">
+  <button uiBtn variant="ghost" type="button" brnDialogClose>{{ 'common.close' | transloco }}</button>
+</div>

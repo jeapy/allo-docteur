@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BrnDialogClose, BrnDialogRef, BrnDialogTitle, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
+import { BrnDialogClose, BrnDialogRef, BrnDialogTitle } from '@spartan-ng/brain/dialog';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { UiButton, UiCheckbox, UiField, UiInput, UiSelect, UiSelectField } from '../../shared/ui';
+import { UiButton, UiCheckbox, UiField, UiInput, UiSelect, UiSelectField, injectDialogEntity } from '../../shared/ui';
 import { CityRef, PharmacyPayload, PharmacyRow } from '../../core/models';
 import { PharmaciesService } from './pharmacies.service';
 
@@ -17,7 +18,7 @@ const PHONE = /^\+?[0-9 ()-]{8,20}$/;
   templateUrl: './pharmacy-form-dialog.html',
 })
 export class PharmacyFormDialogComponent {
-  protected readonly existing = injectBrnDialogContext<PharmacyRow | null>();
+  protected readonly existing = injectDialogEntity<PharmacyRow>();
   private readonly ref = inject<BrnDialogRef<PharmacyPayload>>(BrnDialogRef);
   private readonly fb = inject(FormBuilder).nonNullable;
 
@@ -26,6 +27,7 @@ export class PharmacyFormDialogComponent {
   protected readonly form = this.fb.group({
     name: [this.existing?.name ?? '', [Validators.required, Validators.maxLength(200), Validators.pattern(/\S/)]],
     cityId: [this.existing?.cityId ?? 0, [Validators.required, Validators.min(1)]],
+    districtId: [this.existing?.districtId ?? (null as number | null)],
     address: [this.existing?.address ?? '', [Validators.required, Validators.maxLength(255), Validators.pattern(/\S/)]],
     phone: [this.existing?.phone ?? '', [Validators.required, Validators.pattern(PHONE)]],
     latitude: [this.existing?.latitude ?? (null as number | null), [Validators.min(-90), Validators.max(90)]],
@@ -36,10 +38,15 @@ export class PharmacyFormDialogComponent {
     deliveryFee: [this.existing?.deliveryFee ?? (0 as number | null), [Validators.min(0)]],
   });
 
+  private readonly cityId = toSignal(this.form.controls.cityId.valueChanges, { initialValue: this.form.controls.cityId.value });
+  protected readonly districts = computed(() => this.cities().find((c) => c.id === this.cityId())?.districts ?? []);
+
   constructor() {
     inject(PharmaciesService)
       .cities()
       .subscribe((c) => this.cities.set(c));
+    // un quartier n'a de sens que dans sa ville
+    this.form.controls.cityId.valueChanges.subscribe(() => this.form.controls.districtId.setValue(null));
   }
 
   /** Latitude et longitude vont ensemble. */
@@ -57,6 +64,7 @@ export class PharmacyFormDialogComponent {
     this.ref.close({
       name: v.name.trim(),
       cityId: v.cityId,
+      districtId: v.districtId,
       address: v.address.trim(),
       phone: v.phone.trim(),
       latitude: v.latitude,

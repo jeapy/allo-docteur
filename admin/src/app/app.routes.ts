@@ -42,6 +42,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/sos/sos-list').then((m) => m.SosListComponent),
       },
       {
+        path: 'facilities',
+        loadComponent: () => import('./features/facilities/facilities-list').then((m) => m.FacilitiesListComponent),
+      },
+      {
         path: 'pharmacies',
         loadComponent: () => import('./features/pharmacies/pharmacies-list').then((m) => m.PharmaciesListComponent),
       },

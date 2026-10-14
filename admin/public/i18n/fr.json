@@ -12,6 +12,7 @@
     "accessLogs": "Journal d'accès médical",
     "audit": "Journal d'audit",
     "sos": "Urgences SOS",
+    "facilities": "Structures de santé",
     "pharmacies": "Pharmacies",
     "finance": "Paiements et retraits",
     "subscriptions": "Abonnements",
@@ -101,7 +102,8 @@
     "all": "Tous",
     "yes": "Oui",
     "no": "Non",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "close": "Fermer"
   },
   "verification": {
     "PENDING": "En attente",
@@ -261,6 +263,33 @@
     "CHILD": "Enfant",
     "OTHER": "Autre"
   },
+  "facilities": {
+    "title": "Structures de santé",
+    "hint": "Hôpitaux, cliniques et centres de santé vers lesquels l'alerte SOS oriente les patients. Vérifiez coordonnées et téléphone avant d'activer.",
+    "create": "Ajouter une structure",
+    "edit": "Modifier",
+    "name": "Nom",
+    "type": "Type",
+    "city": "Ville",
+    "district": "Quartier",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "emergencyService": "Service d'urgence",
+    "status": "Statut",
+    "active": "Active",
+    "inactive": "Désactivée",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "saved": "Structure enregistrée.",
+    "empty": "Aucune structure de santé"
+  },
+  "facilityTypes": {
+    "HOSPITAL": "Hôpital",
+    "CLINIC": "Clinique",
+    "HEALTH_CENTER": "Centre de santé"
+  },
   "pharmacies": {
     "title": "Pharmacies partenaires",
     "create": "Ajouter une pharmacie",
@@ -270,6 +299,7 @@
     "city": "Ville",
     "phone": "Téléphone",
     "address": "Adresse",
+    "district": "Quartier",
     "latitude": "Latitude",
     "longitude": "Longitude",
     "coordinatesTogether": "Indiquez la latitude et la longitude, ou aucune.",
@@ -282,6 +312,14 @@
     "inactive": "Désactivée",
     "activate": "Activer",
     "deactivate": "Désactiver",
+    "members": "Pharmaciens",
+    "membersHint": "Seuls les pharmaciens rattachés peuvent traiter les commandes de cette pharmacie.",
+    "noMembers": "Aucun pharmacien rattaché.",
+    "addMember": "Rattacher un pharmacien",
+    "addMemberHint": "Nom ou e-mail (2 caractères minimum)",
+    "add": "Rattacher",
+    "alreadyMember": "Déjà rattaché",
+    "removeMember": "Retirer",
     "saved": "Pharmacie enregistrée.",
     "empty": "Aucune pharmacie"
   },
