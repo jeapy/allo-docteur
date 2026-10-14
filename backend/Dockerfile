@@ -7,8 +7,9 @@ RUN mvn -q -B package -DskipTests
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-RUN useradd --system --uid 10001 app
+RUN useradd --system --uid 10001 app && mkdir -p /data/storage && chown -R app /data
 COPY --from=build /app/target/allo-docteur-*.jar app.jar
 USER app
+VOLUME /data/storage
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
