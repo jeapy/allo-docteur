@@ -1,50 +1,122 @@
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { Component, computed, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, afterNextRender, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { AuthService } from '../core/auth.service';
 import { AdminLevel } from '../core/models';
+import { UiButton } from '../shared/ui';
 
+interface MenuItem {
+  path: string;
+  icon: string;
+  label: string;
+  levels?: AdminLevel[];
+}
+
+const COLLAPSE_KEY = 'ad.sidebar.collapsed';
+
+/**
+ * Coquille de l'application : barre latérale rétractable (icônes seules sur bureau, tiroir sur mobile)
+ * et en-tête avec recherche, notifications et menu profil. La recherche et les notifications sont
+ * visuelles pour l'instant : aucune API admin ne les alimente (voir docs/design-system.md).
+ */
 @Component({
   selector: 'app-shell',
-  imports: [
-    RouterOutlet, RouterLink, RouterLinkActive, MatSidenavModule, MatToolbarModule,
-    MatListModule, MatIconModule, MatButtonModule, TranslocoPipe,
-  ],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, NgIcon, UiButton, TranslocoPipe],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
 })
 export class ShellComponent {
   protected readonly auth = inject(AuthService);
   private readonly bp = inject(BreakpointObserver);
-  protected readonly isHandset = toSignal(this.bp.observe('(max-width: 900px)').pipe(map((s) => s.matches)), {
+  private readonly router = inject(Router);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  protected readonly isHandset = toSignal(this.bp.observe('(max-width: 899px)').pipe(map((s) => s.matches)), {
     initialValue: false,
   });
-  protected readonly mode = computed(() => (this.isHandset() ? 'over' : 'side'));
-  private readonly items: { path: string; icon: string; label: string; levels?: AdminLevel[] }[] = [
-    { path: '/dashboard', icon: 'dashboard', label: 'nav.dashboard' },
-    { path: '/users', icon: 'group', label: 'nav.users' },
-    { path: '/professionals', icon: 'medical_services', label: 'nav.professionals' },
-    { path: '/appointments', icon: 'event', label: 'nav.appointments' },
-    { path: '/sos', icon: 'emergency', label: 'nav.sos' },
-    { path: '/pharmacies', icon: 'local_pharmacy', label: 'nav.pharmacies' },
-    { path: '/finance', icon: 'payments', label: 'nav.finance', levels: ['SUPER', 'FINANCE'] },
-    { path: '/subscriptions', icon: 'card_membership', label: 'nav.subscriptions' },
-    { path: '/complaints', icon: 'support_agent', label: 'nav.complaints', levels: ['SUPER', 'SUPPORT'] },
-    { path: '/reviews', icon: 'reviews', label: 'nav.reviews', levels: ['SUPER', 'SUPPORT'] },
-    { path: '/partners', icon: 'handshake', label: 'nav.partners', levels: ['SUPER', 'SUPPORT'] },
-    { path: '/access-logs', icon: 'policy', label: 'nav.accessLogs', levels: ['SUPER'] },
+  /** Bureau : barre réduite aux icônes. Mobile : tiroir ouvert/fermé (jamais « réduit »). */
+  protected readonly collapsed = signal(readCollapsed());
+  protected readonly drawerOpen = signal(false);
+  protected readonly profileOpen = signal(false);
+  /** Les transitions de mise en page ne démarrent qu'après le premier rendu (pas d'animation au chargement). */
+  protected readonly ready = signal(false);
+
+  private readonly items: MenuItem[] = [
+    { path: '/dashboard', icon: 'lucideLayoutDashboard', label: 'nav.dashboard' },
+    { path: '/users', icon: 'lucideUsers', label: 'nav.users' },
+    { path: '/professionals', icon: 'lucideStethoscope', label: 'nav.professionals' },
+    { path: '/appointments', icon: 'lucideCalendarDays', label: 'nav.appointments' },
+    { path: '/sos', icon: 'lucideSiren', label: 'nav.sos' },
+    { path: '/pharmacies', icon: 'lucidePill', label: 'nav.pharmacies' },
+    { path: '/finance', icon: 'lucideWallet', label: 'nav.finance', levels: ['SUPER', 'FINANCE'] },
+    { path: '/subscriptions', icon: 'lucideCreditCard', label: 'nav.subscriptions' },
+    { path: '/complaints', icon: 'lucideHeadset', label: 'nav.complaints', levels: ['SUPER', 'SUPPORT'] },
+    { path: '/reviews', icon: 'lucideStar', label: 'nav.reviews', levels: ['SUPER', 'SUPPORT'] },
+    { path: '/partners', icon: 'lucideHandshake', label: 'nav.partners', levels: ['SUPER', 'SUPPORT'] },
+    { path: '/access-logs', icon: 'lucideShieldCheck', label: 'nav.accessLogs', levels: ['SUPER'] },
   ];
+
   /** Entrées de menu visibles pour le niveau d'administration connecté. */
   protected readonly menu = computed(() => {
     const level = this.auth.user()?.adminLevel;
     return this.items.filter((i) => !i.levels || (!!level && i.levels.includes(level)));
   });
+  /** Réduite uniquement sur bureau. */
+  protected readonly isCollapsed = computed(() => this.collapsed() && !this.isHandset());
+  protected readonly initials = computed(() => (this.auth.user()?.email ?? '?').slice(0, 2).toUpperCase());
+
+  constructor() {
+    afterNextRender(() => this.ready.set(true));
+    // Ferme le tiroir et le menu profil à chaque navigation.
+    const navigated = toSignal(
+      this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)),
+      { initialValue: null },
+    );
+    effect(() => {
+      navigated();
+      this.drawerOpen.set(false);
+      this.profileOpen.set(false);
+    });
+  }
+
+  protected toggleSidebar(): void {
+    if (this.isHandset()) {
+      this.drawerOpen.update((v) => !v);
+      return;
+    }
+    this.collapsed.update((v) => !v);
+    try {
+      localStorage.setItem(COLLAPSE_KEY, String(this.collapsed()));
+    } catch {
+      /* stockage indisponible : la préférence n'est simplement pas gardée */
+    }
+  }
+
+  protected toggleProfile(): void {
+    this.profileOpen.update((v) => !v);
+  }
+
+  @HostListener('document:keydown.escape')
+  protected onEscape(): void {
+    this.profileOpen.set(false);
+    this.drawerOpen.set(false);
+  }
+
+  @HostListener('document:click', ['$event'])
+  protected onDocumentClick(e: MouseEvent): void {
+    const menu = this.host.nativeElement.querySelector('[data-profile]');
+    if (this.profileOpen() && menu && !menu.contains(e.target as Node)) this.profileOpen.set(false);
+  }
+}
+
+function readCollapsed(): boolean {
+  try {
+    return localStorage.getItem(COLLAPSE_KEY) === 'true';
+  } catch {
+    return false;
+  }
 }

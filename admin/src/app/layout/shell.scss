@@ -1,7 +1,120 @@
-.container { height: 100vh; }
-.sidenav { width: 248px; }
-.brand { padding: 20px 16px; font: var(--mat-sys-title-large); }
-.spacer { flex: 1; }
-.who { margin-right: 8px; font: var(--mat-sys-body-medium); }
-.content { padding: 24px; max-width: 1280px; margin: 0 auto; }
-.active { background: var(--mat-sys-secondary-container); }
+$sidebar-width: 264px;
+$sidebar-width-collapsed: 76px;
+$bp-desktop: 900px;
+
+.skip-link {
+  position: absolute; left: var(--ds-space-2); top: -48px; z-index: 100;
+  padding: var(--ds-space-2) var(--ds-space-3); border-radius: var(--ds-radius-sm);
+  background: var(--ds-primary); color: var(--ds-on-primary); text-decoration: none;
+  transition: top var(--ds-duration-fast) var(--ds-ease);
+  &:focus { top: var(--ds-space-2); }
+}
+
+.shell { min-height: 100vh; }
+.shell--ready .sidebar {
+  transition: transform var(--ds-duration-slow) var(--ds-ease), width var(--ds-duration-slow) var(--ds-ease);
+}
+
+// ---- Barre latérale : tiroir sur mobile, fixe sur bureau
+.sidebar {
+  position: fixed; inset: 0 auto 0 0; z-index: 40;
+  width: $sidebar-width; max-width: 85vw;
+  display: flex; flex-direction: column;
+  background: var(--ds-sidebar-bg); color: var(--ds-sidebar-text);
+  transform: translateX(-100%);
+
+  &--open { transform: none; box-shadow: var(--ds-shadow-lg); }
+
+  &__brand {
+    display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 var(--ds-space-4);
+    color: #fff; font-weight: 650; font-size: 1.0625rem; white-space: nowrap; overflow: hidden;
+  }
+  &__logo {
+    display: grid; place-items: center; flex: none; width: 36px; height: 36px;
+    border-radius: var(--ds-radius-sm); background: var(--ds-primary);
+  }
+  &__nav { flex: 1; overflow-y: auto; padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-4); }
+  ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--ds-space-1); }
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px;
+  border-radius: var(--ds-radius-sm); color: inherit; text-decoration: none; white-space: nowrap;
+  transition: background-color var(--ds-duration-fast) var(--ds-ease), color var(--ds-duration-fast) var(--ds-ease);
+  ng-icon { flex: none; }
+  &:hover { background: rgb(255 255 255 / 8%); color: #fff; }
+  &:active { background: rgb(255 255 255 / 12%); }
+  &:focus-visible { box-shadow: 0 0 0 2px var(--ds-sidebar-bg), 0 0 0 4px #5eead4; }
+  &--active { background: var(--ds-sidebar-active-bg); color: var(--ds-sidebar-active-text); font-weight: 600; }
+}
+
+.backdrop {
+  position: fixed; inset: 0; z-index: 30; background: rgb(15 23 42 / 45%);
+  animation: ds-fade-in var(--ds-duration-base) var(--ds-ease);
+}
+
+// ---- Colonne principale
+.main { min-height: 100vh; display: flex; flex-direction: column; min-width: 0; }
+
+.header {
+  position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: var(--ds-space-2);
+  height: 64px; padding: 0 var(--ds-space-3);
+  background: rgb(255 255 255 / 85%); backdrop-filter: blur(8px); border-bottom: 1px solid var(--ds-border);
+  &__spacer { flex: 1; }
+}
+
+.search {
+  display: none; align-items: center; gap: var(--ds-space-2); width: min(360px, 40vw); height: 40px; padding: 0 12px;
+  border: 1px solid var(--ds-border); border-radius: var(--ds-radius-sm); background: var(--ds-surface-muted);
+  color: var(--ds-text-muted);
+  transition: border-color var(--ds-duration-fast) var(--ds-ease), background-color var(--ds-duration-fast) var(--ds-ease);
+  &:focus-within { border-color: var(--ds-primary); background: var(--ds-surface); box-shadow: 0 0 0 3px var(--ds-primary-soft); }
+  input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: inherit; color: var(--ds-text); }
+}
+
+.profile {
+  position: relative;
+  &__trigger {
+    display: flex; align-items: center; gap: var(--ds-space-2); height: 40px; padding: 0 var(--ds-space-2) 0 4px;
+    border: 0; border-radius: 999px; background: transparent; color: var(--ds-text); font: inherit; cursor: pointer;
+    transition: background-color var(--ds-duration-fast) var(--ds-ease);
+    &:hover { background: var(--ds-surface-muted); }
+  }
+  &__email { display: none; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; }
+  &__menu {
+    position: absolute; right: 0; top: calc(100% + 8px); min-width: 220px; padding: var(--ds-space-2);
+    border: 1px solid var(--ds-border); border-radius: var(--ds-radius-md); background: var(--ds-surface);
+    box-shadow: var(--ds-shadow-lg); animation: ds-fade-in var(--ds-duration-fast) var(--ds-ease);
+  }
+  &__who { margin: 0; padding: var(--ds-space-2); font-size: 0.8125rem; color: var(--ds-text-muted); overflow-wrap: anywhere; }
+  &__item {
+    display: flex; align-items: center; gap: var(--ds-space-2); width: 100%; min-height: 40px; padding: 0 var(--ds-space-2);
+    border: 0; border-radius: var(--ds-radius-sm); background: transparent; font: inherit; color: var(--ds-text); cursor: pointer;
+    transition: background-color var(--ds-duration-fast) var(--ds-ease);
+    &:hover { background: var(--ds-surface-muted); }
+  }
+}
+
+.avatar {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+  background: var(--ds-primary-soft); color: var(--ds-primary-hover); font-size: 0.75rem; font-weight: 650;
+}
+
+.content { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: var(--ds-space-3); outline: none; }
+
+// ---- Bureau : barre fixe, contenu décalé
+@media (min-width: $bp-desktop) {
+  .sidebar { transform: none; box-shadow: none; }
+  .main { margin-left: $sidebar-width; }
+  .shell--ready .main { transition: margin-left var(--ds-duration-slow) var(--ds-ease); }
+  .shell--collapsed {
+    .sidebar { width: $sidebar-width-collapsed; }
+    .main { margin-left: $sidebar-width-collapsed; }
+    .nav-item { justify-content: center; padding: 0; }
+    .sidebar__brand { justify-content: center; padding: 0; }
+  }
+  .header { padding: 0 var(--ds-space-4); }
+  .search { display: flex; }
+  .profile__email { display: inline; }
+  .content { padding: var(--ds-space-4); }
+}

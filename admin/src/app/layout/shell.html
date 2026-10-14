@@ -1,24 +1,68 @@
-<mat-sidenav-container class="container">
-  <mat-sidenav #nav [mode]="mode()" [opened]="!isHandset()" class="sidenav" role="navigation">
-    <div class="brand">{{ 'app.name' | transloco }}</div>
-    <mat-nav-list>
-      @for (item of menu(); track item.path) {
-        <a mat-list-item [routerLink]="item.path" routerLinkActive="active" (click)="isHandset() && nav.close()">
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label | transloco }}</span>
-        </a>
-      }
-    </mat-nav-list>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    <mat-toolbar>
-      @if (isHandset()) {
-        <button mat-icon-button (click)="nav.toggle()" aria-label="Menu"><mat-icon>menu</mat-icon></button>
-      }
-      <span class="spacer"></span>
-      <span class="who">{{ auth.user()?.email }}</span>
-      <button mat-button (click)="auth.logout()">{{ 'nav.logout' | transloco }}</button>
-    </mat-toolbar>
-    <main class="content"><router-outlet /></main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+<a class="skip-link" href="#main">{{ 'ui.skipToContent' | transloco }}</a>
+
+<div class="shell" [class.shell--collapsed]="isCollapsed()" [class.shell--ready]="ready()">
+  @if (isHandset() && drawerOpen()) {
+    <div class="backdrop" (click)="drawerOpen.set(false)" aria-hidden="true"></div>
+  }
+
+  <aside class="sidebar" [class.sidebar--open]="drawerOpen()" [attr.aria-label]="'ui.sidebar' | transloco">
+    <div class="sidebar__brand">
+      <span class="sidebar__logo" aria-hidden="true"><ng-icon name="lucideHeartPulse" size="20" /></span>
+      @if (!isCollapsed()) { <span class="sidebar__name">{{ 'app.name' | transloco }}</span> }
+    </div>
+
+    <nav class="sidebar__nav">
+      <ul>
+        @for (item of menu(); track item.path) {
+          <li>
+            <a class="nav-item" [routerLink]="item.path" routerLinkActive="nav-item--active" ariaCurrentWhenActive="page"
+               [attr.title]="isCollapsed() ? (item.label | transloco) : null">
+              <ng-icon [name]="item.icon" size="20" aria-hidden="true" />
+              <span [class.sr-only]="isCollapsed()">{{ item.label | transloco }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+      <button uiBtn variant="ghost" size="icon" type="button" (click)="toggleSidebar()"
+        [attr.aria-label]="'ui.toggleMenu' | transloco" [attr.aria-expanded]="isHandset() ? drawerOpen() : !isCollapsed()">
+        <ng-icon [name]="isHandset() ? 'lucideMenu' : (isCollapsed() ? 'lucidePanelLeftOpen' : 'lucidePanelLeftClose')" size="20" aria-hidden="true" />
+      </button>
+
+      <form class="search" role="search" (submit)="$event.preventDefault()">
+        <ng-icon name="lucideSearch" size="18" aria-hidden="true" />
+        <input type="search" [attr.aria-label]="'ui.search' | transloco" [placeholder]="'ui.search' | transloco" />
+      </form>
+
+      <span class="header__spacer"></span>
+
+      <button uiBtn variant="ghost" size="icon" type="button" [attr.aria-label]="'ui.notifications' | transloco">
+        <ng-icon name="lucideBell" size="20" aria-hidden="true" />
+      </button>
+
+      <div class="profile" data-profile>
+        <button class="profile__trigger" type="button" aria-haspopup="menu" [attr.aria-expanded]="profileOpen()"
+          (click)="toggleProfile()">
+          <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+          <span class="profile__email">{{ auth.user()?.email }}</span>
+          <ng-icon name="lucideChevronDown" size="16" aria-hidden="true" />
+        </button>
+        @if (profileOpen()) {
+          <div class="profile__menu" role="menu">
+            <p class="profile__who">{{ auth.user()?.email }}</p>
+            <button class="profile__item" type="button" role="menuitem" (click)="auth.logout()">
+              <ng-icon name="lucideLogOut" size="18" aria-hidden="true" />
+              {{ 'nav.logout' | transloco }}
+            </button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <main id="main" class="content" tabindex="-1"><router-outlet /></main>
+  </div>
+</div>

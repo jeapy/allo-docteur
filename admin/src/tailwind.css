@@ -1,0 +1,48 @@
+@import '@fontsource-variable/inter';
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@import 'tw-animate-css';
+
+/* Les tokens vivent dans styles.scss (--ds-*) ; on les expose ici comme thème Tailwind. */
+@theme inline {
+  --font-sans: var(--ds-font);
+
+  --color-primary: var(--ds-primary);
+  --color-primary-hover: var(--ds-primary-hover);
+  --color-primary-soft: var(--ds-primary-soft);
+  --color-on-primary: var(--ds-on-primary);
+  --color-secondary: var(--ds-secondary);
+  --color-secondary-soft: var(--ds-secondary-soft);
+  --color-bg: var(--ds-bg);
+  --color-surface: var(--ds-surface);
+  --color-surface-muted: var(--ds-surface-muted);
+  --color-border: var(--ds-border);
+  --color-border-strong: var(--ds-border-strong);
+  --color-text: var(--ds-text);
+  --color-muted: var(--ds-text-muted);
+  --color-success: var(--ds-success);
+  --color-success-soft: var(--ds-success-soft);
+  --color-warning: var(--ds-warning);
+  --color-warning-soft: var(--ds-warning-soft);
+  --color-danger: var(--ds-danger);
+  --color-danger-soft: var(--ds-danger-soft);
+  --color-danger-text: var(--ds-danger-text);
+  --color-info: var(--ds-info);
+  --color-info-soft: var(--ds-info-soft);
+  --color-sidebar: var(--ds-sidebar-bg);
+  --color-sidebar-text: var(--ds-sidebar-text);
+  --color-sidebar-active: var(--ds-sidebar-active-bg);
+
+  --radius-sm: var(--ds-radius-sm);
+  --radius-md: var(--ds-radius-md);
+  --radius-lg: var(--ds-radius-lg);
+
+  --shadow-sm: var(--ds-shadow-sm);
+  --shadow-md: var(--ds-shadow-md);
+  --shadow-lg: var(--ds-shadow-lg);
+
+  --ease-ds: var(--ds-ease);
+}
+
+/* Preflight volontairement non importé : il casserait les écrans Angular Material pas encore migrés. */

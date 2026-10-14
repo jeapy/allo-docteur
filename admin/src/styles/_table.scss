@@ -1,0 +1,41 @@
+// Tableaux de données du design system : `<div class="ui-table-wrap"><table uiTable>…</table></div>`.
+.ui-table-wrap {
+  overflow-x: auto;
+  border-radius: var(--ds-radius-lg);
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
+  box-shadow: var(--ds-shadow-sm);
+}
+
+.ui-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+
+  th {
+    padding: var(--ds-space-3);
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ds-text-muted);
+    background: var(--ds-surface-muted);
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px var(--ds-space-3);
+    border-top: 1px solid var(--ds-border);
+    color: var(--ds-text);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background-color var(--ds-duration-fast) var(--ds-ease);
+    &:hover { background: var(--ds-surface-muted); }
+  }
+
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sub { display: block; font-size: 0.75rem; color: var(--ds-text-muted); }
+}

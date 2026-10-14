@@ -1,0 +1,89 @@
+<ui-page-header [title]="'dashboard.title' | transloco" [subtitle]="'dashboard.subtitle' | transloco" />
+
+<section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" [attr.aria-label]="'dashboard.kpis' | transloco">
+  <ui-stat-card [label]="'dashboard.users' | transloco" icon="lucideUsers" [loading]="users() === null"
+    [value]="users() === null ? '—' : (users()! | number)" />
+  <ui-stat-card [label]="'dashboard.appointmentsToday' | transloco" icon="lucideCalendarDays" [loading]="todayCount() === null"
+    [value]="todayCount() === null ? '—' : (todayCount()! | number)" />
+  <ui-stat-card [label]="'dashboard.sosOpen' | transloco" icon="lucideSiren" [loading]="sos() === null"
+    [value]="sos() === null ? '—' : sos()!.open + sos()!.accepted"
+    [hint]="sos() ? ('dashboard.sosHint' | transloco: { open: sos()!.open, accepted: sos()!.accepted }) : undefined" />
+  @if (canSeeComplaints) {
+    <ui-stat-card [label]="'dashboard.complaintsOpen' | transloco" icon="lucideHeadset" [loading]="openComplaints() === null"
+      [value]="openComplaints() ?? '—'" />
+  } @else if (finance(); as f) {
+    <ui-stat-card [label]="'dashboard.revenue' | transloco" icon="lucideWallet"
+      [value]="(f.commissions + f.subscriptionRevenue | number: '1.0-0') + ' ' + f.currency" />
+  }
+</section>
+
+@if (canSeeFinance && finance(); as f) {
+  <section class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3" [attr.aria-label]="'dashboard.finance' | transloco">
+    <ui-stat-card [label]="'dashboard.volume' | transloco" icon="lucideTrendingUp"
+      [value]="(f.volume | number: '1.0-0') + ' ' + f.currency" />
+    <ui-stat-card [label]="'dashboard.revenue' | transloco" icon="lucideWallet"
+      [value]="(f.commissions + f.subscriptionRevenue | number: '1.0-0') + ' ' + f.currency"
+      [hint]="'dashboard.revenueHint' | transloco" />
+    <ui-stat-card [label]="'dashboard.pendingWithdrawals' | transloco" icon="lucideBanknote"
+      [value]="f.pendingWithdrawals" [hint]="(f.pendingWithdrawalsAmount | number: '1.0-0') + ' ' + f.currency" />
+  </section>
+}
+
+<div class="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-3">
+  @if (canSeeComplaints) {
+    <ui-card>
+      <h2 class="mb-4">{{ 'dashboard.complaintsByStatus' | transloco }}</h2>
+      @if (complaints() === null) {
+        <div class="flex flex-col gap-3"><ui-skeleton class="h-4" /><ui-skeleton class="h-4" /><ui-skeleton class="h-4" /></div>
+      } @else {
+        <ui-bar-chart [data]="complaintBars()" [translate]="true" [caption]="'dashboard.complaintsByStatus' | transloco" />
+      }
+    </ui-card>
+  }
+  @if (canSeeFinance && finance()) {
+    <ui-card>
+      <h2 class="mb-4">{{ 'dashboard.financeBreakdown' | transloco }}</h2>
+      <ui-bar-chart [data]="financeBars()" [translate]="true" [caption]="'dashboard.financeBreakdown' | transloco" />
+    </ui-card>
+  }
+</div>
+
+<section class="mt-6" [attr.aria-labelledby]="'recent-title'">
+  <div class="mb-3 flex items-center justify-between">
+    <h2 id="recent-title" class="m-0">{{ 'dashboard.recentAppointments' | transloco }}</h2>
+    <a uiBtn variant="ghost" size="sm" routerLink="/appointments">{{ 'dashboard.seeAll' | transloco }}</a>
+  </div>
+
+  @if (recent() === null) {
+    <ui-card [padded]="false">
+      <div class="flex flex-col gap-3 p-4">
+        @for (i of [1, 2, 3, 4]; track i) { <ui-skeleton class="h-6" /> }
+      </div>
+    </ui-card>
+  } @else if (recent()!.length === 0) {
+    <ui-card [padded]="false"><ui-empty-state [title]="'appointments.empty' | transloco" icon="lucideCalendarDays" /></ui-card>
+  } @else {
+    <div class="ui-table-wrap">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th scope="col">{{ 'appointments.date' | transloco }}</th>
+            <th scope="col">{{ 'appointments.patient' | transloco }}</th>
+            <th scope="col">{{ 'appointments.professional' | transloco }}</th>
+            <th scope="col">{{ 'appointments.status' | transloco }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of recent(); track a.id) {
+            <tr>
+              <td>{{ a.startAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ a.patient.name }}</td>
+              <td>{{ a.professional.name }}<span class="sub">{{ a.professional.typeLabel }}</span></td>
+              <td><ui-badge [tone]="tone(a.status)">{{ 'appointmentStatuses.' + a.status | transloco }}</ui-badge></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

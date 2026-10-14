@@ -1,15 +1,129 @@
 @use '@angular/material' as mat;
+@use 'styles/table';
 @import 'material-icons/iconfont/material-icons.css';
 
-html {
+/*
+ * Design system « Allo Docteur » – tokens globaux (thème clair).
+ * Source unique des couleurs, espacements, rayons, ombres et durées :
+ *  - Tailwind/Spartan les consomme via src/tailwind.css (@theme) ;
+ *  - Angular Material (écrans pas encore migrés) les consomme via les surcharges --mat-sys-* plus bas.
+ * Contrastes vérifiés WCAG AA (texte ≥ 4,5:1, bordures de champs ≥ 3:1).
+ */
+:root {
   color-scheme: light;
-  @include mat.theme((
-    color: mat.$azure-palette,
-    typography: system-ui,
-    density: 0,
-  ));
+
+  /* Marque */
+  --ds-primary: #0f766e;
+  --ds-primary-hover: #115e59;
+  --ds-primary-soft: #e6f4f2;
+  --ds-on-primary: #ffffff;
+  --ds-secondary: #4338ca;
+  --ds-secondary-soft: #eef0ff;
+
+  /* Neutres */
+  --ds-bg: #f8fafc;
+  --ds-surface: #ffffff;
+  --ds-surface-muted: #f1f5f9;
+  --ds-border: #e2e8f0;
+  --ds-border-strong: #64748b; /* bordure des champs : 4,7:1 sur blanc */
+  --ds-text: #0f172a;
+  --ds-text-muted: #475569;
+
+  /* Sémantique */
+  --ds-success: #166534;
+  --ds-success-soft: #dcfce7;
+  --ds-warning: #92400e;
+  --ds-warning-soft: #fef3c7;
+  --ds-danger: #b91c1c;
+  --ds-danger-soft: #fee2e2;
+  --ds-danger-text: #991b1b;
+  --ds-info: #1e40af;
+  --ds-info-soft: #dbeafe;
+
+  /* Barre latérale */
+  --ds-sidebar-bg: #0f172a;
+  --ds-sidebar-text: #cbd5e1;
+  --ds-sidebar-active-bg: #134e4a;
+  --ds-sidebar-active-text: #ffffff;
+
+  /* Échelle d'espacement : 4 / 8 / 16 / 24 / 32 */
+  --ds-space-1: 4px;
+  --ds-space-2: 8px;
+  --ds-space-3: 16px;
+  --ds-space-4: 24px;
+  --ds-space-5: 32px;
+
+  /* Rayons */
+  --ds-radius-sm: 8px;
+  --ds-radius-md: 12px;
+  --ds-radius-lg: 16px;
+
+  /* Ombres douces */
+  --ds-shadow-sm: 0 1px 2px rgb(15 23 42 / 6%), 0 1px 3px rgb(15 23 42 / 4%);
+  --ds-shadow-md: 0 4px 12px rgb(15 23 42 / 8%), 0 2px 4px rgb(15 23 42 / 4%);
+  --ds-shadow-lg: 0 12px 32px rgb(15 23 42 / 14%), 0 4px 8px rgb(15 23 42 / 6%);
+
+  /* Mouvement (150–250 ms) */
+  --ds-duration-fast: 150ms;
+  --ds-duration-base: 200ms;
+  --ds-duration-slow: 250ms;
+  --ds-ease: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Typographie */
+  --ds-font: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Anneau de focus visible partout */
+  --ds-focus: 0 0 0 2px var(--ds-surface), 0 0 0 4px var(--ds-primary);
 }
 
+/* Angular Material (écrans en cours de migration) : même palette que le design system */
+html {
+  @include mat.theme((
+    color: mat.$azure-palette,
+    typography: Inter,
+    density: 0,
+  ));
+  --mat-sys-primary: var(--ds-primary);
+  --mat-sys-on-primary: var(--ds-on-primary);
+  --mat-sys-primary-container: var(--ds-primary-soft);
+  --mat-sys-on-primary-container: var(--ds-primary-hover);
+  --mat-sys-secondary-container: var(--ds-primary-soft);
+  --mat-sys-on-secondary-container: var(--ds-primary-hover);
+  --mat-sys-surface: var(--ds-bg);
+  --mat-sys-on-surface: var(--ds-text);
+  --mat-sys-error: var(--ds-danger);
+  --mat-sys-corner-medium: var(--ds-radius-sm);
+  --mat-sys-corner-large: var(--ds-radius-md);
+  --mat-sys-corner-extra-large: var(--ds-radius-lg);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
-body { background: var(--mat-sys-surface); color: var(--mat-sys-on-surface); font: var(--mat-sys-body-large); }
-h1 { font: var(--mat-sys-headline-medium); margin: 0 0 16px; }
+body {
+  background: var(--ds-bg);
+  color: var(--ds-text);
+  font-family: var(--ds-font);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1 { font-size: 1.5rem; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 var(--ds-space-3); }
+h2 { font-size: 1.125rem; font-weight: 600; margin: 0 0 var(--ds-space-2); }
+
+:focus-visible { outline: none; box-shadow: var(--ds-focus); border-radius: var(--ds-radius-sm); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}
+
+/* Transition entre pages (View Transitions API, activée dans le routeur) */
+::view-transition-old(root) { animation: ds-fade-out var(--ds-duration-fast) var(--ds-ease) both; }
+::view-transition-new(root) { animation: ds-fade-in var(--ds-duration-slow) var(--ds-ease) both; }
+@keyframes ds-fade-out { to { opacity: 0; } }
+@keyframes ds-fade-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* Accessibilité : texte réservé aux lecteurs d'écran */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}

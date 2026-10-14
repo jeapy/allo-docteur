@@ -1,55 +1,52 @@
-<main class="wrap">
-  <mat-card class="card">
-    @if (loading()) { <mat-progress-bar mode="indeterminate" /> }
-    <mat-card-header>
-      <mat-card-title>{{ 'app.name' | transloco }}</mat-card-title>
-      <mat-card-subtitle>
-        {{ (mfaToken() ? 'login.mfaTitle' : 'login.title') | transloco }}
-      </mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
+<div class="login">
+  <aside class="login__brand" aria-hidden="true">
+    <div class="login__brand-inner">
+      <span class="login__logo"><ng-icon name="lucideHeartPulse" size="28" /></span>
+      <p class="login__tagline">{{ 'login.tagline' | transloco }}</p>
+    </div>
+  </aside>
+
+  <main class="login__panel">
+    <section class="login__card" [attr.aria-busy]="loading()">
+      <h1 class="login__title">{{ 'app.name' | transloco }}</h1>
+      <p class="login__subtitle">{{ (mfaToken() ? 'login.mfaTitle' : 'login.title') | transloco }}</p>
+
       @if (!mfaToken()) {
-        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'login.email' | transloco }}</mat-label>
-            <input matInput type="email" formControlName="email" autocomplete="username" />
-            @if (form.controls.email.hasError('required')) {
-              <mat-error>{{ 'validation.required' | transloco }}</mat-error>
-            } @else if (form.controls.email.hasError('email')) {
-              <mat-error>{{ 'validation.email' | transloco }}</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'login.password' | transloco }}</mat-label>
-            <input matInput type="password" formControlName="password" autocomplete="current-password" />
-            @if (form.controls.password.hasError('required')) {
-              <mat-error>{{ 'validation.required' | transloco }}</mat-error>
-            }
-          </mat-form-field>
-          @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
-          <button mat-flat-button type="submit" [disabled]="form.invalid || loading()">
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="login__form">
+          <ui-field [label]="'login.email' | transloco" inputId="email"
+            [error]="form.controls.email.touched ? (form.controls.email.hasError('required') ? ('validation.required' | transloco) : (form.controls.email.hasError('email') ? ('validation.email' | transloco) : null)) : null">
+            <input uiInput id="email" type="email" formControlName="email" autocomplete="username"
+              aria-describedby="email-error" />
+          </ui-field>
+          <ui-field [label]="'login.password' | transloco" inputId="password"
+            [error]="form.controls.password.touched && form.controls.password.hasError('required') ? ('validation.required' | transloco) : null">
+            <input uiInput id="password" type="password" formControlName="password" autocomplete="current-password"
+              aria-describedby="password-error" />
+          </ui-field>
+          @if (error()) { <p class="login__error" role="alert">{{ error() }}</p> }
+          <button uiBtn size="lg" type="submit" [disabled]="form.invalid || loading()">
+            @if (loading()) { <span class="spinner" aria-hidden="true"></span> }
             {{ 'login.submit' | transloco }}
           </button>
         </form>
       } @else {
-        <form [formGroup]="mfaForm" (ngSubmit)="verify()" novalidate>
-          <p>{{ 'login.mfaHint' | transloco }}</p>
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'login.code' | transloco }}</mat-label>
-            <input matInput inputmode="numeric" maxlength="6" formControlName="code" autocomplete="one-time-code" />
-            @if (mfaForm.controls.code.invalid) {
-              <mat-error>{{ 'validation.code' | transloco }}</mat-error>
-            }
-          </mat-form-field>
-          @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
-          <div class="row">
-            <button mat-button type="button" (click)="back()">{{ 'login.back' | transloco }}</button>
-            <button mat-flat-button type="submit" [disabled]="mfaForm.invalid || loading()">
+        <form [formGroup]="mfaForm" (ngSubmit)="verify()" novalidate class="login__form">
+          <p class="login__hint">{{ 'login.mfaHint' | transloco }}</p>
+          <ui-field [label]="'login.code' | transloco" inputId="code"
+            [error]="mfaForm.controls.code.touched && mfaForm.controls.code.invalid ? ('validation.code' | transloco) : null">
+            <input uiInput id="code" inputmode="numeric" maxlength="6" formControlName="code"
+              autocomplete="one-time-code" aria-describedby="code-error" />
+          </ui-field>
+          @if (error()) { <p class="login__error" role="alert">{{ error() }}</p> }
+          <div class="login__row">
+            <button uiBtn variant="ghost" size="lg" type="button" (click)="back()">{{ 'login.back' | transloco }}</button>
+            <button uiBtn size="lg" type="submit" [disabled]="mfaForm.invalid || loading()">
+              @if (loading()) { <span class="spinner" aria-hidden="true"></span> }
               {{ 'login.verify' | transloco }}
             </button>
           </div>
         </form>
       }
-    </mat-card-content>
-  </mat-card>
-</main>
+    </section>
+  </main>
+</div>

@@ -27,7 +27,8 @@
     "mfaHint": "Saisissez le code à 6 chiffres de votre application d'authentification.",
     "code": "Code",
     "verify": "Valider",
-    "back": "Retour"
+    "back": "Retour",
+    "tagline": "Votre clinique virtuelle, au chevet de chaque patient."
   },
   "validation": {
     "required": "Champ obligatoire",
@@ -62,7 +63,28 @@
   },
   "dashboard": {
     "title": "Tableau de bord",
-    "soon": "Les indicateurs seront disponibles dans une prochaine phase."
+    "subtitle": "Vue d'ensemble de l'activité de la plateforme.",
+    "kpis": "Indicateurs clés",
+    "users": "Utilisateurs",
+    "appointmentsToday": "Rendez-vous du jour",
+    "sosOpen": "Urgences en cours",
+    "sosHint": "{{open}} en attente · {{accepted}} prise(s) en charge",
+    "complaintsOpen": "Réclamations ouvertes",
+    "revenue": "Revenus plateforme",
+    "revenueHint": "Commissions + abonnements",
+    "finance": "Finance",
+    "volume": "Volume encaissé",
+    "pendingWithdrawals": "Retraits en attente",
+    "complaintsByStatus": "Réclamations par statut",
+    "financeBreakdown": "Répartition financière",
+    "fin": {
+      "commissions": "Commissions",
+      "subscriptionRevenue": "Abonnements",
+      "escrow": "Fonds en séquestre",
+      "refunded": "Remboursés"
+    },
+    "recentAppointments": "Derniers rendez-vous",
+    "seeAll": "Tout voir"
   },
   "errors": {
     "generic": "Une erreur est survenue. Veuillez réessayer.",
@@ -426,5 +448,19 @@
     "deactivate": "Désactiver",
     "empty": "Aucun partenaire",
     "saved": "Partenaire enregistré"
+  },
+  "ui": {
+    "skipToContent": "Aller au contenu",
+    "sidebar": "Navigation principale",
+    "toggleMenu": "Afficher ou masquer le menu",
+    "search": "Rechercher",
+    "notifications": "Notifications",
+    "pagination": {
+      "label": "Pagination",
+      "perPage": "Lignes par page",
+      "range": "{{from}}–{{to}} sur {{total}}",
+      "previous": "Page précédente",
+      "next": "Page suivante"
+    }
   }
 }

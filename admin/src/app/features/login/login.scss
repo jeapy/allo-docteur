@@ -1,5 +1,51 @@
-.wrap { min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--mat-sys-surface-container); }
-.card { width: 100%; max-width: 400px; padding-bottom: 8px; }
-form { display: flex; flex-direction: column; gap: 4px; padding-top: 16px; }
-.row { display: flex; justify-content: space-between; }
-.error { color: var(--mat-sys-error); margin: 0 0 8px; }
+.login {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--ds-bg);
+
+  &__brand { display: none; }
+
+  &__panel { display: grid; place-items: center; padding: var(--ds-space-3); }
+
+  &__card {
+    width: 100%; max-width: 420px; padding: var(--ds-space-5) var(--ds-space-4);
+    border: 1px solid var(--ds-border); border-radius: var(--ds-radius-lg);
+    background: var(--ds-surface); box-shadow: var(--ds-shadow-md);
+    animation: ds-fade-in var(--ds-duration-slow) var(--ds-ease);
+  }
+
+  &__title { margin: 0; font-size: 1.5rem; }
+  &__subtitle { margin: var(--ds-space-1) 0 var(--ds-space-4); color: var(--ds-text-muted); }
+  &__hint { margin: 0; color: var(--ds-text-muted); font-size: 0.875rem; }
+  &__form { display: flex; flex-direction: column; gap: var(--ds-space-3); }
+  &__row { display: flex; justify-content: space-between; gap: var(--ds-space-2); }
+  &__error {
+    margin: 0; padding: 12px var(--ds-space-3); border-radius: var(--ds-radius-sm);
+    background: var(--ds-danger-soft); color: var(--ds-danger-text); font-size: 0.875rem;
+  }
+}
+
+.spinner {
+  width: 16px; height: 16px; border-radius: 50%;
+  border: 2px solid rgb(255 255 255 / 40%); border-top-color: #fff;
+  animation: ds-spin 700ms linear infinite;
+}
+@keyframes ds-spin { to { transform: rotate(360deg); } }
+
+@media (min-width: 900px) {
+  .login {
+    grid-template-columns: minmax(360px, 5fr) 6fr;
+    &__brand {
+      display: grid; place-items: center; padding: var(--ds-space-5);
+      background: linear-gradient(145deg, #0f766e 0%, #134e4a 60%, #0f172a 100%); color: #fff;
+    }
+    &__brand-inner { max-width: 360px; }
+    &__logo {
+      display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: var(--ds-space-4);
+      border-radius: var(--ds-radius-md); background: rgb(255 255 255 / 14%);
+    }
+    &__tagline { margin: 0; font-size: 1.75rem; font-weight: 650; line-height: 1.25; letter-spacing: -0.01em; }
+    &__card { padding: var(--ds-space-5); }
+  }
+}
