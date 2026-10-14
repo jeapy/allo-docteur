@@ -2,15 +2,9 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
+import { NgIcon } from '@ng-icons/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageChange, ToastService, UiBadge, UiButton, UiDialog, UiEmptyState, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { catchError, EMPTY, filter, switchMap } from 'rxjs';
 import { ReviewRow, ReviewStatus } from '../../core/models';
 import { ReasonDialogComponent } from '../professionals/reason-dialog';
@@ -20,20 +14,18 @@ import { ReviewQuery, ReviewsService } from './reviews.service';
 @Component({
   selector: 'app-reviews-list',
   imports: [
-    ReactiveFormsModule, DatePipe, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatSelectModule,
-    MatButtonModule, MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, TranslocoPipe, NgIcon, UiPageHeader, UiSelectField, UiSelect, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './reviews-list.html',
-  styleUrl: './reviews-list.scss',
 })
 export class ReviewsListComponent {
   private readonly api = inject(ReviewsService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['rating', 'comment', 'author', 'status', 'createdAt', 'actions'];
+  protected readonly tone = statusTone;
   protected readonly statuses: ReviewStatus[] = ['VISIBLE', 'HIDDEN'];
   protected readonly status = new FormControl<ReviewStatus | null>(null);
 
@@ -67,16 +59,13 @@ export class ReviewsListComponent {
       .subscribe((status) => this.query.update((q) => ({ ...q, status, page: 0 })));
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.query.update((q) => ({ ...q, page: e.pageIndex, size: e.pageSize }));
   }
 
   protected hide(r: ReviewRow): void {
     this.dialog
-      .open<ReasonDialogComponent, { titleKey: string }, string>(ReasonDialogComponent, {
-        data: { titleKey: 'reviews.hideTitle' },
-      })
-      .afterClosed()
+      .open<string, { titleKey: string }>(ReasonDialogComponent, { titleKey: 'reviews.hideTitle' })
       .pipe(
         filter((x): x is string => !!x),
         switchMap((reason) => this.api.hide(r.id, reason)),
@@ -90,6 +79,6 @@ export class ReviewsListComponent {
 
   private reload(messageKey: string): void {
     this.query.update((q) => ({ ...q })); // nouvelle référence : recharge la page courante
-    this.snack.open(this.i18n.translate(messageKey), undefined, { duration: 3000 });
+    this.toast.success(this.i18n.translate(messageKey));
   }
 }

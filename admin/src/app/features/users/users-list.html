@@ -1,60 +1,61 @@
-<h1>{{ 'users.title' | transloco }}</h1>
-<div class="filters">
-  <mat-form-field appearance="outline" class="grow">
-    <mat-label>{{ 'users.search' | transloco }}</mat-label>
-    <input matInput [formControl]="search" />
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'users.role' | transloco }}</mat-label>
-    <mat-select [formControl]="role">
-      <mat-option value="">{{ 'users.all' | transloco }}</mat-option>
-      @for (r of roles; track r) { <mat-option [value]="r">{{ 'roles.' + r | transloco }}</mat-option> }
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'users.status' | transloco }}</mat-label>
-    <mat-select [formControl]="status">
-      <mat-option value="">{{ 'users.all' | transloco }}</mat-option>
-      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'statuses.' + s | transloco }}</mat-option> }
-    </mat-select>
-  </mat-form-field>
+<ui-page-header [title]="'users.title' | transloco" />
+
+<div class="ui-filters">
+  <ui-field class="grow" [label]="'users.search' | transloco" inputId="user-search">
+    <input uiInput id="user-search" type="search" [formControl]="search" />
+  </ui-field>
+  <ui-select-field [label]="'users.role' | transloco" inputId="user-role">
+    <select uiSelect id="user-role" [formControl]="role">
+      <option value="">{{ 'users.all' | transloco }}</option>
+      @for (r of roles; track r) { <option [value]="r">{{ 'roles.' + r | transloco }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-select-field [label]="'users.status' | transloco" inputId="user-status">
+    <select uiSelect id="user-status" [formControl]="status">
+      <option value="">{{ 'users.all' | transloco }}</option>
+      @for (s of statuses; track s) { <option [value]="s">{{ 'statuses.' + s | transloco }}</option> }
+    </select>
+  </ui-select-field>
 </div>
 
-@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
-<div class="table-wrap">
-  <table mat-table [dataSource]="rows()" matSort (matSortChange)="onSort($event)" matSortActive="createdAt" matSortDirection="desc">
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName">{{ 'users.name' | transloco }}</th>
-      <td mat-cell *matCellDef="let u">{{ u.firstName }} {{ u.lastName }}</td>
-    </ng-container>
-    <ng-container matColumnDef="email">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'users.email' | transloco }}</th>
-      <td mat-cell *matCellDef="let u">{{ u.email }}</td>
-    </ng-container>
-    <ng-container matColumnDef="role">
-      <th mat-header-cell *matHeaderCellDef>{{ 'users.role' | transloco }}</th>
-      <td mat-cell *matCellDef="let u">{{ 'roles.' + u.role | transloco }}</td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'users.status' | transloco }}</th>
-      <td mat-cell *matCellDef="let u">{{ 'statuses.' + u.status | transloco }}</td>
-    </ng-container>
-    <ng-container matColumnDef="createdAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'users.createdAt' | transloco }}</th>
-      <td mat-cell *matCellDef="let u">{{ u.createdAt | date: 'dd/MM/yyyy' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let u">
-        <button mat-button (click)="toggle(u)">
-          {{ (u.status === 'SUSPENDED' ? 'users.activate' : 'users.suspend') | transloco }}
-        </button>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns"></tr>
-    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'users.empty' | transloco }}</td></tr>
-  </table>
-</div>
-<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
-  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+@if (loading() && !rows().length) {
+  <ui-table-skeleton />
+} @else {
+  <div class="ui-table-card" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="scroll">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th uiSortHeader="lastName" [sort]="query().sort" (sortChange)="onSort($event)">{{ 'users.name' | transloco }}</th>
+            <th uiSortHeader="email" [sort]="query().sort" (sortChange)="onSort($event)">{{ 'users.email' | transloco }}</th>
+            <th>{{ 'users.role' | transloco }}</th>
+            <th uiSortHeader="status" [sort]="query().sort" (sortChange)="onSort($event)">{{ 'users.status' | transloco }}</th>
+            <th uiSortHeader="createdAt" [sort]="query().sort" (sortChange)="onSort($event)">{{ 'users.createdAt' | transloco }}</th>
+            <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of rows(); track u.id) {
+            <tr>
+              <td class="font-medium">{{ u.firstName }} {{ u.lastName }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ 'roles.' + u.role | transloco }}</td>
+              <td><ui-badge [tone]="tone(u.status)">{{ 'statuses.' + u.status | transloco }}</ui-badge></td>
+              <td>{{ u.createdAt | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <div class="ui-row-actions">
+                  <button uiBtn variant="outline" size="sm" type="button" (click)="toggle(u)">
+                    {{ (u.status === 'SUSPENDED' ? 'users.activate' : 'users.suspend') | transloco }}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="6"><ui-empty-state icon="lucideUsers" [title]="'users.empty' | transloco" /></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ui-pagination [length]="total()" [pageSize]="query().size" [pageIndex]="query().page" (page)="onPage($event)" />
+  </div>
+}

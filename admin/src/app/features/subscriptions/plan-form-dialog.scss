@@ -1,3 +1,0 @@
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; min-width: min(520px, 80vw); }
-.wide { grid-column: 1 / -1; }
-@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }

@@ -2,16 +2,8 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatTabsModule } from '@angular/material/tabs';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageChange, ToastService, UiBadge, UiButton, UiDialog, UiEmptyState, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiTab, UiTable, UiTableSkeleton, UiTabs, statusTone } from '../../shared/ui';
 import { catchError, EMPTY, filter, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { PlanPayload, PlanRow, SubscriptionRow, SubscriptionStatus } from '../../core/models';
@@ -22,22 +14,24 @@ import { SubscriptionQuery, SubscriptionsService } from './subscriptions.service
 @Component({
   selector: 'app-subscriptions-list',
   imports: [
-    ReactiveFormsModule, DatePipe, DecimalPipe, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatSelectModule,
-    MatButtonModule, MatProgressBarModule, MatTabsModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, DecimalPipe, TranslocoPipe, UiPageHeader, UiSelectField, UiSelect, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton, UiTabs,
   ],
   templateUrl: './subscriptions-list.html',
-  styleUrl: './subscriptions-list.scss',
 })
 export class SubscriptionsListComponent {
   private readonly api = inject(SubscriptionsService);
   private readonly auth = inject(AuthService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['user', 'plan', 'status', 'startsAt', 'endsAt'];
-  protected readonly planColumns = ['code', 'audience', 'price', 'duration', 'commission', 'active', 'actions'];
+  protected readonly tone = statusTone;
+  protected readonly tab = signal('subscriptions');
+  protected readonly tabs = computed<UiTab[]>(() => [
+    { id: 'subscriptions', labelKey: 'subscriptions.tabSubscriptions' },
+    { id: 'plans', labelKey: 'subscriptions.tabPlans' },
+  ]);
   protected readonly statuses: SubscriptionStatus[] = ['TRIAL', 'ACTIVE', 'EXPIRED', 'CANCELLED'];
   protected readonly status = new FormControl<SubscriptionStatus | null>(null);
 
@@ -82,21 +76,20 @@ export class SubscriptionsListComponent {
       .subscribe((status) => this.query.update((q) => ({ ...q, status, page: 0 })));
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.query.update((q) => ({ ...q, page: e.pageIndex, size: e.pageSize }));
   }
 
   protected edit(plan: PlanRow): void {
     this.dialog
-      .open<PlanFormDialogComponent, PlanRow, PlanPayload>(PlanFormDialogComponent, { data: plan })
-      .afterClosed()
+      .open<PlanPayload, PlanRow>(PlanFormDialogComponent, plan)
       .pipe(
         filter((p): p is PlanPayload => !!p),
         switchMap((payload) => this.api.updatePlan(plan.id, payload)),
       )
       .subscribe(() => {
         this.plansTick.update((n) => n + 1);
-        this.snack.open(this.i18n.translate('subscriptions.planSaved'), undefined, { duration: 3000 });
+        this.toast.success(this.i18n.translate('subscriptions.planSaved'));
       });
   }
 }

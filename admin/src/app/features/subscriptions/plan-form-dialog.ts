@@ -1,26 +1,21 @@
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { BrnDialogClose, BrnDialogRef, BrnDialogTitle, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { UiButton, UiCheckbox, UiField, UiInput } from '../../shared/ui';
 import { PlanPayload, PlanRow } from '../../core/models';
 
 /** Modification d'une formule d'abonnement. Le taux de commission se saisit en pourcentage. */
 @Component({
   selector: 'app-plan-form-dialog',
   imports: [
-    ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatButtonModule,
-    TranslocoPipe,
+    ReactiveFormsModule, TranslocoPipe, BrnDialogTitle, BrnDialogClose, UiField, UiInput, UiButton, UiCheckbox,
   ],
   templateUrl: './plan-form-dialog.html',
-  styleUrl: './plan-form-dialog.scss',
 })
 export class PlanFormDialogComponent {
-  protected readonly plan = inject<PlanRow>(MAT_DIALOG_DATA);
-  private readonly ref = inject(MatDialogRef<PlanFormDialogComponent, PlanPayload>);
+  protected readonly plan = injectBrnDialogContext<PlanRow>();
+  private readonly ref = inject<BrnDialogRef<PlanPayload>>(BrnDialogRef);
   private readonly fb = inject(FormBuilder).nonNullable;
 
   protected readonly form = this.fb.group({

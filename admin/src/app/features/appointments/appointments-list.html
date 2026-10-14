@@ -1,78 +1,80 @@
-<h1>{{ 'appointments.title' | transloco }}</h1>
-<div class="filters">
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'appointments.status' | transloco }}</mat-label>
-    <mat-select [formControl]="status">
-      <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
-      @for (s of statuses; track s) { <mat-option [value]="s">{{ 'appointmentStatuses.' + s | transloco }}</mat-option> }
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'appointments.type' | transloco }}</mat-label>
-    <mat-select [formControl]="type">
-      <mat-option value="">{{ 'common.all' | transloco }}</mat-option>
-      @for (t of types; track t) { <mat-option [value]="t">{{ 'appointmentTypes.' + t | transloco }}</mat-option> }
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'appointments.from' | transloco }}</mat-label>
-    <input matInput type="date" [formControl]="from" />
-  </mat-form-field>
-  <mat-form-field appearance="outline">
-    <mat-label>{{ 'appointments.to' | transloco }}</mat-label>
-    <input matInput type="date" [formControl]="to" />
-  </mat-form-field>
+<ui-page-header [title]="'appointments.title' | transloco" />
+
+<div class="ui-filters">
+  <ui-select-field [label]="'appointments.status' | transloco" inputId="ap-status">
+    <select uiSelect id="ap-status" [formControl]="status">
+      <option value="">{{ 'common.all' | transloco }}</option>
+      @for (s of statuses; track s) { <option [value]="s">{{ 'appointmentStatuses.' + s | transloco }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-select-field [label]="'appointments.type' | transloco" inputId="ap-type">
+    <select uiSelect id="ap-type" [formControl]="type">
+      <option value="">{{ 'common.all' | transloco }}</option>
+      @for (t of types; track t) { <option [value]="t">{{ 'appointmentTypes.' + t | transloco }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-field [label]="'appointments.from' | transloco" inputId="ap-from">
+    <input uiInput id="ap-from" type="date" [formControl]="from" />
+  </ui-field>
+  <ui-field [label]="'appointments.to' | transloco" inputId="ap-to">
+    <input uiInput id="ap-to" type="date" [formControl]="to" />
+  </ui-field>
 </div>
 
-@if (loading()) { <mat-progress-bar mode="indeterminate" /> }
-<div class="table-wrap">
-  <table mat-table [dataSource]="rows()" matSort (matSortChange)="onSort($event)" matSortActive="startAt" matSortDirection="desc">
-    <ng-container matColumnDef="startAt">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="startAt">{{ 'appointments.date' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">{{ a.startAt | date: 'dd/MM/yyyy HH:mm' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="type">
-      <th mat-header-cell *matHeaderCellDef>{{ 'appointments.type' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">
-        {{ 'appointmentTypes.' + a.type | transloco }}
-        <div class="sub">{{ 'appointmentReasons.' + a.reason | transloco }}</div>
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="patient">
-      <th mat-header-cell *matHeaderCellDef>{{ 'appointments.patient' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">
-        {{ a.beneficiaryName }}
-        @if (a.beneficiaryName !== a.patient.name) { <div class="sub">{{ 'appointments.bookedBy' | transloco }} {{ a.patient.name }}</div> }
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="professional">
-      <th mat-header-cell *matHeaderCellDef>{{ 'appointments.professional' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">
-        {{ a.professional.name }}
-        @if (a.professional.typeLabel) { <div class="sub">{{ a.professional.typeLabel }}</div> }
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header="status">{{ 'appointments.status' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">
-        {{ 'appointmentStatuses.' + a.status | transloco }}
-        @if (a.cancelReason) { <div class="sub">{{ a.cancelReason }}</div> }
-      </td>
-    </ng-container>
-    <ng-container matColumnDef="fee">
-      <th mat-header-cell *matHeaderCellDef>{{ 'appointments.fee' | transloco }}</th>
-      <td mat-cell *matCellDef="let a">{{ a.fee | currency: a.currency : 'symbol' : '1.0-0' : 'fr' }}</td>
-    </ng-container>
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let a">
-        @if (cancellable(a)) { <button mat-button (click)="cancel(a)">{{ 'appointments.cancel' | transloco }}</button> }
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns"></tr>
-    <tr class="mat-row" *matNoDataRow><td class="empty" [attr.colspan]="columns.length">{{ 'appointments.empty' | transloco }}</td></tr>
-  </table>
-</div>
-<mat-paginator [length]="total()" [pageSize]="query().size" [pageIndex]="query().page"
-  [pageSizeOptions]="[10, 20, 50]" (page)="onPage($event)" />
+@if (loading() && !rows().length) {
+  <ui-table-skeleton />
+} @else {
+  <div class="ui-table-card" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <div class="scroll">
+      <table uiTable>
+        <thead>
+          <tr>
+            <th uiSortHeader="startAt" [sort]="query().sort" (sortChange)="onSort($event)">{{ 'appointments.date' | transloco }}</th>
+            <th>{{ 'appointments.type' | transloco }}</th>
+            <th>{{ 'appointments.patient' | transloco }}</th>
+            <th>{{ 'appointments.professional' | transloco }}</th>
+            <th uiSortHeader="status" [sort]="query().sort" (sortChange)="onSort($event)">{{ 'appointments.status' | transloco }}</th>
+            <th class="num">{{ 'appointments.fee' | transloco }}</th>
+            <th><span class="sr-only">{{ 'users.actions' | transloco }}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of rows(); track a.id) {
+            <tr>
+              <td class="whitespace-nowrap">{{ a.startAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>
+                {{ 'appointmentTypes.' + a.type | transloco }}
+                <span class="sub">{{ 'appointmentReasons.' + a.reason | transloco }}</span>
+              </td>
+              <td>
+                {{ a.beneficiaryName }}
+                @if (a.beneficiaryName !== a.patient.name) {
+                  <span class="sub">{{ 'appointments.bookedBy' | transloco }} {{ a.patient.name }}</span>
+                }
+              </td>
+              <td>
+                {{ a.professional.name }}
+                @if (a.professional.typeLabel) { <span class="sub">{{ a.professional.typeLabel }}</span> }
+              </td>
+              <td>
+                <ui-badge [tone]="tone(a.status)">{{ 'appointmentStatuses.' + a.status | transloco }}</ui-badge>
+                @if (a.cancelReason) { <span class="sub">{{ a.cancelReason }}</span> }
+              </td>
+              <td class="num">{{ a.fee | currency: a.currency : 'symbol' : '1.0-0' : 'fr' }}</td>
+              <td>
+                <div class="ui-row-actions">
+                  @if (cancellable(a)) {
+                    <button uiBtn variant="outline" size="sm" type="button" (click)="cancel(a)">{{ 'appointments.cancel' | transloco }}</button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr><td [attr.colspan]="7"><ui-empty-state icon="lucideCalendarDays" [title]="'appointments.empty' | transloco" /></td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <ui-pagination [length]="total()" [pageSize]="query().size" [pageIndex]="query().page" (page)="onPage($event)" />
+  </div>
+}

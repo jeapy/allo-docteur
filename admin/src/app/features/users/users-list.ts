@@ -2,15 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { PageChange, SortChange, UiBadge, UiButton, UiEmptyState, UiField, UiInput, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiSortHeader, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { catchError, debounceTime, distinctUntilChanged, EMPTY, switchMap } from 'rxjs';
 import { Role, UserStatus, UserSummary } from '../../core/models';
 import { UserQuery, UsersService } from './users.service';
@@ -18,17 +11,15 @@ import { UserQuery, UsersService } from './users.service';
 @Component({
   selector: 'app-users-list',
   imports: [
-    ReactiveFormsModule, DatePipe, MatTableModule, MatPaginatorModule, MatSortModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, TranslocoPipe, UiPageHeader, UiField, UiInput, UiSelectField, UiSelect, UiTable, UiSortHeader, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './users-list.html',
-  styleUrl: './users-list.scss',
 })
 export class UsersListComponent {
   private readonly api = inject(UsersService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['name', 'email', 'role', 'status', 'createdAt', 'actions'];
+  protected readonly tone = statusTone;
   protected readonly roles: Role[] = ['PATIENT', 'PROFESSIONAL', 'ADMIN'];
   protected readonly statuses: UserStatus[] = ['ACTIVE', 'SUSPENDED', 'PENDING'];
 
@@ -70,11 +61,11 @@ export class UsersListComponent {
       .subscribe((status) => this.patch({ status, page: 0 }));
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.patch({ page: e.pageIndex, size: e.pageSize });
   }
 
-  protected onSort(s: Sort): void {
+  protected onSort(s: SortChange): void {
     this.patch({ sort: s.direction ? `${s.active},${s.direction}` : undefined, page: 0 });
   }
 

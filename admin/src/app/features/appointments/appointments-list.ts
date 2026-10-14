@@ -2,17 +2,8 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSortModule, Sort } from '@angular/material/sort';
-import { MatTableModule } from '@angular/material/table';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageChange, SortChange, ToastService, UiBadge, UiButton, UiDialog, UiEmptyState, UiField, UiInput, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiSortHeader, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { catchError, EMPTY, filter, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { AppointmentRow, AppointmentStatus, AppointmentType } from '../../core/models';
@@ -22,21 +13,19 @@ import { AppointmentQuery, AppointmentsService } from './appointments.service';
 @Component({
   selector: 'app-appointments-list',
   imports: [
-    ReactiveFormsModule, DatePipe, CurrencyPipe, MatTableModule, MatPaginatorModule, MatSortModule,
-    MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, CurrencyPipe, TranslocoPipe, UiPageHeader, UiField, UiInput, UiSelectField, UiSelect, UiTable, UiSortHeader, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './appointments-list.html',
-  styleUrl: './appointments-list.scss',
 })
 export class AppointmentsListComponent {
   private readonly api = inject(AppointmentsService);
   private readonly auth = inject(AuthService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['startAt', 'type', 'patient', 'professional', 'status', 'fee', 'actions'];
+  protected readonly tone = statusTone;
   protected readonly statuses: AppointmentStatus[] = ['REQUESTED', 'CONFIRMED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'NO_SHOW'];
   protected readonly types: AppointmentType[] = ['TELECONSULTATION_VIDEO', 'TELECONSULTATION_AUDIO', 'CHAT', 'HOME_VISIT'];
 
@@ -86,11 +75,11 @@ export class AppointmentsListComponent {
     });
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.patch({ page: e.pageIndex, size: e.pageSize });
   }
 
-  protected onSort(s: Sort): void {
+  protected onSort(s: SortChange): void {
     this.patch({ sort: s.direction ? `${s.active},${s.direction}` : undefined, page: 0 });
   }
 
@@ -100,17 +89,14 @@ export class AppointmentsListComponent {
 
   protected cancel(a: AppointmentRow): void {
     this.dialog
-      .open<ReasonDialogComponent, { titleKey: string }, string>(ReasonDialogComponent, {
-        data: { titleKey: 'appointments.cancelTitle' },
-      })
-      .afterClosed()
+      .open<string, { titleKey: string }>(ReasonDialogComponent, { titleKey: 'appointments.cancelTitle' })
       .pipe(
         filter((r): r is string => !!r),
         switchMap((reason) => this.api.cancel(a.id, reason)),
       )
       .subscribe((updated) => {
         this.rows.update((rows) => rows.map((r) => (r.id === updated.id ? updated : r)));
-        this.snack.open(this.i18n.translate('appointments.cancelled'), undefined, { duration: 3000 });
+        this.toast.success(this.i18n.translate('appointments.cancelled'));
       });
   }
 
