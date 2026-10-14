@@ -2,14 +2,9 @@ import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { PageChange, statusTone, UiBadge, UiButton, UiEmptyState, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiTable, UiTableSkeleton } from '../../shared/ui';
 import { catchError, EMPTY, switchMap } from 'rxjs';
 import { ComplaintRow, ComplaintStatus, ComplaintSummary } from '../../core/models';
 import { ComplaintQuery, ComplaintsService } from './complaints.service';
@@ -18,17 +13,15 @@ import { ComplaintQuery, ComplaintsService } from './complaints.service';
 @Component({
   selector: 'app-complaints-list',
   imports: [
-    ReactiveFormsModule, DatePipe, RouterLink, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatSelectModule,
-    MatButtonModule, MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, RouterLink, TranslocoPipe, UiPageHeader, UiSelectField, UiSelect, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './complaints-list.html',
-  styleUrl: './complaints-list.scss',
 })
 export class ComplaintsListComponent {
   private readonly api = inject(ComplaintsService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['number', 'author', 'subject', 'status', 'createdAt', 'actions'];
+  protected readonly tone = statusTone;
   protected readonly statuses: ComplaintStatus[] = ['OPEN', 'IN_REVIEW', 'RESOLVED', 'REJECTED'];
   protected readonly status = new FormControl<ComplaintStatus | null>(null);
 
@@ -65,7 +58,7 @@ export class ComplaintsListComponent {
       .subscribe((status) => this.query.update((q) => ({ ...q, status, page: 0 })));
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.query.update((q) => ({ ...q, page: e.pageIndex, size: e.pageSize }));
   }
 }

@@ -1,15 +1,8 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PageChange, ToastService, UiBadge, UiButton, UiDialog, UiEmptyState, UiPageHeader, UiPagination, UiSelect, UiSelectField, UiTable, UiTableSkeleton, statusTone } from '../../shared/ui';
 import { catchError, EMPTY, filter, switchMap } from 'rxjs';
 import { PartnerPayload, PartnerRow, PartnerStatus, PartnerType } from '../../core/models';
 import { PARTNER_TYPES, PartnerFormDialogComponent } from './partner-form-dialog';
@@ -19,20 +12,18 @@ import { PartnerQuery, PartnersService } from './partners.service';
 @Component({
   selector: 'app-partners-list',
   imports: [
-    ReactiveFormsModule, MatTableModule, MatPaginatorModule, MatFormFieldModule, MatSelectModule, MatButtonModule,
-    MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, TranslocoPipe, UiPageHeader, UiSelectField, UiSelect, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './partners-list.html',
-  styleUrl: './partners-list.scss',
 })
 export class PartnersListComponent {
   private readonly api = inject(PartnersService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
 
-  protected readonly columns = ['name', 'type', 'city', 'contact', 'status', 'actions'];
+  protected readonly tone = statusTone;
   protected readonly types = PARTNER_TYPES;
   protected readonly statuses: PartnerStatus[] = ['ACTIVE', 'INACTIVE'];
   protected readonly type = new FormControl<PartnerType | null>(null);
@@ -71,7 +62,7 @@ export class PartnersListComponent {
       .subscribe((status) => this.query.update((q) => ({ ...q, status, page: 0 })));
   }
 
-  protected onPage(e: PageEvent): void {
+  protected onPage(e: PageChange): void {
     this.query.update((q) => ({ ...q, page: e.pageIndex, size: e.pageSize }));
   }
 
@@ -93,13 +84,12 @@ export class PartnersListComponent {
 
   private openForm(existing: PartnerRow | null) {
     return this.dialog
-      .open<PartnerFormDialogComponent, PartnerRow | null, PartnerPayload>(PartnerFormDialogComponent, { data: existing })
-      .afterClosed()
+      .open<PartnerPayload, PartnerRow | null>(PartnerFormDialogComponent, existing)
       .pipe(filter((p): p is PartnerPayload => !!p));
   }
 
   private saved(): void {
     this.query.update((q) => ({ ...q })); // nouvelle référence : recharge la page courante
-    this.snack.open(this.i18n.translate('partners.saved'), undefined, { duration: 3000 });
+    this.toast.success(this.i18n.translate('partners.saved'));
   }
 }

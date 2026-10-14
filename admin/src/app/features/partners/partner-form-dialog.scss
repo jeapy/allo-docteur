@@ -1,4 +1,0 @@
-.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 12px; min-width: min(560px, 80vw); }
-.wide { grid-column: 1 / -1; }
-.error { color: var(--mat-sys-error, #b3261e); margin: 0 0 12px; }
-@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }

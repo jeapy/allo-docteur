@@ -1,55 +1,51 @@
-<h2 mat-dialog-title>{{ (existing ? 'pharmacies.edit' : 'pharmacies.create') | transloco }}</h2>
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <mat-dialog-content class="grid">
-    <mat-form-field appearance="outline" class="wide">
-      <mat-label>{{ 'pharmacies.name' | transloco }}</mat-label>
-      <input matInput formControlName="name" maxlength="200" required />
-      @if (form.controls.name.invalid) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'pharmacies.city' | transloco }}</mat-label>
-      <mat-select formControlName="cityId" required>
-        @for (c of cities(); track c.id) { <mat-option [value]="c.id">{{ c.name }}</mat-option> }
-      </mat-select>
-      @if (form.controls.cityId.invalid) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'pharmacies.phone' | transloco }}</mat-label>
-      <input matInput formControlName="phone" inputmode="tel" required />
-      @if (form.controls.phone.invalid) { <mat-error>{{ 'validation.phone' | transloco }}</mat-error> }
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="wide">
-      <mat-label>{{ 'pharmacies.address' | transloco }}</mat-label>
-      <input matInput formControlName="address" maxlength="255" required />
-      @if (form.controls.address.invalid) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'pharmacies.latitude' | transloco }}</mat-label>
-      <input matInput type="number" step="0.000001" formControlName="latitude" />
-      @if (form.controls.latitude.invalid) { <mat-error>{{ 'validation.range' | transloco }}</mat-error> }
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>{{ 'pharmacies.longitude' | transloco }}</mat-label>
-      <input matInput type="number" step="0.000001" formControlName="longitude" />
-      @if (form.controls.longitude.invalid) { <mat-error>{{ 'validation.range' | transloco }}</mat-error> }
-    </mat-form-field>
-    @if (coordinatesIncomplete) { <p class="wide error" role="alert">{{ 'pharmacies.coordinatesTogether' | transloco }}</p> }
-    <mat-form-field appearance="outline" class="wide">
-      <mat-label>{{ 'pharmacies.openingHours' | transloco }}</mat-label>
-      <input matInput formControlName="openingHours" maxlength="255" />
-    </mat-form-field>
-    <mat-checkbox formControlName="onDuty">{{ 'pharmacies.onDuty' | transloco }}</mat-checkbox>
-    <mat-checkbox formControlName="offersDelivery">{{ 'pharmacies.delivery' | transloco }}</mat-checkbox>
-    @if (form.controls.offersDelivery.value) {
-      <mat-form-field appearance="outline">
-        <mat-label>{{ 'pharmacies.deliveryFee' | transloco }}</mat-label>
-        <input matInput type="number" min="0" formControlName="deliveryFee" />
-        @if (form.controls.deliveryFee.invalid) { <mat-error>{{ 'validation.range' | transloco }}</mat-error> }
-      </mat-form-field>
-    }
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button type="button" mat-dialog-close>{{ 'common.cancel' | transloco }}</button>
-    <button mat-flat-button type="submit">{{ 'common.save' | transloco }}</button>
-  </mat-dialog-actions>
+<h2 brnDialogTitle class="m-0 mb-4 text-lg font-semibold text-text">{{ (existing ? 'pharmacies.edit' : 'pharmacies.create') | transloco }}</h2>
+<form [formGroup]="form" (ngSubmit)="submit()" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <ui-field class="sm:col-span-2" [label]="'pharmacies.name' | transloco" inputId="pm-name"
+    [error]="form.controls.name.invalid && form.controls.name.touched ? ('validation.required' | transloco) : null">
+    <input uiInput id="pm-name" formControlName="name" maxlength="200" required />
+  </ui-field>
+  <ui-select-field [label]="'pharmacies.city' | transloco" inputId="pm-city">
+    <select uiSelect id="pm-city" formControlName="cityId" required>
+      <option [ngValue]="0" disabled>—</option>
+      @for (c of cities(); track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
+    </select>
+  </ui-select-field>
+  <ui-field [label]="'pharmacies.phone' | transloco" inputId="pm-phone"
+    [error]="form.controls.phone.invalid && form.controls.phone.touched ? ('validation.phone' | transloco) : null">
+    <input uiInput id="pm-phone" formControlName="phone" inputmode="tel" required />
+  </ui-field>
+  <ui-field class="sm:col-span-2" [label]="'pharmacies.address' | transloco" inputId="pm-address"
+    [error]="form.controls.address.invalid && form.controls.address.touched ? ('validation.required' | transloco) : null">
+    <input uiInput id="pm-address" formControlName="address" maxlength="255" required />
+  </ui-field>
+  <ui-field [label]="'pharmacies.latitude' | transloco" inputId="pm-lat"
+    [error]="form.controls.latitude.invalid && form.controls.latitude.touched ? ('validation.range' | transloco) : null">
+    <input uiInput id="pm-lat" type="number" step="0.000001" formControlName="latitude" />
+  </ui-field>
+  <ui-field [label]="'pharmacies.longitude' | transloco" inputId="pm-lng"
+    [error]="form.controls.longitude.invalid && form.controls.longitude.touched ? ('validation.range' | transloco) : null">
+    <input uiInput id="pm-lng" type="number" step="0.000001" formControlName="longitude" />
+  </ui-field>
+  @if (coordinatesIncomplete) {
+    <p class="m-0 text-sm font-medium text-danger-text sm:col-span-2" role="alert">{{ 'pharmacies.coordinatesTogether' | transloco }}</p>
+  }
+  <ui-field class="sm:col-span-2" [label]="'pharmacies.openingHours' | transloco" inputId="pm-hours">
+    <input uiInput id="pm-hours" formControlName="openingHours" maxlength="255" />
+  </ui-field>
+  <label class="flex items-center gap-2 text-sm">
+    <input type="checkbox" uiCheckbox formControlName="onDuty" /> {{ 'pharmacies.onDuty' | transloco }}
+  </label>
+  <label class="flex items-center gap-2 text-sm">
+    <input type="checkbox" uiCheckbox formControlName="offersDelivery" /> {{ 'pharmacies.delivery' | transloco }}
+  </label>
+  @if (form.controls.offersDelivery.value) {
+    <ui-field [label]="'pharmacies.deliveryFee' | transloco" inputId="pm-fee"
+      [error]="form.controls.deliveryFee.invalid && form.controls.deliveryFee.touched ? ('validation.range' | transloco) : null">
+      <input uiInput id="pm-fee" type="number" min="0" formControlName="deliveryFee" />
+    </ui-field>
+  }
+  <div class="mt-2 flex justify-end gap-2 sm:col-span-2">
+    <button uiBtn variant="ghost" type="button" brnDialogClose>{{ 'common.cancel' | transloco }}</button>
+    <button uiBtn type="submit">{{ 'common.save' | transloco }}</button>
+  </div>
 </form>

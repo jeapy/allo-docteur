@@ -1,11 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { BrnDialogClose, BrnDialogRef, BrnDialogTitle, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { UiButton, UiField, UiInput, UiSelect, UiSelectField } from '../../shared/ui';
 import { CityRef, PartnerPayload, PartnerRow, PartnerType } from '../../core/models';
 import { PartnersService } from './partners.service';
 
@@ -19,15 +16,13 @@ const PHONE = /^\+?[0-9 ()-]{8,20}$/;
 @Component({
   selector: 'app-partner-form-dialog',
   imports: [
-    ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule,
-    TranslocoPipe,
+    ReactiveFormsModule, TranslocoPipe, BrnDialogTitle, BrnDialogClose, UiField, UiInput, UiSelectField, UiSelect, UiButton,
   ],
   templateUrl: './partner-form-dialog.html',
-  styleUrl: './partner-form-dialog.scss',
 })
 export class PartnerFormDialogComponent {
-  protected readonly existing = inject<PartnerRow | null>(MAT_DIALOG_DATA);
-  private readonly ref = inject(MatDialogRef<PartnerFormDialogComponent, PartnerPayload>);
+  protected readonly existing = injectBrnDialogContext<PartnerRow | null>();
+  private readonly ref = inject<BrnDialogRef<PartnerPayload>>(BrnDialogRef);
   private readonly fb = inject(FormBuilder).nonNullable;
 
   protected readonly types = PARTNER_TYPES;

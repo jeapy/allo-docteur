@@ -1,14 +1,9 @@
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, effect, inject, input, signal } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatListModule } from '@angular/material/list';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { NgIcon } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { ToastService, UiBadge, UiButton, UiCard, UiDialog, UiEmptyState, UiPageHeader, UiSkeleton, statusTone } from '../../shared/ui';
 import { Observable, filter, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
 import { ProfessionalDetail, ProfessionalDocument } from '../../core/models';
@@ -18,23 +13,22 @@ import { ReasonDialogComponent } from './reason-dialog';
 @Component({
   selector: 'app-professional-detail',
   imports: [
-    DatePipe, DecimalPipe, RouterLink, MatCardModule, MatButtonModule, MatIconModule, MatListModule,
-    MatProgressBarModule, TranslocoPipe,
+    DatePipe, DecimalPipe, RouterLink, TranslocoPipe, NgIcon, UiPageHeader, UiBadge, UiButton, UiEmptyState, UiCard, UiSkeleton,
   ],
   templateUrl: './professional-detail.html',
-  styleUrl: './professional-detail.scss',
 })
 export class ProfessionalDetailComponent {
   /** Paramètre de route :id (withComponentInputBinding). */
   readonly id = input.required<string>();
 
   private readonly api = inject(ProfessionalsService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
   private readonly auth = inject(AuthService);
 
   protected readonly pro = signal<ProfessionalDetail | null>(null);
+  protected readonly tone = statusTone;
   protected readonly busy = signal(false);
 
   /** Seuls les niveaux SUPER et SUPPORT peuvent décider ; FINANCE consulte en lecture seule. */
@@ -75,8 +69,7 @@ export class ProfessionalDetailComponent {
 
   private askReason(titleKey: string): Observable<string> {
     return this.dialog
-      .open<ReasonDialogComponent, { titleKey: string }, string>(ReasonDialogComponent, { data: { titleKey } })
-      .afterClosed()
+      .open<string, { titleKey: string }>(ReasonDialogComponent, { titleKey })
       .pipe(filter((r): r is string => !!r));
   }
 
@@ -90,7 +83,7 @@ export class ProfessionalDetailComponent {
       next: (p: ProfessionalDetail) => {
         this.pro.set(p);
         this.busy.set(false);
-        this.snack.open(this.i18n.translate('professionals.updated'), undefined, { duration: 3000 });
+        this.toast.success(this.i18n.translate('professionals.updated'));
       },
       error: () => this.busy.set(false),
     };

@@ -1,68 +1,76 @@
-<a mat-button routerLink="/professionals"><mat-icon>arrow_back</mat-icon> {{ 'professionals.back' | transloco }}</a>
-@if (busy()) { <mat-progress-bar mode="indeterminate" /> }
-@if (pro(); as p) {
-  <h1>{{ p.firstName }} {{ p.lastName }}</h1>
-  <p class="meta">
-    {{ p.type.label }} · {{ p.email }} ·
-    <strong>{{ 'verification.' + p.verificationStatus | transloco }}</strong>
-  </p>
-  @if (p.rejectionReason) {
-    <p class="reason" role="note">{{ 'professionals.reason' | transloco }} : {{ p.rejectionReason }}</p>
-  }
+<a uiBtn variant="ghost" size="sm" routerLink="/professionals" class="-ml-3 mb-4">
+  <ng-icon name="lucideArrowLeft" size="16" aria-hidden="true" /> {{ 'professionals.back' | transloco }}
+</a>
 
-  <div class="actions">
+@if (pro(); as p) {
+  <ui-page-header [title]="p.firstName + ' ' + p.lastName">
     @if (canReview()) {
       @if (p.verificationStatus === 'PENDING' || p.verificationStatus === 'SUSPENDED') {
-        <button mat-flat-button (click)="approve()" [disabled]="busy()">{{ 'professionals.approve' | transloco }}</button>
+        <button uiBtn type="button" (click)="approve()" [disabled]="busy()">{{ 'professionals.approve' | transloco }}</button>
       }
       @if (p.verificationStatus === 'PENDING') {
-        <button mat-stroked-button (click)="reject()" [disabled]="busy()">{{ 'professionals.reject' | transloco }}</button>
+        <button uiBtn variant="outline" type="button" (click)="reject()" [disabled]="busy()">{{ 'professionals.reject' | transloco }}</button>
       }
       @if (p.verificationStatus === 'APPROVED') {
-        <button mat-stroked-button (click)="suspend()" [disabled]="busy()">{{ 'professionals.suspend' | transloco }}</button>
+        <button uiBtn variant="danger" type="button" (click)="suspend()" [disabled]="busy()">{{ 'professionals.suspend' | transloco }}</button>
       }
     }
+  </ui-page-header>
+
+  <p class="-mt-4 mb-4 flex flex-wrap items-center gap-2 text-sm text-muted">
+    {{ p.type.label }} · {{ p.email }}
+    <ui-badge [tone]="tone(p.verificationStatus)">{{ 'verification.' + p.verificationStatus | transloco }}</ui-badge>
+  </p>
+  @if (p.rejectionReason) {
+    <p role="note" class="mb-4 rounded-md bg-danger-soft px-4 py-3 text-sm text-danger-text">
+      {{ 'professionals.reason' | transloco }} : {{ p.rejectionReason }}
+    </p>
+  }
+
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <ui-card>
+      <h2 class="mb-4">{{ 'professionals.identity' | transloco }}</h2>
+      <dl class="m-0 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 text-sm">
+        <dt class="font-semibold text-muted">{{ 'professionals.license' | transloco }}</dt><dd class="m-0">{{ p.licenseNumber }}</dd>
+        <dt class="font-semibold text-muted">{{ 'professionals.qualification' | transloco }}</dt><dd class="m-0">{{ p.qualification }}</dd>
+        <dt class="font-semibold text-muted">{{ 'professionals.experience' | transloco }}</dt><dd class="m-0">{{ p.yearsExperience ?? '—' }}</dd>
+        <dt class="font-semibold text-muted">{{ 'professionals.city' | transloco }}</dt>
+        <dd class="m-0">{{ p.city.name }}{{ p.district ? ' – ' + p.district.name : '' }}</dd>
+        <dt class="font-semibold text-muted">{{ 'professionals.specialties' | transloco }}</dt>
+        <dd class="m-0 flex flex-wrap gap-1.5">@for (s of p.specialties; track s.id) { <ui-badge tone="primary">{{ s.name }}</ui-badge> }</dd>
+        <dt class="font-semibold text-muted">{{ 'professionals.fees' | transloco }}</dt>
+        <dd class="m-0">
+          @if (p.offersTeleconsultation) { {{ 'professionals.tele' | transloco }} : {{ p.consultationFee | number }} {{ p.currency }}<br /> }
+          @if (p.offersHomeVisit) { {{ 'professionals.home' | transloco }} : {{ p.homeVisitFee | number }} {{ p.currency }} }
+        </dd>
+      </dl>
+      @if (p.bio) { <p class="mt-4 text-sm">{{ p.bio }}</p> }
+    </ui-card>
+
+    <ui-card>
+      <h2 class="mb-4">{{ 'professionals.documents' | transloco }}</h2>
+      @if (p.documents?.length) {
+        <ul class="m-0 flex list-none flex-col divide-y divide-border p-0">
+          @for (d of p.documents; track d.id) {
+            <li class="flex items-center gap-3 py-3">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-primary-soft text-primary">
+                <ng-icon name="lucideFileText" size="20" aria-hidden="true" />
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block truncate text-sm font-medium">{{ d.filename }}</span>
+                <span class="block text-xs text-muted">{{ d.type }} · {{ d.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              </span>
+              <button uiBtn variant="outline" size="sm" type="button" (click)="open(d)">{{ 'professionals.open' | transloco }}</button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <ui-empty-state icon="lucideFileText" [title]="'professionals.noDocuments' | transloco" />
+      }
+    </ui-card>
   </div>
-
-  <div class="grid">
-    <mat-card>
-      <mat-card-header><mat-card-title>{{ 'professionals.identity' | transloco }}</mat-card-title></mat-card-header>
-      <mat-card-content>
-        <dl>
-          <dt>{{ 'professionals.license' | transloco }}</dt><dd>{{ p.licenseNumber }}</dd>
-          <dt>{{ 'professionals.qualification' | transloco }}</dt><dd>{{ p.qualification }}</dd>
-          <dt>{{ 'professionals.experience' | transloco }}</dt><dd>{{ p.yearsExperience ?? '—' }}</dd>
-          <dt>{{ 'professionals.city' | transloco }}</dt><dd>{{ p.city.name }}{{ p.district ? ' – ' + p.district.name : '' }}</dd>
-          <dt>{{ 'professionals.specialties' | transloco }}</dt>
-          <dd>@for (s of p.specialties; track s.id) { <span class="chip">{{ s.name }}</span> }</dd>
-          <dt>{{ 'professionals.fees' | transloco }}</dt>
-          <dd>
-            @if (p.offersTeleconsultation) { {{ 'professionals.tele' | transloco }} : {{ p.consultationFee | number }} {{ p.currency }}<br /> }
-            @if (p.offersHomeVisit) { {{ 'professionals.home' | transloco }} : {{ p.homeVisitFee | number }} {{ p.currency }} }
-          </dd>
-        </dl>
-        @if (p.bio) { <p>{{ p.bio }}</p> }
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card>
-      <mat-card-header><mat-card-title>{{ 'professionals.documents' | transloco }}</mat-card-title></mat-card-header>
-      <mat-card-content>
-        @if (p.documents?.length) {
-          <mat-list>
-            @for (d of p.documents; track d.id) {
-              <mat-list-item>
-                <mat-icon matListItemIcon>description</mat-icon>
-                <span matListItemTitle>{{ d.filename }}</span>
-                <span matListItemLine>{{ d.type }} · {{ d.uploadedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-                <button matListItemMeta mat-button (click)="open(d)">{{ 'professionals.open' | transloco }}</button>
-              </mat-list-item>
-            }
-          </mat-list>
-        } @else {
-          <p>{{ 'professionals.noDocuments' | transloco }}</p>
-        }
-      </mat-card-content>
-    </mat-card>
+} @else if (busy()) {
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2" role="status" aria-busy="true">
+    <ui-skeleton class="h-10 lg:col-span-2" /><ui-skeleton class="h-64" /><ui-skeleton class="h-64" />
   </div>
 }

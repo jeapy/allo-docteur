@@ -1,53 +1,68 @@
-<a mat-button routerLink="/complaints">{{ 'complaints.back' | transloco }}</a>
-@if (busy()) { <mat-progress-bar mode="indeterminate" /> }
+<a uiBtn variant="ghost" size="sm" routerLink="/complaints" class="-ml-3 mb-4">
+  <ng-icon name="lucideArrowLeft" size="16" aria-hidden="true" /> {{ 'complaints.back' | transloco }}
+</a>
+
 @if (detail(); as d) {
-  <h1>{{ d.summary.number }} — {{ d.summary.subject }}</h1>
-  <p class="meta">
-    {{ 'complaintStatuses.' + d.summary.status | transloco }} ·
+  <ui-page-header [title]="d.summary.number + ' — ' + d.summary.subject" />
+  <p class="-mt-4 mb-1 flex flex-wrap items-center gap-2 text-sm text-muted">
+    <ui-badge [tone]="tone(d.summary.status)">{{ 'complaintStatuses.' + d.summary.status | transloco }}</ui-badge>
     {{ d.summary.authorName || d.summary.authorId }} ({{ 'roles.' + d.summary.authorRole | transloco }}) ·
     {{ d.summary.createdAt | date: 'dd/MM/yyyy HH:mm' }}
   </p>
-  @if (d.summary.appointmentId) { <p class="meta">{{ 'complaints.linkedAppointment' | transloco }} : {{ d.summary.appointmentId }}</p> }
-
-  <mat-card class="block">
-    <mat-card-header><mat-card-title>{{ 'complaints.description' | transloco }}</mat-card-title></mat-card-header>
-    <mat-card-content><p class="text">{{ d.description }}</p></mat-card-content>
-  </mat-card>
-
-  @if (d.resolution) {
-    <mat-card class="block">
-      <mat-card-header><mat-card-title>{{ (d.summary.status === 'RESOLVED' ? 'complaints.resolution' : 'complaints.rejectReason') | transloco }}</mat-card-title></mat-card-header>
-      <mat-card-content><p class="text">{{ d.resolution }}</p></mat-card-content>
-    </mat-card>
+  @if (d.summary.appointmentId) {
+    <p class="m-0 mb-4 text-sm text-muted">{{ 'complaints.linkedAppointment' | transloco }} : {{ d.summary.appointmentId }}</p>
   }
 
-  <section class="block" [attr.aria-label]="'complaints.thread' | transloco">
-    <h2>{{ 'complaints.thread' | transloco }}</h2>
-    @for (m of d.messages; track m.id) {
-      <div class="msg" [class.admin]="m.fromAdmin">
-        <div class="who">{{ (m.fromAdmin ? 'complaints.fromAdmin' : 'complaints.fromAuthor') | transloco }} · {{ m.createdAt | date: 'dd/MM/yyyy HH:mm' }}</div>
-        <p class="text">{{ m.body }}</p>
-      </div>
-    } @empty {
-      <p class="meta">{{ 'complaints.noMessages' | transloco }}</p>
+  <div class="mt-4 flex max-w-3xl flex-col gap-4">
+    <ui-card>
+      <h2 class="mb-2">{{ 'complaints.description' | transloco }}</h2>
+      <p class="m-0 whitespace-pre-wrap [overflow-wrap:anywhere]">{{ d.description }}</p>
+    </ui-card>
+
+    @if (d.resolution) {
+      <ui-card>
+        <h2 class="mb-2">{{ (d.summary.status === 'RESOLVED' ? 'complaints.resolution' : 'complaints.rejectReason') | transloco }}</h2>
+        <p class="m-0 whitespace-pre-wrap [overflow-wrap:anywhere]">{{ d.resolution }}</p>
+      </ui-card>
     }
-  </section>
 
-  @if (!closed()) {
-    <form class="block" (ngSubmit)="send()">
-      <mat-form-field appearance="outline" class="full">
-        <mat-label>{{ 'complaints.yourReply' | transloco }}</mat-label>
-        <textarea matInput rows="4" maxlength="5000" [formControl]="message"></textarea>
-        @if (message.invalid && message.touched) { <mat-error>{{ 'validation.required' | transloco }}</mat-error> }
-      </mat-form-field>
-      <div class="actions">
-        <button mat-flat-button type="submit" [disabled]="busy()">{{ 'complaints.send' | transloco }}</button>
-        @if (d.summary.status === 'OPEN') {
-          <button mat-stroked-button type="button" [disabled]="busy()" (click)="take()">{{ 'complaints.take' | transloco }}</button>
+    <section [attr.aria-label]="'complaints.thread' | transloco">
+      <h2 class="mb-3">{{ 'complaints.thread' | transloco }}</h2>
+      <div class="flex flex-col gap-3">
+        @for (m of d.messages; track m.id) {
+          <div class="max-w-[85%] rounded-lg border px-4 py-3"
+            [class.self-end]="m.fromAdmin" [class.bg-primary-soft]="m.fromAdmin" [class.border-primary-soft-hover]="m.fromAdmin"
+            [class.bg-surface]="!m.fromAdmin" [class.border-border]="!m.fromAdmin">
+            <div class="mb-1 text-xs text-muted">
+              {{ (m.fromAdmin ? 'complaints.fromAdmin' : 'complaints.fromAuthor') | transloco }} · {{ m.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+            </div>
+            <p class="m-0 whitespace-pre-wrap text-sm [overflow-wrap:anywhere]">{{ m.body }}</p>
+          </div>
+        } @empty {
+          <ui-empty-state icon="lucideHeadset" [title]="'complaints.noMessages' | transloco" />
         }
-        <button mat-stroked-button type="button" [disabled]="busy()" (click)="resolve()">{{ 'complaints.resolve' | transloco }}</button>
-        <button mat-stroked-button type="button" [disabled]="busy()" (click)="reject()">{{ 'complaints.reject' | transloco }}</button>
       </div>
-    </form>
-  }
+    </section>
+
+    @if (!closed()) {
+      <form (ngSubmit)="send()" class="flex flex-col gap-4">
+        <ui-field [label]="'complaints.yourReply' | transloco" inputId="cl-reply"
+          [error]="message.invalid && message.touched ? ('validation.required' | transloco) : null">
+          <textarea uiInput id="cl-reply" rows="4" maxlength="5000" class="resize-y" [formControl]="message"></textarea>
+        </ui-field>
+        <div class="flex flex-wrap gap-2">
+          <button uiBtn type="submit" [disabled]="busy()">{{ 'complaints.send' | transloco }}</button>
+          @if (d.summary.status === 'OPEN') {
+            <button uiBtn variant="outline" type="button" [disabled]="busy()" (click)="take()">{{ 'complaints.take' | transloco }}</button>
+          }
+          <button uiBtn variant="secondary" type="button" [disabled]="busy()" (click)="resolve()">{{ 'complaints.resolve' | transloco }}</button>
+          <button uiBtn variant="danger" type="button" [disabled]="busy()" (click)="reject()">{{ 'complaints.reject' | transloco }}</button>
+        </div>
+      </form>
+    }
+  </div>
+} @else if (busy()) {
+  <div class="flex max-w-3xl flex-col gap-4" role="status" aria-busy="true">
+    <ui-skeleton class="h-10" /><ui-skeleton class="h-32" /><ui-skeleton class="h-24" />
+  </div>
 }

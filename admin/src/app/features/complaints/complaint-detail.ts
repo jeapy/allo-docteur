@@ -1,15 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
+import { NgIcon } from '@ng-icons/core';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { ToastService, UiBadge, UiButton, UiCard, UiDialog, UiEmptyState, UiField, UiInput, UiPageHeader, UiSkeleton, statusTone } from '../../shared/ui';
 import { Observable, filter, switchMap } from 'rxjs';
 import { ComplaintDetail } from '../../core/models';
 import { ReasonDialogComponent } from '../professionals/reason-dialog';
@@ -19,22 +14,21 @@ import { ComplaintsService } from './complaints.service';
 @Component({
   selector: 'app-complaint-detail',
   imports: [
-    ReactiveFormsModule, DatePipe, RouterLink, MatCardModule, MatButtonModule, MatFormFieldModule, MatInputModule,
-    MatProgressBarModule, TranslocoPipe,
+    ReactiveFormsModule, DatePipe, RouterLink, TranslocoPipe, NgIcon, UiPageHeader, UiField, UiInput, UiBadge, UiButton, UiEmptyState, UiCard, UiSkeleton,
   ],
   templateUrl: './complaint-detail.html',
-  styleUrl: './complaint-detail.scss',
 })
 export class ComplaintDetailComponent {
   /** Paramètre de route :id (withComponentInputBinding). */
   readonly id = input.required<string>();
 
   private readonly api = inject(ComplaintsService);
-  private readonly dialog = inject(MatDialog);
-  private readonly snack = inject(MatSnackBar);
+  private readonly dialog = inject(UiDialog);
+  private readonly toast = inject(ToastService);
   private readonly i18n = inject(TranslocoService);
 
   protected readonly detail = signal<ComplaintDetail | null>(null);
+  protected readonly tone = statusTone;
   protected readonly busy = signal(false);
   protected readonly closed = computed(() => {
     const s = this.detail()?.summary.status;
@@ -85,10 +79,7 @@ export class ComplaintDetailComponent {
 
   private askText(titleKey: string, labelKey: string): Observable<string> {
     return this.dialog
-      .open<ReasonDialogComponent, { titleKey: string; labelKey: string }, string>(ReasonDialogComponent, {
-        data: { titleKey, labelKey },
-      })
-      .afterClosed()
+      .open<string, { titleKey: string; labelKey: string }>(ReasonDialogComponent, { titleKey, labelKey })
       .pipe(filter((t): t is string => !!t));
   }
 
@@ -102,7 +93,7 @@ export class ComplaintDetailComponent {
       this.detail.set(d);
       this.busy.set(false);
       after?.();
-      this.snack.open(this.i18n.translate('complaints.saved'), undefined, { duration: 3000 });
+      this.toast.success(this.i18n.translate('complaints.saved'));
     };
   }
 }

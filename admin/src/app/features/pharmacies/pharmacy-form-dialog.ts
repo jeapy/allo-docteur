@@ -1,12 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { BrnDialogClose, BrnDialogRef, BrnDialogTitle, injectBrnDialogContext } from '@spartan-ng/brain/dialog';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { UiButton, UiCheckbox, UiField, UiInput, UiSelect, UiSelectField } from '../../shared/ui';
 import { CityRef, PharmacyPayload, PharmacyRow } from '../../core/models';
 import { PharmaciesService } from './pharmacies.service';
 
@@ -16,15 +12,13 @@ const PHONE = /^\+?[0-9 ()-]{8,20}$/;
 @Component({
   selector: 'app-pharmacy-form-dialog',
   imports: [
-    ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule,
-    MatButtonModule, TranslocoPipe,
+    ReactiveFormsModule, TranslocoPipe, BrnDialogTitle, BrnDialogClose, UiField, UiInput, UiSelectField, UiSelect, UiButton, UiCheckbox,
   ],
   templateUrl: './pharmacy-form-dialog.html',
-  styleUrl: './pharmacy-form-dialog.scss',
 })
 export class PharmacyFormDialogComponent {
-  protected readonly existing = inject<PharmacyRow | null>(MAT_DIALOG_DATA);
-  private readonly ref = inject(MatDialogRef<PharmacyFormDialogComponent, PharmacyPayload>);
+  protected readonly existing = injectBrnDialogContext<PharmacyRow | null>();
+  private readonly ref = inject<BrnDialogRef<PharmacyPayload>>(BrnDialogRef);
   private readonly fb = inject(FormBuilder).nonNullable;
 
   protected readonly cities = signal<CityRef[]>([]);
