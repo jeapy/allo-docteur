@@ -81,7 +81,8 @@ class ReviewFlowTest extends AbstractIntegrationTest {
         assertThat(status(tooEarly)).isEqualTo(409);
         assertThat(api.body(tooEarly).get("code").asText()).isEqualTo("REVIEW_NOT_ALLOWED");
 
-        Done d = completed(fx.approvedProfessional("Fini" + UUID.randomUUID().toString().substring(0, 6)), patient);
+        // autre patient : le premier a déjà un rendez-vous au même créneau (chevauchement refusé)
+        Done d = completed(fx.approvedProfessional("Fini" + UUID.randomUUID().toString().substring(0, 6)), fx.patient("Avis2"));
         String url = "/api/v1/appointments/" + d.appointmentId() + "/review";
 
         assertThat(status(api.post(url, Map.of("rating", 0), d.patient().token()))).isEqualTo(400);
