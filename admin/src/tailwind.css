@@ -11,6 +11,7 @@
   --color-primary: var(--ds-primary);
   --color-primary-hover: var(--ds-primary-hover);
   --color-primary-soft: var(--ds-primary-soft);
+  --color-primary-soft-hover: var(--ds-primary-soft-hover);
   --color-on-primary: var(--ds-on-primary);
   --color-secondary: var(--ds-secondary);
   --color-secondary-soft: var(--ds-secondary-soft);

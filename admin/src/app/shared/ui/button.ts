@@ -10,7 +10,7 @@ const BASE =
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: 'bg-primary text-on-primary shadow-sm hover:bg-primary-hover hover:shadow-md',
-  secondary: 'bg-primary-soft text-primary-hover hover:bg-[#d3ebe7]',
+  secondary: 'bg-primary-soft text-primary-hover hover:bg-primary-soft-hover',
   outline: 'border border-border-strong bg-surface text-text hover:bg-surface-muted',
   ghost: 'bg-transparent text-text hover:bg-surface-muted',
   danger: 'bg-danger text-on-primary shadow-sm hover:bg-[#991b1b]',

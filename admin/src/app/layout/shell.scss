@@ -44,7 +44,7 @@ $bp-desktop: 900px;
   ng-icon { flex: none; }
   &:hover { background: rgb(255 255 255 / 8%); color: #fff; }
   &:active { background: rgb(255 255 255 / 12%); }
-  &:focus-visible { box-shadow: 0 0 0 2px var(--ds-sidebar-bg), 0 0 0 4px #5eead4; }
+  &:focus-visible { box-shadow: 0 0 0 2px var(--ds-sidebar-bg), 0 0 0 4px var(--ds-sidebar-focus); }
   &--active { background: var(--ds-sidebar-active-bg); color: var(--ds-sidebar-active-text); font-weight: 600; }
 }
 

@@ -38,7 +38,7 @@
     grid-template-columns: minmax(360px, 5fr) 6fr;
     &__brand {
       display: grid; place-items: center; padding: var(--ds-space-5);
-      background: linear-gradient(145deg, #0f766e 0%, #134e4a 60%, #0f172a 100%); color: #fff;
+      background: linear-gradient(145deg, var(--ds-primary) 0%, var(--ds-sidebar-active-bg) 60%, var(--ds-sidebar-bg) 100%); color: #fff;
     }
     &__brand-inner { max-width: 360px; }
     &__logo {

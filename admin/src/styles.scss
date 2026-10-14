@@ -13,12 +13,13 @@
   color-scheme: light;
 
   /* Marque */
-  --ds-primary: #0f766e;
-  --ds-primary-hover: #115e59;
-  --ds-primary-soft: #e6f4f2;
+  --ds-primary: #0369a1; /* bleu hospitalier */
+  --ds-primary-hover: #075985;
+  --ds-primary-soft: #e0f0fa;
+  --ds-primary-soft-hover: #cde6f5;
   --ds-on-primary: #ffffff;
-  --ds-secondary: #4338ca;
-  --ds-secondary-soft: #eef0ff;
+  --ds-secondary: #0f766e;
+  --ds-secondary-soft: #e6f4f2;
 
   /* Neutres */
   --ds-bg: #f8fafc;
@@ -43,8 +44,9 @@
   /* Barre latérale */
   --ds-sidebar-bg: #0f172a;
   --ds-sidebar-text: #cbd5e1;
-  --ds-sidebar-active-bg: #134e4a;
+  --ds-sidebar-active-bg: #0c4a6e;
   --ds-sidebar-active-text: #ffffff;
+  --ds-sidebar-focus: #7dd3fc;
 
   /* Échelle d'espacement : 4 / 8 / 16 / 24 / 32 */
   --ds-space-1: 4px;

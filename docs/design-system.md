@@ -8,8 +8,8 @@ Minimalisme et espace blanc · coins 8 à 16 px · ombres douces · hiérarchie 
 ## 2. Tokens (`admin/src/styles.scss`, variables `--ds-*`)
 | Famille | Tokens | Valeurs |
 |---|---|---|
-| Marque | `primary` / `primary-hover` / `primary-soft` | `#0f766e` / `#115e59` / `#e6f4f2` (5,5:1 sur blanc) |
-| Secondaire | `secondary` / `secondary-soft` | `#4338ca` / `#eef0ff` |
+| Marque | `primary` / `primary-hover` / `primary-soft` | `#0369a1` (bleu hospitalier) / `#075985` / `#e0f0fa` (5,9:1 sur blanc) |
+| Secondaire | `secondary` / `secondary-soft` | `#0f766e` (sarcelle) / `#e6f4f2` |
 | Neutres | `bg`, `surface`, `surface-muted`, `border`, `border-strong`, `text`, `text-muted` | `#f8fafc`, `#fff`, `#f1f5f9`, `#e2e8f0`, `#64748b` (4,8:1), `#0f172a` (17:1), `#475569` (7,6:1) |
 | Succès | `success` / `success-soft` | `#166534` / `#dcfce7` (6,5:1) |
 | Alerte | `warning` / `warning-soft` | `#92400e` / `#fef3c7` (6,4:1) |
