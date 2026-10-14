@@ -3,7 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, finalize, map, of, shareReplay, tap, catchError, switchMap } from 'rxjs';
 import { API_BASE_URL } from './config';
-import { CurrentUser, LoginResponse, Role, TokenResponse } from './models';
+import { CurrentUser, LoginResponse, RecoveryCodes, Role, TokenResponse, TotpSetup } from './models';
 
 /**
  * Access token gardé en mémoire uniquement. Le refresh token est un cookie httpOnly
@@ -21,6 +21,12 @@ export class AuthService {
 
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._token() !== null && this._user() !== null);
+
+  /** Administrateurs SUPER/FINANCE : la 2FA est obligatoire (le serveur refuse tout le reste tant qu'elle manque). */
+  readonly mustEnrollTwoFactor = computed(() => {
+    const u = this._user();
+    return !!u && u.role === 'ADMIN' && !u.mfaEnabled && (!u.adminLevel || u.adminLevel === 'SUPER' || u.adminLevel === 'FINANCE');
+  });
 
   get accessToken(): string | null {
     return this._token();
@@ -68,6 +74,26 @@ export class AuthService {
         this.clear();
         return of(false);
       }),
+    );
+  }
+
+  setupTwoFactor(): Observable<TotpSetup> {
+    return this.http.post<TotpSetup>(`${this.base}/auth/2fa/setup`, {});
+  }
+
+  enableTwoFactor(code: string): Observable<RecoveryCodes> {
+    return this.http.post<RecoveryCodes>(`${this.base}/auth/2fa/enable`, { code });
+  }
+
+  /**
+   * À appeler une fois la 2FA activée : le jeton d'accès en cours ne porte pas encore l'information,
+   * on en obtient un nouveau (refresh) puis on recharge le profil.
+   */
+  completeTwoFactorEnrollment(): Observable<boolean> {
+    return this.refresh().pipe(
+      switchMap(() => this.http.get<CurrentUser>(`${this.base}/auth/me`)),
+      tap((u) => this._user.set(u)),
+      map(() => true),
     );
   }
 

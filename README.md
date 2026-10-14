@@ -53,3 +53,6 @@ Compte admin initial : `APP_ADMIN_EMAIL` / `APP_ADMIN_PASSWORD` (créé au premi
 - Versement des gains des pharmacies (leur portefeuille est crédité, aucun retrait n'est encore prévu) et remboursement d'un paiement déjà réparti.
 - Intégrations réelles Mobile Money / carte / banque (aujourd'hui : stubs), avec rappel de l'opérateur (webhook) pour les paiements en attente.
 - Prorata lors d'un changement de formule d'abonnement ; effets métier des abonnements (visibilité, remises Premium) si le métier le décide.
+
+## Phase 9 — durcissement
+- **2FA obligatoire des administrateurs SUPER et FINANCE** : le jeton d'accès porte l'état de la 2FA (`mfa`). Tant qu'elle n'est pas activée, seul `/api/v1/auth/**` répond ; le reste renvoie `403` avec le code `MFA_ENROLLMENT_REQUIRED`. L'admin Angular conduit alors à `/security/2fa` (QR code, codes de secours). Premier démarrage : connectez-vous avec le compte initial, activez la 2FA, reconnectez-vous. `APP_REQUIRE_ADMIN_MFA=false` désactive l'exigence (développement uniquement).

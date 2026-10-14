@@ -8,6 +8,16 @@ export interface CurrentUser {
   lastName: string | null;
   role: Role;
   adminLevel?: AdminLevel | null;
+  mfaEnabled: boolean;
+}
+
+export interface TotpSetup {
+  secret: string;
+  otpauthUri: string;
+}
+
+export interface RecoveryCodes {
+  recoveryCodes: string[];
 }
 
 export interface TokenResponse {

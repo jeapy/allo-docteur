@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard, guestGuard, levelGuard, roleGuard } from './core/guards';
+import { authGuard, guestGuard, levelGuard, roleGuard, twoFactorEnrolledGuard, twoFactorPendingGuard } from './core/guards';
 
 export const routes: Routes = [
   {
@@ -8,8 +8,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/login').then((m) => m.LoginComponent),
   },
   {
+    path: 'security/2fa',
+    canActivate: [authGuard, roleGuard('ADMIN'), twoFactorPendingGuard],
+    loadComponent: () => import('./features/security/two-factor-setup').then((m) => m.TwoFactorSetupComponent),
+  },
+  {
     path: '',
-    canActivate: [authGuard, roleGuard('ADMIN')],
+    canActivate: [authGuard, roleGuard('ADMIN'), twoFactorEnrolledGuard],
     loadComponent: () => import('./layout/shell').then((m) => m.ShellComponent),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },

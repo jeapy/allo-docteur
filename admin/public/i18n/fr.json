@@ -463,5 +463,17 @@
       "previous": "Page précédente",
       "next": "Page suivante"
     }
+  },
+  "twoFactor": {
+    "title": "Double authentification",
+    "required": "Obligatoire pour votre niveau d'administration.",
+    "step1": "Scannez le QR code avec une application d'authentification (Google Authenticator, Authy, FreeOTP…).",
+    "step2": "Saisissez le code à 6 chiffres affiché pour confirmer.",
+    "qrAlt": "QR code de configuration de la double authentification",
+    "manualKey": "Ou saisissez cette clé manuellement",
+    "invalidCode": "Code incorrect ou expiré. Réessayez.",
+    "enable": "Activer",
+    "recoveryWarning": "Conservez ces codes de secours en lieu sûr : chacun ne sert qu'une fois et ils ne seront plus affichés.",
+    "saved": "J'ai conservé mes codes, continuer"
   }
 }

@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { authInterceptor, errorInterceptor } from './interceptors';
 import { CurrentUser } from './models';
 
-const user: CurrentUser = { id: '1', email: 'a@b.c', firstName: 'A', lastName: 'B', role: 'ADMIN' };
+const user: CurrentUser = { id: '1', email: 'a@b.c', firstName: 'A', lastName: 'B', role: 'ADMIN', mfaEnabled: true };
 const API = '/api/v1';
 
 describe('Auth', () => {
@@ -90,5 +90,35 @@ describe('Auth', () => {
     client.get(`${API}/admin/users`).subscribe({ error: () => undefined });
     http.expectOne(`${API}/admin/users`).flush({ detail: 'Boom' }, { status: 400, statusText: 'Bad Request' });
     expect(toast.error).toHaveBeenCalledWith('Boom');
+  });
+
+  it("exige l'enrôlement 2FA des admins SUPER/FINANCE sans 2FA, pas des autres", () => {
+    const login = (u: CurrentUser) => {
+      auth.login('a@b.c', 'pw').subscribe();
+      http.expectOne(`${API}/auth/login`).flush({ status: 'AUTHENTICATED', accessToken: 'T', expiresIn: 900, user: u });
+    };
+    login({ ...user, mfaEnabled: false, adminLevel: 'FINANCE' });
+    expect(auth.mustEnrollTwoFactor()).toBe(true);
+    login({ ...user, mfaEnabled: false, adminLevel: 'SUPPORT' });
+    expect(auth.mustEnrollTwoFactor()).toBe(false);
+    login({ ...user, mfaEnabled: true, adminLevel: 'SUPER' });
+    expect(auth.mustEnrollTwoFactor()).toBe(false);
+  });
+
+  it("recharge jeton et profil une fois la 2FA activée", () => {
+    auth.completeTwoFactorEnrollment().subscribe();
+    http.expectOne(`${API}/auth/refresh`).flush({ accessToken: 'FRESH', expiresIn: 900 });
+    http.expectOne(`${API}/auth/me`).flush({ ...user, mfaEnabled: true, adminLevel: 'SUPER' });
+    expect(auth.accessToken).toBe('FRESH');
+    expect(auth.user()?.mfaEnabled).toBe(true);
+  });
+
+  it("conduit à l'enrôlement sans toast quand le serveur répond MFA_ENROLLMENT_REQUIRED", () => {
+    const toast = TestBed.inject(ToastService);
+    client.get(`${API}/admin/users`).subscribe({ error: () => undefined });
+    http
+      .expectOne(`${API}/admin/users`)
+      .flush({ code: 'MFA_ENROLLMENT_REQUIRED', detail: 'x' }, { status: 403, statusText: 'Forbidden' });
+    expect(toast.error).not.toHaveBeenCalled();
   });
 });

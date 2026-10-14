@@ -1,0 +1,53 @@
+<main class="grid min-h-screen place-items-center bg-bg p-4">
+  <ui-card class="w-full max-w-md" [attr.aria-busy]="loading()">
+    <div class="mb-4 flex items-center gap-3">
+      <span class="grid h-10 w-10 place-items-center rounded-md bg-primary-soft text-primary">
+        <ng-icon name="lucideShieldCheck" size="20" aria-hidden="true" />
+      </span>
+      <div>
+        <h1 class="m-0 text-xl font-semibold">{{ 'twoFactor.title' | transloco }}</h1>
+        <p class="m-0 text-sm text-muted">{{ 'twoFactor.required' | transloco }}</p>
+      </div>
+    </div>
+
+    @if (step() === 'scan') {
+      <ol class="m-0 mb-4 list-decimal pl-5 text-sm text-muted">
+        <li>{{ 'twoFactor.step1' | transloco }}</li>
+        <li>{{ 'twoFactor.step2' | transloco }}</li>
+      </ol>
+
+      <div class="mb-4 flex flex-col items-center gap-3">
+        @if (qr(); as src) {
+          <img [src]="src" width="192" height="192" [alt]="'twoFactor.qrAlt' | transloco" class="rounded-md border border-border" />
+        } @else {
+          <ui-skeleton class="h-48 w-48" />
+        }
+        @if (setup(); as s) {
+          <div class="w-full text-center">
+            <p class="m-0 text-xs text-muted">{{ 'twoFactor.manualKey' | transloco }}</p>
+            <code class="mt-1 inline-block rounded-sm bg-surface-muted px-2 py-1 text-sm tracking-wider [overflow-wrap:anywhere]">{{ s.secret }}</code>
+          </div>
+        }
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="confirm()" novalidate class="flex flex-col gap-4">
+        <ui-field [label]="'login.code' | transloco" inputId="totp-code"
+          [error]="failed() ? ('twoFactor.invalidCode' | transloco) : (form.controls.code.touched && form.controls.code.invalid ? ('validation.code' | transloco) : null)">
+          <input uiInput id="totp-code" inputmode="numeric" maxlength="6" formControlName="code" autocomplete="one-time-code" />
+        </ui-field>
+        <div class="flex justify-between gap-2">
+          <button uiBtn variant="ghost" type="button" (click)="logout()">{{ 'nav.logout' | transloco }}</button>
+          <button uiBtn type="submit" [disabled]="form.invalid || loading() || !setup()">{{ 'twoFactor.enable' | transloco }}</button>
+        </div>
+      </form>
+    } @else {
+      <p class="m-0 mb-3 rounded-md bg-warning-soft px-4 py-3 text-sm text-warning" role="note">{{ 'twoFactor.recoveryWarning' | transloco }}</p>
+      <ul class="m-0 mb-4 grid list-none grid-cols-2 gap-2 p-0">
+        @for (c of recoveryCodes(); track c) {
+          <li><code class="block rounded-sm bg-surface-muted px-2 py-1 text-center text-sm">{{ c }}</code></li>
+        }
+      </ul>
+      <button uiBtn class="w-full" type="button" [disabled]="loading()" (click)="finish()">{{ 'twoFactor.saved' | transloco }}</button>
+    }
+  </ui-card>
+</main>

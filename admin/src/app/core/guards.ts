@@ -24,3 +24,15 @@ export const levelGuard = (...levels: AdminLevel[]): CanActivateFn => () => {
   const level = auth.user()?.adminLevel;
   return level && levels.includes(level) ? true : inject(Router).createUrlTree(['/']);
 };
+
+/** Un administrateur qui doit encore activer la 2FA n'accède qu'à l'écran d'enrôlement. */
+export const twoFactorEnrolledGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  return auth.mustEnrollTwoFactor() ? inject(Router).createUrlTree(['/security/2fa']) : true;
+};
+
+/** L'écran d'enrôlement n'a de sens que tant que la 2FA manque. */
+export const twoFactorPendingGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  return auth.mustEnrollTwoFactor() ? true : inject(Router).createUrlTree(['/']);
+};

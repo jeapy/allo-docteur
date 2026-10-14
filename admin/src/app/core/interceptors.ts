@@ -1,5 +1,6 @@
 import { HttpErrorResponse, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { ToastService } from '../shared/ui/toast';
@@ -42,11 +43,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next: HttpHandlerFn) => 
 /** Affiche une notification pour les erreurs API (ProblemDetail), sauf 401 gérés ailleurs. */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toast = inject(ToastService);
+  const router = inject(Router);
   const i18n = inject(TranslocoService);
   const base = inject(API_BASE_URL);
   return next(req).pipe(
     catchError((err: unknown) => {
       if (err instanceof HttpErrorResponse && req.url.startsWith(base) && err.status !== 401) {
+        if (err.status === 403 && (err.error as ProblemDetail | null)?.code === 'MFA_ENROLLMENT_REQUIRED') {
+          // état local périmé : le serveur exige l'enrôlement 2FA, on y conduit l'administrateur
+          void router.navigate(['/security/2fa']);
+          return throwError(() => err);
+        }
         toast.error(messageFor(err, i18n));
       }
       return throwError(() => err);
