@@ -1,12 +1,9 @@
-@use '@angular/material' as mat;
 @use 'styles/table';
-@import 'material-icons/iconfont/material-icons.css';
 
 /*
  * Design system « Allo Docteur » – tokens globaux (thème clair).
  * Source unique des couleurs, espacements, rayons, ombres et durées :
  *  - Tailwind/Spartan les consomme via src/tailwind.css (@theme) ;
- *  - Angular Material (écrans pas encore migrés) les consomme via les surcharges --mat-sys-* plus bas.
  * Contrastes vérifiés WCAG AA (texte ≥ 4,5:1, bordures de champs ≥ 3:1).
  */
 :root {
@@ -76,27 +73,6 @@
 
   /* Anneau de focus visible partout */
   --ds-focus: 0 0 0 2px var(--ds-surface), 0 0 0 4px var(--ds-primary);
-}
-
-/* Angular Material (écrans en cours de migration) : même palette que le design system */
-html {
-  @include mat.theme((
-    color: mat.$azure-palette,
-    typography: Inter,
-    density: 0,
-  ));
-  --mat-sys-primary: var(--ds-primary);
-  --mat-sys-on-primary: var(--ds-on-primary);
-  --mat-sys-primary-container: var(--ds-primary-soft);
-  --mat-sys-on-primary-container: var(--ds-primary-hover);
-  --mat-sys-secondary-container: var(--ds-primary-soft);
-  --mat-sys-on-secondary-container: var(--ds-primary-hover);
-  --mat-sys-surface: var(--ds-bg);
-  --mat-sys-on-surface: var(--ds-text);
-  --mat-sys-error: var(--ds-danger);
-  --mat-sys-corner-medium: var(--ds-radius-sm);
-  --mat-sys-corner-large: var(--ds-radius-md);
-  --mat-sys-corner-extra-large: var(--ds-radius-lg);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
