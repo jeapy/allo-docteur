@@ -1,5 +1,6 @@
 // Tableaux de données du design system : `<div class="ui-table-wrap"><table uiTable>…</table></div>`.
 .ui-table-wrap {
+  position: relative;
   overflow-x: auto;
   border-radius: var(--ds-radius-lg);
   border: 1px solid var(--ds-border);
@@ -36,6 +37,34 @@
     &:hover { background: var(--ds-surface-muted); }
   }
 
-  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .sub { display: block; font-size: 0.75rem; color: var(--ds-text-muted); }
 }
+
+// Carte de tableau : tableau défilant + pagination dans un même cadre.
+.ui-table-card {
+  position: relative; // contient les .sr-only (position: absolute) des en-têtes
+  overflow: hidden;
+  border-radius: var(--ds-radius-lg);
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
+  box-shadow: var(--ds-shadow-sm);
+  transition: opacity var(--ds-duration-base) var(--ds-ease);
+
+  &.is-loading { opacity: 0.6; }
+  > .scroll { overflow-x: auto; }
+  .ui-table { td, th { &:first-child { padding-left: var(--ds-space-4); } &:last-child { padding-right: var(--ds-space-4); } } }
+}
+
+// Barre de filtres au-dessus d'un tableau.
+.ui-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-3);
+  margin-bottom: var(--ds-space-4);
+  > * { flex: 0 1 12rem; }
+  > .grow { flex: 1 1 16rem; }
+}
+
+// Actions en ligne (boutons alignés à droite dans une cellule).
+.ui-row-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--ds-space-2); }

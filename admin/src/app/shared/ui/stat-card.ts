@@ -8,14 +8,14 @@ import { UiSkeleton } from './skeleton';
   selector: 'ui-stat-card',
   imports: [NgIcon, UiCard, UiSkeleton],
   template: `
-    <ui-card [interactive]="true" class="h-full">
+    <ui-card [interactive]="true" class="h-full" [class.ring-2]="alert()" [class.ring-warning]="alert()">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
           <p class="m-0 text-sm font-medium text-muted">{{ label() }}</p>
           @if (loading()) {
             <ui-skeleton class="mt-3 h-8 w-24" />
           } @else {
-            <p class="m-0 mt-2 truncate text-3xl font-semibold tracking-tight text-text">{{ value() ?? '—' }}</p>
+            <p class="m-0 mt-2 text-2xl font-semibold [overflow-wrap:anywhere] tracking-tight text-text">{{ value() ?? '—' }}</p>
           }
           @if (hint() && !loading()) { <p class="m-0 mt-1 text-xs text-muted">{{ hint() }}</p> }
         </div>
@@ -31,6 +31,8 @@ export class UiStatCard {
   readonly label = input.required<string>();
   readonly value = input<string | number | null>('—');
   readonly icon = input('lucideActivity');
-  readonly hint = input<string>();
+  readonly hint = input<string | null>();
   readonly loading = input(false);
+  /** Met la carte en évidence (anneau) : le sens est aussi porté par le texte, pas seulement la couleur. */
+  readonly alert = input(false);
 }
