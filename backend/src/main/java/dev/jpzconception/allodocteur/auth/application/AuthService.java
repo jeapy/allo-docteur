@@ -232,21 +232,34 @@ public class AuthService {
 
     /** Répond toujours de la même façon pour ne pas révéler l'existence d'un compte. */
     public void forgotPassword(String rawEmail) {
-        users.findByEmailIgnoreCase(normalize(rawEmail)).ifPresent(user -> {
-            Instant now = Instant.now(clock);
-            String raw = TokenHasher.randomToken();
-            PasswordResetToken token = new PasswordResetToken();
-            token.setUserId(user.getId());
-            token.setTokenHash(TokenHasher.sha256(raw));
-            token.setCreatedAt(now);
-            token.setExpiresAt(now.plus(RESET_TTL));
-            resetTokens.save(token);
-            email.send(user.getEmail(), "Réinitialisation de votre mot de passe",
-                    "Pour choisir un nouveau mot de passe, ouvrez : "
-                            + props.frontendUrl() + "/reset-password?token=" + raw
-                            + "\nCe lien expire dans 1 heure.");
-            audit.record(user.getId(), "PASSWORD_RESET_REQUESTED", "USER", user.getId().toString(), null);
-        });
+        users.findByEmailIgnoreCase(normalize(rawEmail)).ifPresent(user ->
+                sendResetLink(user, user.getId(), "PASSWORD_RESET_REQUESTED", null));
+    }
+
+    /**
+     * Un administrateur déclenche l'envoi du lien de réinitialisation à l'adresse du compte. Il ne voit jamais le
+     * lien ni le nouveau mot de passe : seul le titulaire du compte peut finaliser.
+     */
+    public void adminTriggerPasswordReset(UUID adminId, UUID userId) {
+        User user = users.findById(userId)
+                .orElseThrow(() -> ApiException.notFound("USER_NOT_FOUND", "Utilisateur introuvable."));
+        sendResetLink(user, adminId, "PASSWORD_RESET_TRIGGERED_BY_ADMIN", user.getEmail());
+    }
+
+    private void sendResetLink(User user, UUID actorId, String auditAction, String details) {
+        Instant now = Instant.now(clock);
+        String raw = TokenHasher.randomToken();
+        PasswordResetToken token = new PasswordResetToken();
+        token.setUserId(user.getId());
+        token.setTokenHash(TokenHasher.sha256(raw));
+        token.setCreatedAt(now);
+        token.setExpiresAt(now.plus(RESET_TTL));
+        resetTokens.save(token);
+        email.send(user.getEmail(), "Réinitialisation de votre mot de passe",
+                "Pour choisir un nouveau mot de passe, ouvrez : "
+                        + props.frontendUrl() + "/reset-password?token=" + raw
+                        + "\nCe lien expire dans 1 heure.");
+        audit.record(actorId, auditAction, "USER", user.getId().toString(), details);
     }
 
     public void resetPassword(String rawToken, String newPassword) {
