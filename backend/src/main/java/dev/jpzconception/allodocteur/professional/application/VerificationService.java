@@ -4,6 +4,7 @@ import dev.jpzconception.allodocteur.admin.application.AuditService;
 import dev.jpzconception.allodocteur.notification.application.EmailSender;
 import dev.jpzconception.allodocteur.professional.api.ProfessionalDtos.AdminProfessionalRow;
 import dev.jpzconception.allodocteur.professional.api.ProfessionalDtos.ProfessionalDetail;
+import dev.jpzconception.allodocteur.professional.domain.LicenseCheckStatus;
 import dev.jpzconception.allodocteur.professional.domain.Professional;
 import dev.jpzconception.allodocteur.professional.domain.VerificationStatus;
 import dev.jpzconception.allodocteur.professional.infrastructure.ProfessionalDocumentRepository;
@@ -34,11 +35,13 @@ public class VerificationService {
     private final AuditService audit;
     private final EmailSender email;
     private final Clock clock;
+    private final ProfessionalProperties properties;
     private final org.springframework.context.ApplicationEventPublisher events;
 
     public VerificationService(ProfessionalRepository professionals, ProfessionalDocumentRepository documents,
                                ProfessionalService professionalService, ProfessionalAssembler assembler,
                                AuditService audit, EmailSender email, Clock clock,
+                               ProfessionalProperties properties,
                                org.springframework.context.ApplicationEventPublisher events) {
         this.professionals = professionals;
         this.documents = documents;
@@ -47,6 +50,7 @@ public class VerificationService {
         this.audit = audit;
         this.email = email;
         this.clock = clock;
+        this.properties = properties;
         this.events = events;
     }
 
@@ -68,11 +72,32 @@ public class VerificationService {
         if (documents.countByProfessionalId(id) == 0) {
             throw ApiException.conflict("DOCUMENTS_REQUIRED", "Au moins un justificatif est requis avant validation.");
         }
+        if (p.getLicenseCheckStatus() == LicenseCheckStatus.NOT_FOUND) {
+            throw ApiException.conflict("LICENSE_NOT_FOUND",
+                    "Le numéro d'ordre a été signalé introuvable : validation impossible.");
+        }
+        if (properties.requireConfirmedLicense() && p.getLicenseCheckStatus() != LicenseCheckStatus.CONFIRMED) {
+            throw ApiException.conflict("LICENSE_NOT_CONFIRMED",
+                    "Le numéro d'ordre doit être confirmé avant la validation du profil.");
+        }
         p.approve(adminId, Instant.now(clock));
         audit.record(adminId, "PROFESSIONAL_APPROVED", "PROFESSIONAL", id.toString(), p.getLicenseNumber());
         events.publishEvent(new ProfessionalEvents.VerificationChanged(id, VerificationStatus.APPROVED));
         email.send(p.getUser().getEmail(), "Votre profil Allo Docteur est validé",
                 "Votre profil est désormais visible dans le répertoire des professionnels.");
+        return professionalService.detail(p, true);
+    }
+
+    /** Enregistre le résultat de la vérification manuelle du numéro d'ordre auprès de l'ordre concerné. */
+    public ProfessionalDetail confirmLicense(UUID adminId, UUID id, LicenseCheckStatus result, String note) {
+        if (result != LicenseCheckStatus.CONFIRMED && result != LicenseCheckStatus.NOT_FOUND) {
+            throw ApiException.badRequest("INVALID_LICENSE_CHECK", "Résultat attendu : CONFIRMED ou NOT_FOUND.");
+        }
+        Professional p = professionalService.require(id);
+        p.recordLicenseCheck(result, adminId, Instant.now(clock), note);
+        audit.record(adminId, result == LicenseCheckStatus.CONFIRMED
+                ? "PROFESSIONAL_LICENSE_CONFIRMED" : "PROFESSIONAL_LICENSE_NOT_FOUND",
+                "PROFESSIONAL", id.toString(), p.getLicenseNumber());
         return professionalService.detail(p, true);
     }
 

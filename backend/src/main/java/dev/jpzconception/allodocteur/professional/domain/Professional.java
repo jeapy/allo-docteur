@@ -102,6 +102,19 @@ public class Professional extends AuditableEntity {
     @Column(name = "rejection_reason", columnDefinition = "text")
     private String rejectionReason;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "license_check_status", nullable = false)
+    private LicenseCheckStatus licenseCheckStatus = LicenseCheckStatus.UNCHECKED;
+
+    @Column(name = "license_checked_at")
+    private Instant licenseCheckedAt;
+
+    @Column(name = "license_checked_by")
+    private UUID licenseCheckedBy;
+
+    @Column(name = "license_check_note")
+    private String licenseCheckNote;
+
     @Column(name = "rating_avg", nullable = false)
     private BigDecimal ratingAvg = BigDecimal.ZERO;
 
@@ -119,6 +132,14 @@ public class Professional extends AuditableEntity {
 
     @Column(name = "deleted_at")
     private Instant deletedAt;
+
+    /** Enregistre le résultat d'une vérification du numéro d'ordre (automatique : {@code by} nul). */
+    public void recordLicenseCheck(LicenseCheckStatus status, UUID by, Instant now, String note) {
+        this.licenseCheckStatus = status;
+        this.licenseCheckedAt = now;
+        this.licenseCheckedBy = by;
+        this.licenseCheckNote = note;
+    }
 
     // ---- transitions du workflow de validation ----
 

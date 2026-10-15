@@ -22,6 +22,8 @@ import dev.jpzconception.allodocteur.shared.security.AuthenticatedUser;
 import dev.jpzconception.allodocteur.user.domain.Role;
 import dev.jpzconception.allodocteur.user.domain.UserStatus;
 import dev.jpzconception.allodocteur.user.infrastructure.UserRepository;
+import java.time.Clock;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,12 +45,15 @@ public class ProfessionalService {
     private final ProfessionalDocumentRepository documents;
     private final ProfessionalAssembler assembler;
     private final AuditService audit;
+    private final LicenseVerifier licenseVerifier;
+    private final Clock clock;
 
     public ProfessionalService(ProfessionalRepository professionals, UserRepository users,
                                ProfessionalTypeRepository types, SpecialtyRepository specialties,
                                CityRepository cities, DistrictRepository districts,
                                AvailabilityRuleRepository rules, ProfessionalDocumentRepository documents,
-                               ProfessionalAssembler assembler, AuditService audit) {
+                               ProfessionalAssembler assembler, AuditService audit,
+                               LicenseVerifier licenseVerifier, Clock clock) {
         this.professionals = professionals;
         this.users = users;
         this.types = types;
@@ -59,6 +64,8 @@ public class ProfessionalService {
         this.documents = documents;
         this.assembler = assembler;
         this.audit = audit;
+        this.licenseVerifier = licenseVerifier;
+        this.clock = clock;
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +96,12 @@ public class ProfessionalService {
             throw ApiException.badRequest("INVALID_SPECIALTY", "Spécialité inconnue.");
         }
 
-        String license = req.licenseNumber().trim();
+        String license = LicenseVerifier.normalize(req.licenseNumber());
+        LicenseVerifier.Result licenseResult = licenseVerifier.check(type, license);
+        if (licenseResult == LicenseVerifier.Result.INVALID_FORMAT) {
+            throw ApiException.badRequest("INVALID_LICENSE_FORMAT",
+                    "Numéro d'ordre invalide pour ce type de professionnel.");
+        }
         Professional p = professionals.findById(userId).orElse(null);
         boolean creating = p == null;
         if (creating ? professionals.licenseExists(license) : professionals.licenseUsedByOther(license, userId)) {
@@ -106,6 +118,10 @@ public class ProfessionalService {
                     || !p.getType().getId().equals(type.getId());
         }
 
+        if (creating || sensitiveChange) {
+            // nouveau numéro ou nouveau type : l'ancienne vérification (et une éventuelle confirmation) ne vaut plus
+            p.recordLicenseCheck(LicenseVerifier.statusOf(licenseResult), null, Instant.now(clock), null);
+        }
         p.setType(type);
         p.setQualification(req.qualification().trim());
         p.setLicenseNumber(license);

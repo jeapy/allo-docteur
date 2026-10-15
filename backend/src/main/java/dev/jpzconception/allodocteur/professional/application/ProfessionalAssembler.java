@@ -34,7 +34,8 @@ public class ProfessionalAssembler {
         return new ProfessionalDetail(
                 p.getId(), u.getFirstName(), u.getLastName(), u.getPhotoUrl(),
                 privileged ? u.getEmail() : null,
-                typeRef(p.getType()), p.getQualification(), p.getLicenseNumber(), p.getYearsExperience(), p.getBio(),
+                typeRef(p.getType()), p.getQualification(), p.getLicenseNumber(),
+                privileged ? licenseCheck(p) : null, p.getYearsExperience(), p.getBio(),
                 new Ref(p.getCity().getId(), p.getCity().getName()),
                 p.getDistrict() == null ? null : new Ref(p.getDistrict().getId(), p.getDistrict().getName()),
                 p.getConsultationFee(), p.getHomeVisitFee(), p.getCurrency(),
@@ -50,7 +51,7 @@ public class ProfessionalAssembler {
     public AdminProfessionalRow toRow(Professional p) {
         User u = p.getUser();
         return new AdminProfessionalRow(p.getId(), u.getFirstName(), u.getLastName(), u.getEmail(),
-                typeRef(p.getType()), p.getLicenseNumber(), p.getCity().getName(),
+                typeRef(p.getType()), p.getLicenseNumber(), p.getLicenseCheckStatus(), p.getCity().getName(),
                 p.getVerificationStatus(), p.getCreatedAt());
     }
 
@@ -62,6 +63,11 @@ public class ProfessionalAssembler {
     public DocumentDto document(ProfessionalDocument d) {
         return new DocumentDto(d.getId(), d.getType(), d.getOriginalFilename(), d.getContentType(),
                 d.getSizeBytes(), d.getUploadedAt());
+    }
+
+    private static LicenseCheckDto licenseCheck(Professional p) {
+        return new LicenseCheckDto(p.getLicenseCheckStatus(), p.getLicenseCheckedAt(), p.getLicenseCheckedBy(),
+                p.getLicenseCheckNote());
     }
 
     private static TypeRef typeRef(ProfessionalType t) {

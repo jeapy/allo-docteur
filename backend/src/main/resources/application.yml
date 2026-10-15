@@ -56,8 +56,13 @@ app:
     password: ${APP_ADMIN_PASSWORD:}
   rate-limit:
     auth-per-minute: 10
+    public-per-minute: 20   # endpoints publics (candidature pro, vérification du n° d'ordre), par IP
   security:
     require-admin-mfa: ${APP_REQUIRE_ADMIN_MFA:true}  # admins SUPER/FINANCE : 2FA obligatoire (seul /auth/** reste ouvert avant l'enrôlement)
+  professionals:
+    require-confirmed-license: ${APP_REQUIRE_CONFIRMED_LICENSE:true}  # n° d'ordre confirmé par un admin avant approbation
+    license-default-pattern: "[A-Za-z0-9][A-Za-z0-9 ./_-]{3,49}"
+    # license-patterns:   # regex par code de type (ex. MEDECIN) une fois les formats réels connus
   storage:
     local-path: ${APP_STORAGE_PATH:./data/storage}
   notifications:

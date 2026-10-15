@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import dev.jpzconception.allodocteur.professional.domain.LicenseCheckStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -57,6 +58,9 @@ public final class ProfessionalDtos {
             LocalTime endTime,
             @Size(max = 255) String reason) {}
 
+    /** Résultat manuel de la vérification du numéro d'ordre par l'administration. */
+    public record LicenseCheckRequest(@NotNull LicenseCheckStatus result, @Size(max = 500) String note) {}
+
     public record ReasonRequest(@NotBlank @Size(max = 1000) String reason) {}
 
     // ------------------------------------------------------------ réponses
@@ -71,6 +75,8 @@ public final class ProfessionalDtos {
                           boolean teleconsultation, boolean homeVisit) {}
 
     public record ExceptionDto(UUID id, LocalDate date, LocalTime startTime, LocalTime endTime, String reason) {}
+
+    public record LicenseCheckDto(LicenseCheckStatus status, Instant checkedAt, UUID checkedBy, String note) {}
 
     public record DocumentDto(UUID id, DocumentType type, String filename, String contentType, long sizeBytes,
                               Instant uploadedAt) {}
@@ -106,6 +112,7 @@ public final class ProfessionalDtos {
             TypeRef type,
             String qualification,
             String licenseNumber,
+            LicenseCheckDto licenseCheck,
             Integer yearsExperience,
             String bio,
             Ref city,
@@ -133,6 +140,7 @@ public final class ProfessionalDtos {
             String email,
             TypeRef type,
             String licenseNumber,
+            LicenseCheckStatus licenseCheck,
             String city,
             VerificationStatus verificationStatus,
             Instant createdAt) {}

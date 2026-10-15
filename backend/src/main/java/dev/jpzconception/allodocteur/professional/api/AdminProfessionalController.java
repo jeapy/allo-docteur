@@ -1,6 +1,7 @@
 package dev.jpzconception.allodocteur.professional.api;
 
 import dev.jpzconception.allodocteur.professional.api.ProfessionalDtos.AdminProfessionalRow;
+import dev.jpzconception.allodocteur.professional.api.ProfessionalDtos.LicenseCheckRequest;
 import dev.jpzconception.allodocteur.professional.api.ProfessionalDtos.ProfessionalDetail;
 import dev.jpzconception.allodocteur.professional.api.ProfessionalDtos.ReasonRequest;
 import dev.jpzconception.allodocteur.professional.application.VerificationService;
@@ -69,5 +70,12 @@ public class AdminProfessionalController {
     public ProfessionalDetail suspend(@AuthenticationPrincipal AuthenticatedUser admin, @PathVariable UUID id,
                                       @Valid @RequestBody ReasonRequest request) {
         return service.suspend(admin.id(), id, request.reason());
+    }
+
+    @PostMapping("/{id}/license-check")
+    @PreAuthorize(CAN_REVIEW)
+    public ProfessionalDetail licenseCheck(@AuthenticationPrincipal AuthenticatedUser admin, @PathVariable UUID id,
+                                           @Valid @RequestBody LicenseCheckRequest request) {
+        return service.confirmLicense(admin.id(), id, request.result(), request.note());
     }
 }
