@@ -51,6 +51,23 @@ public class DocumentService {
                 .map(assembler::document).toList();
     }
 
+    /** Contrôle un fichier sans rien enregistrer (candidature publique : tout valider avant de créer le compte). */
+    public void precheck(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw ApiException.badRequest("EMPTY_FILE", "Fichier vide.");
+        }
+        if (file.getSize() > MAX_BYTES) {
+            throw ApiException.badRequest("FILE_TOO_LARGE", "Fichier trop volumineux (5 Mo maximum).");
+        }
+        try {
+            if (detectContentType(file.getBytes()) == null) {
+                throw ApiException.badRequest("UNSUPPORTED_FILE", "Formats acceptés : PDF, JPEG, PNG.");
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Lecture du fichier impossible", e);
+        }
+    }
+
     public DocumentDto upload(UUID professionalId, DocumentType type, MultipartFile file) {
         if (!professionals.existsById(professionalId)) {
             throw ApiException.notFound("PROFILE_REQUIRED", "Créez d'abord votre profil professionnel.");

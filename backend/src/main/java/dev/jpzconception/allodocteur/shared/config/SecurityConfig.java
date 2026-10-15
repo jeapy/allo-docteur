@@ -30,6 +30,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC = {
             "/api/v1/auth/register", "/api/v1/auth/login", "/api/v1/auth/2fa/verify",
             "/api/v1/auth/refresh", "/api/v1/auth/logout", "/api/v1/auth/password/**",
+            "/api/v1/public/**",
             "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
             "/actuator/health", "/actuator/health/**", "/actuator/info"
     };
@@ -49,13 +50,16 @@ public class SecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(PUBLIC).permitAll()
+                        // référentiels (types, spécialités, villes) : nécessaires au formulaire public de candidature
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reference/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint((req, res, ex) ->
                                 writeProblem(res, 401, "Unauthorized", "UNAUTHENTICATED", "Authentification requise."))
                         .accessDeniedHandler((req, res, ex) ->
                                 writeProblem(res, 403, "Forbidden", "ACCESS_DENIED", "Accès refusé.")))
-                .addFilterBefore(new RateLimitFilter(new RateLimiter(props.rateLimit().authPerMinute(), clock)),
+                .addFilterBefore(new RateLimitFilter(new RateLimiter(props.rateLimit().authPerMinute(), clock),
+                        new RateLimiter(props.rateLimit().publicPerMinute(), clock)),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationFilter(jwt, requireAdminMfa), UsernamePasswordAuthenticationFilter.class);
         return http.build();

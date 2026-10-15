@@ -25,5 +25,5 @@ public record AppProperties(
 
     public record Admin(String email, String password) {}
 
-    public record RateLimit(int authPerMinute) {}
+    public record RateLimit(int authPerMinute, int publicPerMinute) {}
 }
