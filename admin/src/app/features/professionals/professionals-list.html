@@ -34,7 +34,10 @@
             <tr>
               <td class="font-medium">{{ p.firstName }} {{ p.lastName }}<span class="sub font-normal">{{ p.email }}</span></td>
               <td>{{ p.type.label }}</td>
-              <td>{{ p.licenseNumber }}</td>
+              <td>{{ p.licenseNumber }}
+                @if (p.licenseCheck === 'CONFIRMED') { <ng-icon name="lucideShieldCheck" size="14" class="ml-1 inline text-success" [attr.title]="'licenseCheck.CONFIRMED' | transloco" /> }
+                @if (p.licenseCheck === 'NOT_FOUND') { <ng-icon name="lucideCircleAlert" size="14" class="ml-1 inline text-danger" [attr.title]="'licenseCheck.NOT_FOUND' | transloco" /> }
+              </td>
               <td>{{ p.city }}</td>
               <td><ui-badge [tone]="tone(p.verificationStatus)">{{ 'verification.' + p.verificationStatus | transloco }}</ui-badge></td>
               <td>{{ p.createdAt | date: 'dd/MM/yyyy' }}</td>

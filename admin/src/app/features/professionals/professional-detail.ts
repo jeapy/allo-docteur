@@ -3,10 +3,10 @@ import { Component, effect, inject, input, signal } from '@angular/core';
 import { NgIcon } from '@ng-icons/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { ToastService, UiBadge, UiButton, UiCard, UiDialog, UiEmptyState, UiPageHeader, UiSkeleton, statusTone } from '../../shared/ui';
+import { BadgeTone, ToastService, UiBadge, UiButton, UiCard, UiDialog, UiEmptyState, UiPageHeader, UiSkeleton, statusTone } from '../../shared/ui';
 import { Observable, filter, switchMap } from 'rxjs';
 import { AuthService } from '../../core/auth.service';
-import { ProfessionalDetail, ProfessionalDocument } from '../../core/models';
+import { LicenseCheckStatus, ProfessionalDetail, ProfessionalDocument } from '../../core/models';
 import { ProfessionalsService } from './professionals.service';
 import { ReasonDialogComponent } from './reason-dialog';
 
@@ -30,6 +30,8 @@ export class ProfessionalDetailComponent {
   protected readonly pro = signal<ProfessionalDetail | null>(null);
   protected readonly tone = statusTone;
   protected readonly busy = signal(false);
+  protected readonly licenseTone = (s: LicenseCheckStatus): BadgeTone =>
+    ({ CONFIRMED: 'success', FORMAT_VALID: 'warning', NOT_FOUND: 'danger', UNCHECKED: 'neutral' } as Record<LicenseCheckStatus, BadgeTone>)[s];
 
   /** Seuls les niveaux SUPER et SUPPORT peuvent décider ; FINANCE consulte en lecture seule. */
   protected readonly canReview = () => ['SUPER', 'SUPPORT'].includes(this.auth.user()?.adminLevel ?? '');
@@ -53,6 +55,14 @@ export class ProfessionalDetailComponent {
 
   protected reject(): void {
     this.askReason('professionals.rejectTitle').pipe(switchMap((r) => this.api.reject(this.id(), r))).subscribe(this.handle());
+  }
+
+  protected confirmLicense(): void {
+    this.run(this.api.checkLicense(this.id(), 'CONFIRMED'));
+  }
+
+  protected licenseNotFound(): void {
+    this.askReason('licenseCheck.notFoundTitle').pipe(switchMap((n) => this.api.checkLicense(this.id(), 'NOT_FOUND', n))).subscribe(this.handle());
   }
 
   protected suspend(): void {

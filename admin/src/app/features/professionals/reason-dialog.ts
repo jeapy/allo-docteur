@@ -19,7 +19,7 @@ export interface ReasonDialogData {
     <h2 brnDialogTitle class="m-0 mb-4 text-lg font-semibold text-text">{{ data.titleKey | transloco }}</h2>
     <ui-field [label]="(data.labelKey ?? 'professionals.reason') | transloco" inputId="reason-input"
       [error]="reason.touched && reason.invalid ? ('validation.required' | transloco) : null">
-      <textarea uiInput id="reason-input" rows="4" maxlength="1000" class="resize-y" [formControl]="reason"></textarea>
+      <textarea uiInput id="reason-input" rows="4" maxlength="500" class="resize-y" [formControl]="reason"></textarea>
     </ui-field>
     <div class="mt-6 flex justify-end gap-2">
       <button uiBtn variant="ghost" type="button" brnDialogClose>{{ 'common.cancel' | transloco }}</button>

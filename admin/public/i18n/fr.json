@@ -32,7 +32,9 @@
     "verify": "Valider",
     "back": "Retour",
     "forgot": "Mot de passe oublié ?",
-    "tagline": "Votre clinique virtuelle, au chevet de chaque patient."
+    "tagline": "Votre clinique virtuelle, au chevet de chaque patient.",
+    "applyPrompt": "Vous êtes professionnel de santé ?",
+    "applyLink": "Déposer ma candidature"
   },
   "validation": {
     "required": "Champ obligatoire",
@@ -573,5 +575,65 @@
     "enable": "Activer",
     "recoveryWarning": "Conservez ces codes de secours en lieu sûr : chacun ne sert qu'une fois et ils ne seront plus affichés.",
     "saved": "J'ai conservé mes codes, continuer"
+  },
+  "licenseCheck": {
+    "UNCHECKED": "Non vérifié",
+    "FORMAT_VALID": "Format valide, à confirmer",
+    "CONFIRMED": "Confirmé",
+    "NOT_FOUND": "Introuvable",
+    "confirm": "Confirmer le numéro d'ordre",
+    "notFound": "Numéro introuvable",
+    "notFoundTitle": "Numéro d'ordre introuvable"
+  },
+  "apply": {
+    "title": "Devenir professionnel Allo Docteur",
+    "tagline": "Rejoignez la clinique virtuelle et consultez vos patients à distance ou à domicile.",
+    "subtitle": "Créez votre compte et soumettez votre dossier. Notre équipe vérifie votre numéro d'ordre et vos justificatifs avant de publier votre profil.",
+    "account": "Votre compte",
+    "profile": "Votre profil professionnel",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phone": "Téléphone",
+    "phoneHint": "Format international, par exemple +2250700000000.",
+    "district": "Quartier",
+    "specialties": "Spécialités",
+    "offer": "Prestations proposées",
+    "bio": "Présentation (facultatif)",
+    "noOffer": "Choisissez au moins une prestation.",
+    "teleFee": "Indiquez le tarif de téléconsultation.",
+    "homeFee": "Indiquez le tarif de visite à domicile.",
+    "filesHint": "PDF, JPEG ou PNG, 5 Mo maximum par fichier, {{ max }} fichiers au plus. Joignez au moins un justificatif de votre numéro d'ordre.",
+    "docType": "Type de document",
+    "addFile": "Ajouter un fichier",
+    "remove": "Retirer le fichier",
+    "kind": {
+      "LICENSE": "Numéro d'ordre",
+      "DIPLOMA": "Diplôme",
+      "ID_CARD": "Pièce d'identité",
+      "OTHER": "Autre"
+    },
+    "file": {
+      "empty": "Ajoutez au moins un justificatif.",
+      "tooMany": "Cinq fichiers au maximum.",
+      "tooLarge": "Un fichier dépasse 5 Mo.",
+      "totalTooLarge": "Le total des fichiers est trop volumineux (11 Mo maximum).",
+      "unsupported": "Formats acceptés : PDF, JPEG, PNG.",
+      "licenseMissing": "Ajoutez un justificatif de type « Numéro d'ordre »."
+    },
+    "license": {
+      "hint": "Votre numéro sera vérifié dès la saisie.",
+      "checking": "Vérification en cours…",
+      "INVALID_FORMAT": "Format de numéro invalide pour ce type de professionnel.",
+      "ALREADY_REGISTERED": "Ce numéro d'ordre est déjà enregistré.",
+      "FORMAT_VALID": "Format valide. Notre équipe confirmera le numéro.",
+      "REGISTRY_CONFIRMED": "Numéro confirmé par l'ordre.",
+      "REGISTRY_NOT_FOUND": "Numéro introuvable dans le registre de l'ordre."
+    },
+    "terms": "J'atteste l'exactitude de ces informations et j'accepte les conditions d'utilisation de la plateforme.",
+    "submit": "Envoyer ma candidature",
+    "reviewHint": "Vous recevrez un e-mail dès que votre profil aura été examiné.",
+    "doneTitle": "Candidature envoyée",
+    "doneBody": "Merci ! Nous avons bien reçu votre dossier. Un e-mail de confirmation a été envoyé à {{ email }}.",
+    "reference": "Référence"
   }
 }

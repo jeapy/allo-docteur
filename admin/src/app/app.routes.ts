@@ -8,6 +8,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/login/login').then((m) => m.LoginComponent),
   },
   {
+    // publique : un professionnel dépose sa candidature sans compte (validée ensuite par l'administration)
+    path: 'devenir-professionnel',
+    loadComponent: () => import('./features/apply/apply').then((m) => m.ApplyComponent),
+  },
+  {
     path: 'forgot-password',
     canActivate: [guestGuard],
     loadComponent: () => import('./features/password/forgot-password').then((m) => m.ForgotPasswordComponent),

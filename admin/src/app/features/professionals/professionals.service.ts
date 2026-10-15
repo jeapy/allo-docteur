@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/config';
-import { Page, ProfessionalDetail, ProfessionalRow, VerificationStatus } from '../../core/models';
+import { LicenseCheckStatus, Page, ProfessionalDetail, ProfessionalRow, VerificationStatus } from '../../core/models';
 
 export interface ProfessionalQuery {
   page: number;
@@ -37,6 +37,11 @@ export class ProfessionalsService {
 
   suspend(id: string, reason: string): Observable<ProfessionalDetail> {
     return this.http.post<ProfessionalDetail>(`${this.base}/${id}/suspend`, { reason });
+  }
+
+  /** Résultat de la vérification manuelle du numéro d'ordre auprès de l'ordre concerné. */
+  checkLicense(id: string, result: Extract<LicenseCheckStatus, 'CONFIRMED' | 'NOT_FOUND'>, note?: string): Observable<ProfessionalDetail> {
+    return this.http.post<ProfessionalDetail>(`${this.base}/${id}/license-check`, { result, note: note || null });
   }
 
   /** Les justificatifs exigent le jeton : on récupère un Blob puis on l'ouvre côté navigateur. */

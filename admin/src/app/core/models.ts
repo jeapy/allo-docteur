@@ -63,6 +63,15 @@ export type VerificationStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDE
 export interface TypeRef { id: number; code: string; label: string }
 export interface Ref { id: number; name: string }
 
+export type LicenseCheckStatus = 'UNCHECKED' | 'FORMAT_VALID' | 'CONFIRMED' | 'NOT_FOUND';
+
+export interface LicenseCheck {
+  status: LicenseCheckStatus;
+  checkedAt: string | null;
+  checkedBy: string | null;
+  note: string | null;
+}
+
 export interface ProfessionalRow {
   id: string;
   firstName: string | null;
@@ -70,6 +79,7 @@ export interface ProfessionalRow {
   email: string;
   type: TypeRef;
   licenseNumber: string;
+  licenseCheck?: LicenseCheckStatus;
   city: string;
   verificationStatus: VerificationStatus;
   createdAt: string;
@@ -92,6 +102,7 @@ export interface ProfessionalDetail {
   type: TypeRef;
   qualification: string;
   licenseNumber: string;
+  licenseCheck?: LicenseCheck | null;
   yearsExperience: number | null;
   bio: string | null;
   city: Ref;

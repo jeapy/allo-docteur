@@ -48,6 +48,12 @@
           </div>
         </form>
       }
+      @if (!mfaToken()) {
+        <p class="login__hint mt-6">
+          {{ 'login.applyPrompt' | transloco }}
+          <a routerLink="/devenir-professionnel" class="text-primary-hover underline">{{ 'login.applyLink' | transloco }}</a>
+        </p>
+      }
     </section>
   </main>
 </div>

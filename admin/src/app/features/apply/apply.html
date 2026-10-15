@@ -1,0 +1,184 @@
+<div class="login">
+  <aside class="login__brand" aria-hidden="true">
+    <div class="login__brand-inner">
+      <span class="login__logo"><ng-icon name="lucideHeartPulse" size="28" /></span>
+      <p class="login__tagline">{{ 'apply.tagline' | transloco }}</p>
+    </div>
+  </aside>
+
+  <main class="login__panel apply__panel">
+    <section class="login__card apply__card" [attr.aria-busy]="submitting()">
+      <h1 class="login__title">{{ 'apply.title' | transloco }}</h1>
+
+      @if (receipt(); as r) {
+        <div class="mt-4 flex flex-col gap-4" role="status">
+          <p class="m-0 flex items-center gap-2 text-lg font-semibold text-success">
+            <ng-icon name="lucideCheck" size="22" aria-hidden="true" /> {{ 'apply.doneTitle' | transloco }}
+          </p>
+          <p class="m-0 text-sm">{{ 'apply.doneBody' | transloco: { email: r.email } }}</p>
+          <p class="m-0 text-xs text-muted">{{ 'apply.reference' | transloco }} : {{ r.reference }}</p>
+          <a uiBtn variant="outline" routerLink="/login">{{ 'password.backToLogin' | transloco }}</a>
+        </div>
+      } @else {
+        <p class="login__subtitle">{{ 'apply.subtitle' | transloco }}</p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="login__form">
+          <fieldset formGroupName="account" class="apply__group">
+            <legend>{{ 'apply.account' | transloco }}</legend>
+            <div class="apply__grid">
+              <ui-field [label]="'apply.firstName' | transloco" inputId="ap-first" [error]="msg('account.firstName')">
+                <input uiInput id="ap-first" formControlName="firstName" autocomplete="given-name" />
+              </ui-field>
+              <ui-field [label]="'apply.lastName' | transloco" inputId="ap-last" [error]="msg('account.lastName')">
+                <input uiInput id="ap-last" formControlName="lastName" autocomplete="family-name" />
+              </ui-field>
+            </div>
+            <ui-field [label]="'login.email' | transloco" inputId="ap-email" [error]="msg('account.email')">
+              <input uiInput id="ap-email" type="email" formControlName="email" autocomplete="email" />
+            </ui-field>
+            <ui-field [label]="'apply.phone' | transloco" inputId="ap-phone" [error]="msg('account.phone')">
+              <input uiInput id="ap-phone" type="tel" formControlName="phone" autocomplete="tel" />
+            </ui-field>
+            <p class="apply__hint">{{ 'apply.phoneHint' | transloco }}</p>
+            <ui-field [label]="'login.password' | transloco" inputId="ap-password" [error]="msg('account.password')">
+              <input uiInput id="ap-password" type="password" formControlName="password" autocomplete="new-password" />
+            </ui-field>
+          </fieldset>
+
+          <fieldset formGroupName="profile" class="apply__group">
+            <legend>{{ 'apply.profile' | transloco }}</legend>
+            <ui-select-field [label]="'professionals.type' | transloco" inputId="ap-type">
+              <select uiSelect id="ap-type" formControlName="professionalTypeId">
+                <option [ngValue]="null" disabled>—</option>
+                @for (t of types(); track t.id) { <option [ngValue]="t.id">{{ t.label }}</option> }
+              </select>
+            </ui-select-field>
+            @if (msg('profile.professionalTypeId'); as m) { <p class="apply__error" role="alert">{{ m }}</p> }
+
+            <ui-field [label]="'professionals.license' | transloco" inputId="ap-license" [error]="msg('profile.licenseNumber')">
+              <input uiInput id="ap-license" formControlName="licenseNumber" autocomplete="off" aria-describedby="ap-license-status" />
+            </ui-field>
+            <p id="ap-license-status" class="apply__status" aria-live="polite">
+              @if (licenseChecking()) {
+                <span class="apply__muted">{{ 'apply.license.checking' | transloco }}</span>
+              } @else if (license(); as l) {
+                <span [class]="'apply__badge apply__badge--' + (l.status === 'FORMAT_VALID' || l.status === 'REGISTRY_CONFIRMED' ? 'ok' : 'ko')">
+                  <ng-icon [name]="l.status === 'FORMAT_VALID' || l.status === 'REGISTRY_CONFIRMED' ? 'lucideCheck' : 'lucideCircleAlert'" size="14" aria-hidden="true" />
+                  {{ 'apply.license.' + l.status | transloco }}
+                </span>
+              } @else {
+                <span class="apply__muted">{{ 'apply.license.hint' | transloco }}</span>
+              }
+            </p>
+
+            <ui-field [label]="'professionals.qualification' | transloco" inputId="ap-qualification" [error]="msg('profile.qualification')">
+              <input uiInput id="ap-qualification" formControlName="qualification" />
+            </ui-field>
+            <div class="apply__grid">
+              <ui-field [label]="'professionals.experience' | transloco" inputId="ap-years" [error]="msg('profile.yearsExperience')">
+                <input uiInput id="ap-years" type="number" min="0" max="70" formControlName="yearsExperience" />
+              </ui-field>
+              <ui-select-field [label]="'professionals.city' | transloco" inputId="ap-city">
+                <select uiSelect id="ap-city" formControlName="cityId">
+                  <option [ngValue]="null" disabled>—</option>
+                  @for (c of cities(); track c.id) { <option [ngValue]="c.id">{{ c.name }}</option> }
+                </select>
+              </ui-select-field>
+            </div>
+            @if (msg('profile.cityId'); as m) { <p class="apply__error" role="alert">{{ m }}</p> }
+            @if (districts().length) {
+              <ui-select-field [label]="'apply.district' | transloco" inputId="ap-district">
+                <select uiSelect id="ap-district" formControlName="districtId">
+                  <option [ngValue]="null">—</option>
+                  @for (d of districts(); track d.id) { <option [ngValue]="d.id">{{ d.name }}</option> }
+                </select>
+              </ui-select-field>
+            }
+
+            <fieldset class="apply__sub">
+              <legend>{{ 'apply.specialties' | transloco }}</legend>
+              <div class="apply__checks">
+                @for (s of specialties(); track s.id) {
+                  <label class="apply__check">
+                    <input uiCheckbox type="checkbox" [checked]="isChosen(s.id)" (change)="toggleSpecialty(s.id, $any($event.target).checked)" />
+                    {{ s.name }}
+                  </label>
+                }
+              </div>
+              @if (msg('profile.specialtyIds'); as m) { <p class="apply__error" role="alert">{{ m }}</p> }
+            </fieldset>
+
+            <fieldset class="apply__sub">
+              <legend>{{ 'apply.offer' | transloco }}</legend>
+              <label class="apply__check"><input uiCheckbox type="checkbox" formControlName="offersTeleconsultation" /> {{ 'professionals.tele' | transloco }}</label>
+              @if (offersTele()) {
+                <ui-field [label]="('professionals.tele' | transloco) + ' (XOF)'" inputId="ap-tele-fee" [error]="msg('profile.consultationFee')">
+                  <input uiInput id="ap-tele-fee" type="number" min="0" formControlName="consultationFee" />
+                </ui-field>
+              }
+              <label class="apply__check"><input uiCheckbox type="checkbox" formControlName="offersHomeVisit" /> {{ 'professionals.home' | transloco }}</label>
+              @if (offersHome()) {
+                <ui-field [label]="('professionals.home' | transloco) + ' (XOF)'" inputId="ap-home-fee" [error]="msg('profile.homeVisitFee')">
+                  <input uiInput id="ap-home-fee" type="number" min="0" formControlName="homeVisitFee" />
+                </ui-field>
+              }
+              @if (offerError(); as m) { <p class="apply__error" role="alert">{{ m }}</p> }
+            </fieldset>
+
+            <ui-field [label]="'apply.bio' | transloco" inputId="ap-bio" [error]="msg('profile.bio')">
+              <textarea uiInput id="ap-bio" rows="3" formControlName="bio"></textarea>
+            </ui-field>
+          </fieldset>
+
+          <fieldset class="apply__group">
+            <legend>{{ 'professionals.documents' | transloco }}</legend>
+            <p class="apply__hint">{{ 'apply.filesHint' | transloco: { max: maxFiles } }}</p>
+            @if (documents().length) {
+              <ul class="apply__files">
+                @for (d of documents(); track $index) {
+                  <li>
+                    <ng-icon name="lucideFileText" size="18" aria-hidden="true" />
+                    <span class="apply__fname">{{ d.file.name }}<small>{{ d.file.size / 1024 | number: '1.0-0' }} Ko</small></span>
+                    <select uiSelect class="apply__kind" [attr.aria-label]="'apply.docType' | transloco"
+                      [value]="d.type" (change)="setDocKind($index, $any($event.target).value)">
+                      @for (k of kinds; track k) { <option [value]="k" [selected]="k === d.type">{{ 'apply.kind.' + k | transloco }}</option> }
+                    </select>
+                    <button uiBtn variant="ghost" size="sm" type="button" (click)="removeFile($index)"
+                      [attr.aria-label]="'apply.remove' | transloco">
+                      <ng-icon name="lucideX" size="16" aria-hidden="true" />
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+            <div class="apply__adder">
+              <ui-select-field [label]="'apply.docType' | transloco" inputId="ap-kind">
+                <select uiSelect id="ap-kind" [value]="newKind()" (change)="setKind($any($event.target).value)">
+                  @for (k of kinds; track k) { <option [value]="k">{{ 'apply.kind.' + k | transloco }}</option> }
+                </select>
+              </ui-select-field>
+              <button uiBtn variant="outline" type="button" (click)="picker.click()">{{ 'apply.addFile' | transloco }}</button>
+              <input #picker type="file" class="sr-only" tabindex="-1" aria-hidden="true" [accept]="accept" multiple (change)="addFile(picker)" />
+            </div>
+            @if (fileProblemText(); as m) { <p class="apply__error" role="alert">{{ m }}</p> }
+          </fieldset>
+
+          <label class="apply__check">
+            <input uiCheckbox type="checkbox" formControlName="acceptTerms" />
+            <span>{{ 'apply.terms' | transloco }}</span>
+          </label>
+          @if (msg('acceptTerms'); as m) { <p class="apply__error" role="alert">{{ m }}</p> }
+
+          <button uiBtn size="lg" type="submit" [disabled]="submitting()">
+            @if (submitting()) { <span class="spinner" aria-hidden="true"></span> }
+            {{ 'apply.submit' | transloco }}
+          </button>
+          <p class="login__hint">{{ 'apply.reviewHint' | transloco }}</p>
+          <p class="login__hint">
+            <a routerLink="/login" class="text-primary-hover underline">{{ 'password.backToLogin' | transloco }}</a>
+          </p>
+        </form>
+      }
+    </section>
+  </main>
+</div>

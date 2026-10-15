@@ -31,7 +31,26 @@
     <ui-card>
       <h2 class="mb-4">{{ 'professionals.identity' | transloco }}</h2>
       <dl class="m-0 grid grid-cols-[max-content_1fr] gap-x-6 gap-y-3 text-sm">
-        <dt class="font-semibold text-muted">{{ 'professionals.license' | transloco }}</dt><dd class="m-0">{{ p.licenseNumber }}</dd>
+        <dt class="font-semibold text-muted">{{ 'professionals.license' | transloco }}</dt><dd class="m-0">
+          {{ p.licenseNumber }}
+          @if (p.licenseCheck; as lc) {
+            <span class="mt-1.5 flex flex-wrap items-center gap-2">
+              <ui-badge [tone]="licenseTone(lc.status)">{{ 'licenseCheck.' + lc.status | transloco }}</ui-badge>
+              @if (lc.checkedAt) { <span class="text-xs text-muted">{{ lc.checkedAt | date: 'dd/MM/yyyy HH:mm' }}</span> }
+            </span>
+            @if (lc.note) { <span class="mt-1 block text-xs text-muted">{{ lc.note }}</span> }
+            @if (canReview()) {
+              <span class="mt-2 flex flex-wrap gap-2">
+                @if (lc.status !== 'CONFIRMED') {
+                  <button uiBtn variant="outline" size="sm" type="button" (click)="confirmLicense()" [disabled]="busy()">{{ 'licenseCheck.confirm' | transloco }}</button>
+                }
+                @if (lc.status !== 'NOT_FOUND') {
+                  <button uiBtn variant="ghost" size="sm" type="button" (click)="licenseNotFound()" [disabled]="busy()">{{ 'licenseCheck.notFound' | transloco }}</button>
+                }
+              </span>
+            }
+          }
+        </dd>
         <dt class="font-semibold text-muted">{{ 'professionals.qualification' | transloco }}</dt><dd class="m-0">{{ p.qualification }}</dd>
         <dt class="font-semibold text-muted">{{ 'professionals.experience' | transloco }}</dt><dd class="m-0">{{ p.yearsExperience ?? '—' }}</dd>
         <dt class="font-semibold text-muted">{{ 'professionals.city' | transloco }}</dt>

@@ -1,3 +1,4 @@
+import { NgIcon } from '@ng-icons/core';
 import { DatePipe } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
@@ -12,7 +13,7 @@ import { ProfessionalQuery, ProfessionalsService } from './professionals.service
 @Component({
   selector: 'app-professionals-list',
   imports: [
-    ReactiveFormsModule, DatePipe, RouterLink, TranslocoPipe, UiPageHeader, UiField, UiInput, UiSelectField, UiSelect, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
+    ReactiveFormsModule, DatePipe, RouterLink, TranslocoPipe, NgIcon, UiPageHeader, UiField, UiInput, UiSelectField, UiSelect, UiTable, UiBadge, UiButton, UiPagination, UiEmptyState, UiTableSkeleton,
   ],
   templateUrl: './professionals-list.html',
 })

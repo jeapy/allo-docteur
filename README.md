@@ -28,6 +28,7 @@ make up                  # postgres + backend (8080) + admin (8081)
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Modules, ports et stubs, modèle de données, migrations, sécurité, décisions |
 | [`docs/EXPLOITATION.md`](docs/EXPLOITATION.md) | Variables d'environnement, premier démarrage, sauvegardes, checklist de production, limites connues |
 | [`docs/api-contract-phase1.md`](docs/api-contract-phase1.md) … [`phase9`](docs/api-contract-phase9.md) | Contrat d'API de chaque phase (Swagger fait foi pour le détail des schémas) |
+| [`docs/api-contract-phase10.md`](docs/api-contract-phase10.md) | Candidature publique d'un professionnel et vérification du n° d'ordre |
 | [`docs/design-system.md`](docs/design-system.md) | Design system de l'administration, composants, pièges rencontrés |
 | [`docs/schema_bdd_allo_docteur.md`](docs/schema_bdd_allo_docteur.md) | Schéma de départ proposé (le schéma réel est celui des migrations Flyway) |
 
